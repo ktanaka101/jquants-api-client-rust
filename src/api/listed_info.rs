@@ -1,13 +1,40 @@
 //! Listed info API endpoints.
 
+use std::fmt;
+
 use market_code::MarketCode;
 use sector17_code::Sector17Code;
 use sector33_code::Sector33Code;
-use serde::Deserialize;
+use serde::{de::DeserializeOwned, Deserialize};
+
+use crate::JQuantsError;
+
+use super::JQuantsApiClient;
 
 mod market_code;
 mod sector17_code;
 mod sector33_code;
+
+impl JQuantsApiClient {
+    /// Get listed information
+    ///
+    /// Use [Listed Information (/listed/info) API](https://jpx.gitbook.io/j-quants-en/api-reference/listed_info)
+    ///
+    /// # Parameters
+    ///
+    /// [API Param specification](https://jpx.gitbook.io/j-quants-en/api-reference/listed_info#parameter-and-response)
+    /// * `code` - Issue code (e.g. 27800 or 2780)
+    /// * `date` - Date (e.g. 20210907 or 2021-09-07)
+    pub async fn get_listed_info<T: DeserializeOwned + fmt::Debug>(
+        &mut self,
+        code: &str,
+        date: &str,
+    ) -> Result<T, JQuantsError> {
+        let endpoint = "listed/info";
+        let params = [("code", code), ("date", date), ("pagination_key", "1")];
+        self.get::<T>(endpoint, Some(&params[..])).await
+    }
+}
 
 /// Listed info response for free plan
 ///

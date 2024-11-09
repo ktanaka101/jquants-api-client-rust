@@ -19,7 +19,7 @@
 //!
 //! - [JQuants API documentation](https://jpx.gitbook.io/j-quants-en)
 
-use jquants_api_client::client::JQuantsClient;
+use jquants_api_client::JQuantsFreePlanClient;
 use std::env;
 use tracing::Level;
 use tracing_subscriber::FmtSubscriber;
@@ -40,7 +40,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         panic!("Please set the JQUANTS_REFRESH_TOKEN environment variable to your JQuants refresh token");
     }
 
-    let mut client = JQuantsClient::new_from_refresh_token(refresh_token);
+    let mut client = JQuantsFreePlanClient::new_from_refresh_token(refresh_token);
     let listed_info_response = client.get_listed_info("2789", "2024-08-01").await?;
 
     for info in listed_info_response.info {
