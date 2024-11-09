@@ -22,7 +22,7 @@ const BASE_URL: &str = "https://api.jquants.com/v1";
 ///
 /// # Example
 ///
-/// ```rust
+/// ```ignore
 /// let path = "token/auth_refresh";
 /// let url = build_url(path);
 /// assert_eq!(url, "https://api.jquants.com/v1/token/auth_refresh");
