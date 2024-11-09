@@ -1,0 +1,12 @@
+[package]
+name = "hello_world"
+version = "0.0.0"
+publish = false
+edition = "2021"
+
+[dependencies]
+jquants-api-client = { path = "../.." }
+tokio = { version = "^1.41", features = ["full"] }
+dotenvy = "^0.15"
+tracing = "^0.1"
+tracing-subscriber = "^0.3"
