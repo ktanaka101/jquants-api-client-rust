@@ -31,6 +31,15 @@ fn build_url(path: &str) -> String {
     format!("{}/{}", BASE_URL, path)
 }
 
+/// J-Quants API client trait
+pub trait JQuantsPlanClient {
+    /// Get the API client.
+    fn get_client(&self) -> &JQuantsApiClient;
+
+    /// Get the mutable API client.
+    fn get_mut_client(&mut self) -> &mut JQuantsApiClient;
+}
+
 /// J-Quants API client
 ///
 /// See: [API Reference](https://jpx.gitbook.io/j-quants-en)

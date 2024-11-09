@@ -9,13 +9,17 @@ use serde::{de::DeserializeOwned, Deserialize};
 
 use crate::JQuantsError;
 
-use super::JQuantsApiClient;
+use super::JQuantsPlanClient;
 
 mod market_code;
 mod sector17_code;
 mod sector33_code;
 
-impl JQuantsApiClient {
+/// Listed info API endpoints.
+pub trait ListedInfoApi: JQuantsPlanClient + Send {
+    /// Response type for listed info API.
+    type Response: DeserializeOwned + fmt::Debug;
+
     /// Get listed information
     ///
     /// Use [Listed Information (/listed/info) API](https://jpx.gitbook.io/j-quants-en/api-reference/listed_info)
@@ -25,14 +29,22 @@ impl JQuantsApiClient {
     /// [API Param specification](https://jpx.gitbook.io/j-quants-en/api-reference/listed_info#parameter-and-response)
     /// * `code` - Issue code (e.g. 27800 or 2780)
     /// * `date` - Date (e.g. 20210907 or 2021-09-07)
-    pub async fn get_listed_info<T: DeserializeOwned + fmt::Debug>(
+    fn get_listed_info(
         &mut self,
         code: &str,
         date: &str,
-    ) -> Result<T, JQuantsError> {
-        let endpoint = "listed/info";
-        let params = [("code", code), ("date", date), ("pagination_key", "1")];
-        self.get::<T>(endpoint, Some(&params[..])).await
+        pagination_key: &str,
+    ) -> impl std::future::Future<Output = Result<Self::Response, JQuantsError>> + Send {
+        async move {
+            let params = [
+                ("code", code),
+                ("date", date),
+                ("pagination_key", pagination_key),
+            ];
+            self.get_mut_client()
+                .get::<Self::Response>("listed/info", Some(&params[..]))
+                .await
+        }
     }
 }
 

@@ -1,8 +1,8 @@
 //! Premium plan client implementation for JQuants API.
 
-use crate::{
-    api::{listed_info::ListedInfoStandardPlanResponse, JQuantsApiClient},
-    JQuantsError,
+use crate::api::{
+    listed_info::{ListedInfoApi, ListedInfoStandardPlanResponse},
+    JQuantsApiClient, JQuantsPlanClient,
 };
 
 /// Premium plan client for J-Quants API.
@@ -17,13 +17,18 @@ impl JQuantsPremiumPlanClient {
             api_client: JQuantsApiClient::new_from_refresh_token(refresh_token),
         }
     }
+}
 
-    /// Get the listed information.
-    pub async fn get_listed_info(
-        &mut self,
-        code: &str,
-        date: &str,
-    ) -> Result<ListedInfoStandardPlanResponse, JQuantsError> {
-        self.api_client.get_listed_info(code, date).await
+impl JQuantsPlanClient for JQuantsPremiumPlanClient {
+    fn get_client(&self) -> &JQuantsApiClient {
+        &self.api_client
     }
+
+    fn get_mut_client(&mut self) -> &mut JQuantsApiClient {
+        &mut self.api_client
+    }
+}
+
+impl ListedInfoApi for JQuantsPremiumPlanClient {
+    type Response = ListedInfoStandardPlanResponse;
 }

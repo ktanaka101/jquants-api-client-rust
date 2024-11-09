@@ -19,7 +19,7 @@
 //!
 //! - [JQuants API documentation](https://jpx.gitbook.io/j-quants-en)
 
-use jquants_api_client::JQuantsFreePlanClient;
+use jquants_api_client::{api::listed_info::ListedInfoApi, JQuantsFreePlanClient};
 use std::env;
 use tracing::Level;
 use tracing_subscriber::FmtSubscriber;
@@ -41,7 +41,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
 
     let mut client = JQuantsFreePlanClient::new_from_refresh_token(refresh_token);
-    let listed_info_response = client.get_listed_info("2789", "2024-08-01").await?;
+    let listed_info_response = client.get_listed_info("2789", "2024-08-01", "1").await?;
 
     for info in listed_info_response.info {
         println!(

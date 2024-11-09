@@ -1,6 +1,9 @@
 //! Free plan client implementation for JQuants API.
 
-use crate::{api::listed_info::ListedInfoFreePlanResponse, api::JQuantsApiClient, JQuantsError};
+use crate::api::{
+    listed_info::{ListedInfoApi, ListedInfoFreePlanResponse},
+    JQuantsApiClient, JQuantsPlanClient,
+};
 
 /// Free plan client for J-Quants API.
 pub struct JQuantsFreePlanClient {
@@ -14,13 +17,18 @@ impl JQuantsFreePlanClient {
             api_client: JQuantsApiClient::new_from_refresh_token(refresh_token),
         }
     }
+}
 
-    /// Get the listed information.
-    pub async fn get_listed_info(
-        &mut self,
-        code: &str,
-        date: &str,
-    ) -> Result<ListedInfoFreePlanResponse, JQuantsError> {
-        self.api_client.get_listed_info(code, date).await
+impl JQuantsPlanClient for JQuantsFreePlanClient {
+    fn get_client(&self) -> &JQuantsApiClient {
+        &self.api_client
     }
+
+    fn get_mut_client(&mut self) -> &mut JQuantsApiClient {
+        &mut self.api_client
+    }
+}
+
+impl ListedInfoApi for JQuantsFreePlanClient {
+    type Response = ListedInfoFreePlanResponse;
 }
