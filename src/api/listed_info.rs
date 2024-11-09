@@ -1,22 +1,97 @@
 //! Listed info API endpoints.
 
-use std::fmt;
+use std::{fmt, marker::PhantomData};
 
 use market_code::MarketCode;
 use sector17_code::Sector17Code;
 use sector33_code::Sector33Code;
-use serde::{de::DeserializeOwned, Deserialize};
+use serde::{de::DeserializeOwned, Deserialize, Serialize};
 
-use crate::JQuantsError;
-
-use super::JQuantsPlanClient;
+use super::{JQuantsApiClient, JQuantsPlanClient};
 
 mod market_code;
 mod sector17_code;
 mod sector33_code;
 
+/// Parameters for listed info API.
+#[derive(Serialize)]
+pub struct ListedInfoApiBuilder<'a, R: DeserializeOwned + fmt::Debug> {
+    #[serde(skip)]
+    client: JQuantsApiClient,
+    #[serde(skip)]
+    phantom: PhantomData<R>,
+
+    /// Issue code (e.g. 27800 or 2780)
+    pub code: Option<&'a str>,
+    /// Date (e.g. 20210907 or 2021-09-07)
+    pub date: Option<&'a str>,
+}
+impl<'a, R: DeserializeOwned + fmt::Debug> ListedInfoApiBuilder<'a, R> {
+    pub(crate) fn new(client: JQuantsApiClient) -> Self {
+        Self {
+            client,
+            phantom: PhantomData,
+            code: None,
+            date: None,
+        }
+    }
+
+    /// All listed issues as of the day when API is executed.
+    pub fn all_stocks_today(self) -> Self {
+        ListedInfoApiBuilder {
+            code: None,
+            date: None,
+            ..self
+        }
+    }
+
+    /// Specified listed issues as of the day when API is executed.
+    pub fn stock_today(self, code: &'a str) -> Self {
+        ListedInfoApiBuilder {
+            code: Some(code),
+            date: None,
+            ..self
+        }
+    }
+
+    /// All listed issues as of the specified day.
+    pub fn all_stocks_on_date(self, date: &'a str) -> Self {
+        ListedInfoApiBuilder {
+            code: None,
+            date: Some(date),
+            ..self
+        }
+    }
+
+    /// Specified listed issues as of the specified day.
+    pub fn stock_on_date(self, code: &'a str, date: &'a str) -> Self {
+        ListedInfoApiBuilder {
+            code: Some(code),
+            date: Some(date),
+            ..self
+        }
+    }
+
+    /// Set code.
+    pub fn set_code(mut self, code: &'a str) -> Self {
+        self.code = Some(code);
+        self
+    }
+
+    /// Set date.
+    pub fn set_date(mut self, date: &'a str) -> Self {
+        self.date = Some(date);
+        self
+    }
+
+    /// Send the request.
+    pub async fn send(&self) -> Result<R, crate::JQuantsError> {
+        self.client.inner.get::<R>("listed/info", self).await
+    }
+}
+
 /// Listed info API endpoints.
-pub trait ListedInfoApi: JQuantsPlanClient + Send {
+pub trait ListedInfoApi: JQuantsPlanClient {
     /// Response type for listed info API.
     type Response: DeserializeOwned + fmt::Debug;
 
@@ -29,22 +104,8 @@ pub trait ListedInfoApi: JQuantsPlanClient + Send {
     /// [API Param specification](https://jpx.gitbook.io/j-quants-en/api-reference/listed_info#parameter-and-response)
     /// * `code` - Issue code (e.g. 27800 or 2780)
     /// * `date` - Date (e.g. 20210907 or 2021-09-07)
-    fn get_listed_info(
-        &mut self,
-        code: &str,
-        date: &str,
-        pagination_key: &str,
-    ) -> impl std::future::Future<Output = Result<Self::Response, JQuantsError>> + Send {
-        async move {
-            let params = [
-                ("code", code),
-                ("date", date),
-                ("pagination_key", pagination_key),
-            ];
-            self.get_mut_client()
-                .get::<Self::Response>("listed/info", Some(&params[..]))
-                .await
-        }
+    fn get_listed_info(&self) -> ListedInfoApiBuilder<Self::Response> {
+        ListedInfoApiBuilder::new(self.get_api_client().clone())
     }
 }
 

@@ -6,14 +6,15 @@ pub mod listed_info;
 pub mod token_auth_refresh;
 pub mod token_auth_user;
 
-use std::fmt;
+use std::{fmt, sync::Arc};
+use tokio::sync::{Mutex, RwLock};
 
 use crate::api::error_response::ErrorResponse;
 use crate::api::token_auth_refresh::TokenAuthRefreshResponse;
 use crate::error::JQuantsError;
 use chrono::{DateTime, Local};
 use reqwest::{Client, RequestBuilder};
-use serde::de::DeserializeOwned;
+use serde::{de::DeserializeOwned, Serialize};
 
 const BASE_URL: &str = "https://api.jquants.com/v1";
 /// Concatenate the base URL and the path.
@@ -32,41 +33,67 @@ fn build_url(path: &str) -> String {
 }
 
 /// J-Quants API client trait
-pub trait JQuantsPlanClient {
+pub trait JQuantsPlanClient: Clone {
     /// Get the API client.
-    fn get_client(&self) -> &JQuantsApiClient;
+    fn get_api_client(&self) -> &JQuantsApiClient;
+}
 
-    /// Get the mutable API client.
-    fn get_mut_client(&mut self) -> &mut JQuantsApiClient;
+/// J-Quants API client
+#[derive(Clone)]
+pub struct JQuantsApiClient {
+    pub(crate) inner: Arc<JQuantsApiClientRef>,
+}
+impl JQuantsApiClient {
+    /// Create a new client from a refresh token.
+    pub fn new_from_refresh_token(refresh_token: String) -> Self {
+        Self {
+            inner: Arc::new(JQuantsApiClientRef::new_from_refresh_token(refresh_token)),
+        }
+    }
 }
 
 /// J-Quants API client
 ///
 /// See: [API Reference](https://jpx.gitbook.io/j-quants-en)
-pub struct JQuantsApiClient {
+pub(crate) struct JQuantsApiClientRef {
     /// HTTP client
     client: Client,
     /// Refresh token
     /// Use this token to refresh the ID token.
     refresh_token: String,
     /// ID token
-    id_token: Option<IdTokenWrapper>,
+    id_token: Arc<RwLock<Option<IdTokenWrapper>>>,
+
+    /// Lock for refreshing the ID token
+    refresh_id_token_lock: Arc<Mutex<()>>,
 }
 
-impl JQuantsApiClient {
+impl JQuantsApiClientRef {
     /// Create a new client from a refresh token.
     pub(crate) fn new_from_refresh_token(refresh_token: String) -> Self {
         Self {
             client: Client::new(),
             refresh_token,
-            id_token: None,
+            id_token: Arc::new(RwLock::new(None)),
+            refresh_id_token_lock: Arc::new(Mutex::new(())),
         }
     }
 
     /// Refresh the token.
     ///
     /// Use [ID Token (/token/auth_refresh) API](https://jpx.gitbook.io/j-quants-en/api-reference/idtoken)
-    pub(crate) async fn refresh_token(&mut self) -> Result<(), JQuantsError> {
+    pub(crate) async fn refresh_token(&self) -> Result<(), JQuantsError> {
+        let _lock = self.refresh_id_token_lock.lock().await;
+
+        // Recheck as the token may have been updated by another task
+        {
+            let id_token = self.id_token.read().await;
+            if id_token.as_ref().map_or(false, |token| token.is_valid()) {
+                tracing::info!("Token was refreshed by another task");
+                return Ok(());
+            }
+        }
+
         let url = build_url("token/auth_refresh");
         let request = self
             .client
@@ -77,7 +104,8 @@ impl JQuantsApiClient {
         let response = self
             .common_send::<TokenAuthRefreshResponse>(request)
             .await?;
-        self.id_token = Some(IdTokenWrapper {
+        let mut id_token = self.id_token.write().await;
+        id_token.replace(IdTokenWrapper {
             id_token: response.id_token,
             updated_at: now,
         });
@@ -87,9 +115,9 @@ impl JQuantsApiClient {
 
     /// Send a GET request to the API.
     pub(crate) async fn get<T: DeserializeOwned + fmt::Debug>(
-        &mut self,
+        &self,
         path: &str,
-        params: Option<&[(&str, &str)]>,
+        params: impl Serialize,
     ) -> Result<T, JQuantsError> {
         let url = format!("{BASE_URL}/{}", path);
         let request = self.client.get(&url).query(&params);
@@ -101,32 +129,43 @@ impl JQuantsApiClient {
     /// Reuses the ID token if it is valid.
     /// If the ID token is missing or invalid, it retrieves a new ID token.
     async fn common_send_with_auth<T: DeserializeOwned + fmt::Debug>(
-        &mut self,
+        &self,
         request: RequestBuilder,
     ) -> Result<T, JQuantsError> {
-        match self.id_token {
-            Some(ref id_token) => {
-                if id_token.is_valid() {
-                    tracing::info!("Using cached ID token");
-                } else {
-                    tracing::info!("ID token expired. Refreshing...");
-                    self.refresh_token().await?;
+        let refresh_needed = {
+            let id_token = self.id_token.read().await;
+            match id_token.as_ref() {
+                Some(id_token) => {
+                    if id_token.is_valid() {
+                        tracing::info!("Using cached ID token");
+                        false
+                    } else {
+                        tracing::info!("ID token expired. Refreshing...");
+                        true
+                    }
+                }
+                None => {
+                    tracing::info!("ID token is None. Refreshing...");
+                    true
                 }
             }
-            _ => {
-                tracing::info!("ID token is None. Refreshing...");
-                self.refresh_token().await?;
-            }
+        };
+
+        if refresh_needed {
+            self.refresh_token().await?;
         }
 
-        self.common_send(request.header(
-            "Authorization",
-            &format!(
-                "Bearer {}",
-                self.id_token.as_ref().expect("BUG: token is None").id_token
-            ),
-        ))
-        .await
+        let id_token = {
+            self.id_token
+                .read()
+                .await
+                .as_ref()
+                .expect("BUG: token is None")
+                .id_token
+                .clone()
+        };
+        self.common_send(request.header("Authorization", &format!("Bearer {id_token}")))
+            .await
     }
 
     /// Send a request and parse the response.

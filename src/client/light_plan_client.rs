@@ -6,6 +6,7 @@ use crate::api::{
 };
 
 /// Light plan client for J-Quants API.
+#[derive(Clone)]
 pub struct JQuantsLightPlanClient {
     api_client: JQuantsApiClient,
 }
@@ -20,12 +21,8 @@ impl JQuantsLightPlanClient {
 }
 
 impl JQuantsPlanClient for JQuantsLightPlanClient {
-    fn get_client(&self) -> &JQuantsApiClient {
+    fn get_api_client(&self) -> &JQuantsApiClient {
         &self.api_client
-    }
-
-    fn get_mut_client(&mut self) -> &mut JQuantsApiClient {
-        &mut self.api_client
     }
 }
 

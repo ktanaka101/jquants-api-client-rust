@@ -6,6 +6,7 @@ use crate::api::{
 };
 
 /// Premium plan client for J-Quants API.
+#[derive(Clone)]
 pub struct JQuantsPremiumPlanClient {
     api_client: JQuantsApiClient,
 }
@@ -20,12 +21,8 @@ impl JQuantsPremiumPlanClient {
 }
 
 impl JQuantsPlanClient for JQuantsPremiumPlanClient {
-    fn get_client(&self) -> &JQuantsApiClient {
+    fn get_api_client(&self) -> &JQuantsApiClient {
         &self.api_client
-    }
-
-    fn get_mut_client(&mut self) -> &mut JQuantsApiClient {
-        &mut self.api_client
     }
 }
 
