@@ -43,7 +43,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let client = JQuantsFreePlanClient::new_from_refresh_token(refresh_token);
     let listed_info_response = client
         .get_listed_info()
-        .stock_on_date("2789", "2024-08-01")
+        .code("2789")
+        .date("2024-08-01")
         .send()
         .await?;
 

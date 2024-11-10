@@ -15,18 +15,20 @@ mod sector33_code;
 
 /// Parameters for listed info API.
 #[derive(Serialize)]
-pub struct ListedInfoApiBuilder<'a, R: DeserializeOwned + fmt::Debug> {
+pub struct ListedInfoApiBuilder<R: DeserializeOwned + fmt::Debug> {
     #[serde(skip)]
     client: JQuantsApiClient,
     #[serde(skip)]
     phantom: PhantomData<R>,
 
     /// Issue code (e.g. 27800 or 2780)
-    pub code: Option<&'a str>,
-    /// Date (e.g. 20210907 or 2021-09-07)
-    pub date: Option<&'a str>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub code: Option<String>,
+    /// Date (e.g. 27800 or 2780)
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub date: Option<String>,
 }
-impl<'a, R: DeserializeOwned + fmt::Debug> ListedInfoApiBuilder<'a, R> {
+impl<R: DeserializeOwned + fmt::Debug> ListedInfoApiBuilder<R> {
     pub(crate) fn new(client: JQuantsApiClient) -> Self {
         Self {
             client,
@@ -36,55 +38,19 @@ impl<'a, R: DeserializeOwned + fmt::Debug> ListedInfoApiBuilder<'a, R> {
         }
     }
 
-    /// All listed issues as of the day when API is executed.
-    pub fn all_stocks_today(self) -> Self {
-        ListedInfoApiBuilder {
-            code: None,
-            date: None,
-            ..self
-        }
-    }
-
-    /// Specified listed issues as of the day when API is executed.
-    pub fn stock_today(self, code: &'a str) -> Self {
-        ListedInfoApiBuilder {
-            code: Some(code),
-            date: None,
-            ..self
-        }
-    }
-
-    /// All listed issues as of the specified day.
-    pub fn all_stocks_on_date(self, date: &'a str) -> Self {
-        ListedInfoApiBuilder {
-            code: None,
-            date: Some(date),
-            ..self
-        }
-    }
-
-    /// Specified listed issues as of the specified day.
-    pub fn stock_on_date(self, code: &'a str, date: &'a str) -> Self {
-        ListedInfoApiBuilder {
-            code: Some(code),
-            date: Some(date),
-            ..self
-        }
-    }
-
-    /// Set code.
-    pub fn set_code(mut self, code: &'a str) -> Self {
-        self.code = Some(code);
+    /// Set issue code. (e.g. 27800 or 2780)
+    pub fn code(&mut self, code: impl Into<String>) -> &mut Self {
+        self.code = Some(code.into());
         self
     }
 
-    /// Set date.
-    pub fn set_date(mut self, date: &'a str) -> Self {
-        self.date = Some(date);
+    /// Set date. (e.g. 27800 or 2780)
+    pub fn date(&mut self, date: impl Into<String>) -> &mut Self {
+        self.date = Some(date.into());
         self
     }
 
-    /// Send the request.
+    /// Get listed information.
     pub async fn send(&self) -> Result<R, crate::JQuantsError> {
         self.client.inner.get::<R>("listed/info", self).await
     }
