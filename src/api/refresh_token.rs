@@ -13,17 +13,17 @@ use serde::Deserialize;
 /// While the Debug trait is implemented, the id_token is masked due to security risks.
 /// If you wish to display it, please do so at your own responsibility.
 #[derive(Deserialize)]
-pub struct TokenAuthUserResponse {
+pub struct RefreshTokenResponse {
     /// The refresh token.
     #[serde(rename = "refreshToken")]
     pub refresh_token: String,
 }
 
-impl fmt::Debug for TokenAuthUserResponse {
+impl fmt::Debug for RefreshTokenResponse {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let masking = "********";
 
-        f.debug_struct("TokenAuthUserResponse")
+        f.debug_struct("RefreshTokenResponse")
             .field("refresh_token", &masking)
             .finish()
     }
