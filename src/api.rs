@@ -1,17 +1,16 @@
 //! This module contains all the API models.
 //! The models are used to serialize and deserialize the data that is sent to and from the API.
 
+pub mod auth;
 pub mod error_response;
-pub mod id_token;
 pub mod listed_issue_info;
-pub mod refresh_token;
 pub mod stock_prices;
 
+use auth::id_token::IdTokenResponse;
 use std::{fmt, sync::Arc};
 use tokio::sync::{Mutex, RwLock};
 
 use crate::api::error_response::ErrorResponse;
-use crate::api::id_token::IdTokenResponse;
 use crate::error::JQuantsError;
 use chrono::{DateTime, Local};
 use reqwest::{Client, RequestBuilder};
