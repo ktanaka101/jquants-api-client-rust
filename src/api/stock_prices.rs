@@ -317,7 +317,7 @@ pub struct DailyQuoteCommon {
 
 #[cfg(test)]
 mod tests {
-    use crate::api::prices_daily_quotes::{
+    use crate::api::stock_prices::{
         DailyQuoteCommon, DailyQuotePremiumPlan, DailyQuoteStandardPlan,
         StockPricesPremiumPlanResponse, StockPricesStandardPlanResponse,
     };
