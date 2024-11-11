@@ -112,7 +112,7 @@ pub struct StockPricesStandardPlanResponse {
     pub daily_quotes: Vec<DailyQuoteStandardPlan>,
 
     /// Pagination key for fetching next set of data
-    pub pagination_key: String,
+    pub pagination_key: Option<String>,
 }
 
 /// Stock prices (OHLC) response for premium plan.
@@ -124,7 +124,7 @@ pub struct StockPricesPremiumPlanResponse {
     pub daily_quotes: Vec<DailyQuotePremiumPlan>,
 
     /// Pagination key for fetching next set of data
-    pub pagination_key: String,
+    pub pagination_key: Option<String>,
 }
 
 /// Daily Quote for standard plan.
@@ -372,7 +372,62 @@ mod tests {
                     adjustment_volume: 2202500.0,
                 },
             }],
-            pagination_key: "value1.value2.".to_string(),
+            pagination_key: Some("value1.value2.".to_string()),
+        };
+
+        pretty_assertions::assert_eq!(response, expected_response);
+    }
+
+    #[test]
+    fn test_deserialize_stock_prices_standard_plan_response_no_pagination_key() {
+        let json = r#"
+            {
+                "daily_quotes": [
+                    {
+                        "Date": "2023-03-24",
+                        "Code": "86970",
+                        "Open": 2047.0,
+                        "High": 2069.0,
+                        "Low": 2035.0,
+                        "Close": 2045.0,
+                        "UpperLimit": "0",
+                        "LowerLimit": "0",
+                        "Volume": 2202500.0,
+                        "TurnoverValue": 4507051850.0,
+                        "AdjustmentFactor": 1.0,
+                        "AdjustmentOpen": 2047.0,
+                        "AdjustmentHigh": 2069.0,
+                        "AdjustmentLow": 2035.0,
+                        "AdjustmentClose": 2045.0,
+                        "AdjustmentVolume": 2202500.0
+                    }
+                ]
+            }
+        "#;
+
+        let response: StockPricesStandardPlanResponse = serde_json::from_str(json).unwrap();
+        let expected_response = StockPricesStandardPlanResponse {
+            daily_quotes: vec![DailyQuoteStandardPlan {
+                common: DailyQuoteCommon {
+                    date: "2023-03-24".to_string(),
+                    code: "86970".to_string(),
+                    open: 2047.0,
+                    high: 2069.0,
+                    low: 2035.0,
+                    close: 2045.0,
+                    upper_limit: "0".to_string(),
+                    lower_limit: "0".to_string(),
+                    volume: 2202500.0,
+                    turnover_value: 4507051850.0,
+                    adjustment_factor: 1.0,
+                    adjustment_open: 2047.0,
+                    adjustment_high: 2069.0,
+                    adjustment_low: 2035.0,
+                    adjustment_close: 2045.0,
+                    adjustment_volume: 2202500.0,
+                },
+            }],
+            pagination_key: None,
         };
 
         pretty_assertions::assert_eq!(response, expected_response);
@@ -480,7 +535,114 @@ mod tests {
                 afternoon_adjustment_close: 2045.0,
                 afternoon_adjustment_volume: 1081300.0,
             }],
-            pagination_key: "value1.value2.".to_string(),
+            pagination_key: Some("value1.value2.".to_string()),
+        };
+
+        pretty_assertions::assert_eq!(response, expected_response);
+    }
+
+    #[test]
+    fn test_deserialize_stock_prices_premium_plan_response_no_pagination_key() {
+        let json = r#"
+            {
+                "daily_quotes": [
+                    {
+                        "Date": "2023-03-24",
+                        "Code": "86970",
+                        "Open": 2047.0,
+                        "High": 2069.0,
+                        "Low": 2035.0,
+                        "Close": 2045.0,
+                        "UpperLimit": "0",
+                        "LowerLimit": "0",
+                        "Volume": 2202500.0,
+                        "TurnoverValue": 4507051850.0,
+                        "AdjustmentFactor": 1.0,
+                        "AdjustmentOpen": 2047.0,
+                        "AdjustmentHigh": 2069.0,
+                        "AdjustmentLow": 2035.0,
+                        "AdjustmentClose": 2045.0,
+                        "AdjustmentVolume": 2202500.0,
+                        "MorningOpen": 2047.0,
+                        "MorningHigh": 2069.0,
+                        "MorningLow": 2040.0,
+                        "MorningClose": 2045.5,
+                        "MorningUpperLimit": "0",
+                        "MorningLowerLimit": "0",
+                        "MorningVolume": 1121200.0,
+                        "MorningTurnoverValue": 2297525850.0,
+                        "MorningAdjustmentOpen": 2047.0,
+                        "MorningAdjustmentHigh": 2069.0,
+                        "MorningAdjustmentLow": 2040.0,
+                        "MorningAdjustmentClose": 2045.5,
+                        "MorningAdjustmentVolume": 1121200.0,
+                        "AfternoonOpen": 2047.0,
+                        "AfternoonHigh": 2047.0,
+                        "AfternoonLow": 2035.0,
+                        "AfternoonClose": 2045.0,
+                        "AfternoonUpperLimit": "0",
+                        "AfternoonLowerLimit": "0",
+                        "AfternoonVolume": 1081300.0,
+                        "AfternoonTurnoverValue": 2209526000.0,
+                        "AfternoonAdjustmentOpen": 2047.0,
+                        "AfternoonAdjustmentHigh": 2047.0,
+                        "AfternoonAdjustmentLow": 2035.0,
+                        "AfternoonAdjustmentClose": 2045.0,
+                        "AfternoonAdjustmentVolume": 1081300.0
+                    }
+                ]
+            }
+        "#;
+
+        let response: StockPricesPremiumPlanResponse = serde_json::from_str(json).unwrap();
+        let expected_response = StockPricesPremiumPlanResponse {
+            daily_quotes: vec![DailyQuotePremiumPlan {
+                common: DailyQuoteCommon {
+                    date: "2023-03-24".to_string(),
+                    code: "86970".to_string(),
+                    open: 2047.0,
+                    high: 2069.0,
+                    low: 2035.0,
+                    close: 2045.0,
+                    upper_limit: "0".to_string(),
+                    lower_limit: "0".to_string(),
+                    volume: 2202500.0,
+                    turnover_value: 4507051850.0,
+                    adjustment_factor: 1.0,
+                    adjustment_open: 2047.0,
+                    adjustment_high: 2069.0,
+                    adjustment_low: 2035.0,
+                    adjustment_close: 2045.0,
+                    adjustment_volume: 2202500.0,
+                },
+                morning_open: 2047.0,
+                morning_high: 2069.0,
+                morning_low: 2040.0,
+                morning_close: 2045.5,
+                morning_upper_limit: "0".to_string(),
+                morning_lower_limit: "0".to_string(),
+                morning_volume: 1121200.0,
+                morning_turnover_value: 2297525850.0,
+                morning_adjustment_open: 2047.0,
+                morning_adjustment_high: 2069.0,
+                morning_adjustment_low: 2040.0,
+                morning_adjustment_close: 2045.5,
+                morning_adjustment_volume: 1121200.0,
+                afternoon_open: 2047.0,
+                afternoon_high: 2047.0,
+                afternoon_low: 2035.0,
+                afternoon_close: 2045.0,
+                afternoon_upper_limit: "0".to_string(),
+                afternoon_lower_limit: "0".to_string(),
+                afternoon_volume: 1081300.0,
+                afternoon_turnover_value: 2209526000.0,
+                afternoon_adjustment_open: 2047.0,
+                afternoon_adjustment_high: 2047.0,
+                afternoon_adjustment_low: 2035.0,
+                afternoon_adjustment_close: 2045.0,
+                afternoon_adjustment_volume: 1081300.0,
+            }],
+            pagination_key: None,
         };
 
         pretty_assertions::assert_eq!(response, expected_response);
