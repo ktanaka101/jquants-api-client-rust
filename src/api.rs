@@ -3,6 +3,7 @@
 
 pub mod error_response;
 pub mod listed_info;
+pub mod prices_daily_quotes;
 pub mod token_auth_refresh;
 pub mod token_auth_user;
 
