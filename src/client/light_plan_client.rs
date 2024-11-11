@@ -1,7 +1,7 @@
 //! Light plan client implementation for JQuants API.
 
 use crate::api::{
-    listed_info::{ListedIssueInfoApi, ListedIssueInfoFreePlanResponse},
+    listed_issue_info::{ListedIssueInfoApi, ListedIssueInfoFreePlanResponse},
     JQuantsApiClient, JQuantsPlanClient,
 };
 

@@ -1,7 +1,7 @@
 //! Premium plan client implementation for JQuants API.
 
 use crate::api::{
-    listed_info::{ListedIssueInfoApi, ListedIssueInfoStandardPlanResponse},
+    listed_issue_info::{ListedIssueInfoApi, ListedIssueInfoStandardPlanResponse},
     JQuantsApiClient, JQuantsPlanClient,
 };
 
