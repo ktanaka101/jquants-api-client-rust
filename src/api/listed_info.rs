@@ -98,7 +98,7 @@ pub struct ListedInfoStandardPlanResponse {
 pub struct ListedInfoFreePlan {
     /// The common structure for listed info.
     #[serde(flatten)]
-    pub base: ListedInfoBase,
+    pub common: ListedInfoCommon,
 }
 
 /// Listed info for standard plan
@@ -106,7 +106,7 @@ pub struct ListedInfoFreePlan {
 pub struct ListedInfoStandardPlan {
     /// The common structure for listed info.
     #[serde(flatten)]
-    pub base: ListedInfoBase,
+    common: ListedInfoCommon,
 
     /// The margin code.
     #[serde(rename = "MarginCode")]
@@ -119,7 +119,7 @@ pub struct ListedInfoStandardPlan {
 
 /// Common structure for listed info
 #[derive(Debug, PartialEq, Eq, Deserialize)]
-pub struct ListedInfoBase {
+pub struct ListedInfoCommon {
     /// The date.
     #[serde(rename = "Date")]
     pub date: String,
@@ -194,7 +194,7 @@ mod tests {
         let response: ListedInfoFreePlanResponse = serde_json::from_str(json).unwrap();
         let expected_response: ListedInfoFreePlanResponse = ListedInfoFreePlanResponse {
             info: vec![ListedInfoFreePlan {
-                base: ListedInfoBase {
+                common: ListedInfoCommon {
                     date: "2022-11-11".to_string(),
                     code: "86970".to_string(),
                     company_name: "日本取引所グループ".to_string(),
@@ -240,7 +240,7 @@ mod tests {
         let response: ListedInfoStandardPlanResponse = serde_json::from_str(json).unwrap();
         let expected_response: ListedInfoStandardPlanResponse = ListedInfoStandardPlanResponse {
             info: vec![ListedInfoStandardPlan {
-                base: ListedInfoBase {
+                common: ListedInfoCommon {
                     date: "2022-11-11".to_string(),
                     code: "86970".to_string(),
                     company_name: "日本取引所グループ".to_string(),
