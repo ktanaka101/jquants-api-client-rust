@@ -19,7 +19,7 @@
 //!
 //! - [JQuants API documentation](https://jpx.gitbook.io/j-quants-en)
 
-use jquants_api_client::{api::listed_info::ListedInfoApi, JQuantsFreePlanClient};
+use jquants_api_client::{api::listed_info::ListedIssueInfoApi, JQuantsFreePlanClient};
 use std::env;
 use tracing::Level;
 use tracing_subscriber::FmtSubscriber;
@@ -41,27 +41,27 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
 
     let client = JQuantsFreePlanClient::new_from_refresh_token(refresh_token);
-    let listed_info_response = client
-        .get_listed_info()
+    let listed_issue_info_response = client
+        .get_listed_issue_info()
         .code("2789")
         .date("2024-08-01")
         .send()
         .await?;
 
-    for info in listed_info_response.info {
+    for issue_info in listed_issue_info_response.info {
         println!(
             "Date: {}, Code: {}, CompanyName: {}, CompanyNameEnglish: {}, Sector17Code: {:?}, Sector17CodeName: {}, Sector33Code: {:?}, Sector33CodeName: {}, ScaleCategory: {}, MarketCode: {:?}, MarketCodeName: {}",
-            info.base.date,
-            info.base.code,
-            info.base.company_name,
-            info.base.company_name_english,
-            info.base.sector17_code,
-            info.base.sector17_code_name,
-            info.base.sector33_code,
-            info.base.sector33_code_name,
-            info.base.scale_category,
-            info.base.market_code,
-            info.base.market_code_name,
+            issue_info.common.date,
+            issue_info.common.code,
+            issue_info.common.company_name,
+            issue_info.common.company_name_english,
+            issue_info.common.sector17_code,
+            issue_info.common.sector17_code_name,
+            issue_info.common.sector33_code,
+            issue_info.common.sector33_code_name,
+            issue_info.common.scale_category,
+            issue_info.common.market_code,
+            issue_info.common.market_code_name,
         );
     }
 

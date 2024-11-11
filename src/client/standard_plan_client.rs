@@ -1,7 +1,7 @@
 //! Standard plan client implementation for JQuants API.
 
 use crate::api::{
-    listed_info::{ListedInfoApi, ListedInfoStandardPlanResponse},
+    listed_info::{ListedIssueInfoApi, ListedIssueInfoStandardPlanResponse},
     JQuantsApiClient, JQuantsPlanClient,
 };
 
@@ -26,6 +26,6 @@ impl JQuantsPlanClient for JQuantsStandardPlanClient {
     }
 }
 
-impl ListedInfoApi for JQuantsStandardPlanClient {
-    type Response = ListedInfoStandardPlanResponse;
+impl ListedIssueInfoApi for JQuantsStandardPlanClient {
+    type Response = ListedIssueInfoStandardPlanResponse;
 }
