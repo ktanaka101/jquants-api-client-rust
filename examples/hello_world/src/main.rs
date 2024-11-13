@@ -1,11 +1,15 @@
 //! This example demonstrates how to use the JQuants client to get the stock price of a symbol.
 //!
+//! # Required Environment Variables
+//!
 //! To run this example, you need to set the `JQUANTS_REFRESH_TOKEN` environment variable to your JQuants API key.
 //!
 //! ```sh
 //! export JQUANTS_REFRESH_TOKEN=your-api-key // or Modify .env.local file
 //! cargo run
 //! ```
+//!
+//! # Obtaining an API Key
 //!
 //! You can obtain an Refresh Token by signing up at [J-Quants](https://jpx-jquants.com/).
 //!

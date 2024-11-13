@@ -3,11 +3,15 @@ use std::{fmt, marker::PhantomData};
 
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 
-use super::{JQuantsApiClient, JQuantsPlanClient};
+use super::{
+    builder::JQuantsBuilder,
+    pagination::{HasPaginationKey, MergePage, Paginatable},
+    JQuantsApiClient, JQuantsPlanClient,
+};
 
 /// Builder for Stock Prices (OHLC) API.
 #[derive(Clone, Serialize)]
-pub struct StockPricesBuilder<R: DeserializeOwned + fmt::Debug> {
+pub struct StockPricesBuilder<R: DeserializeOwned + fmt::Debug + Clone> {
     #[serde(skip)]
     client: JQuantsApiClient,
     #[serde(skip)]
@@ -32,7 +36,35 @@ pub struct StockPricesBuilder<R: DeserializeOwned + fmt::Debug> {
     pub(crate) pagination_key: Option<String>,
 }
 
-impl<R: DeserializeOwned + fmt::Debug> StockPricesBuilder<R> {
+impl<R: DeserializeOwned + fmt::Debug + Clone> JQuantsBuilder<R> for StockPricesBuilder<R> {
+    /// Get prices daily quotes.
+    async fn send(&self) -> Result<R, crate::JQuantsError> {
+        self.client.inner.get("prices/daily_quotes", self).await
+    }
+}
+
+impl HasPaginationKey for StockPricesStandardPlanResponse {
+    fn get_pagination_key(&self) -> Option<&str> {
+        self.pagination_key.as_deref()
+    }
+}
+
+impl HasPaginationKey for StockPricesPremiumPlanResponse {
+    fn get_pagination_key(&self) -> Option<&str> {
+        self.pagination_key.as_deref()
+    }
+}
+
+impl<R: DeserializeOwned + fmt::Debug + Clone + HasPaginationKey + MergePage> Paginatable<R>
+    for StockPricesBuilder<R>
+{
+    fn pagination_key(&mut self, pagination_key: impl Into<String>) -> &mut Self {
+        self.pagination_key = Some(pagination_key.into());
+        self
+    }
+}
+
+impl<R: DeserializeOwned + fmt::Debug + Clone> StockPricesBuilder<R> {
     /// Create a new builder.
     pub(crate) fn new(client: JQuantsApiClient) -> Self {
         Self {
@@ -69,23 +101,12 @@ impl<R: DeserializeOwned + fmt::Debug> StockPricesBuilder<R> {
         self.date = Some(date.into());
         self
     }
-
-    /// Set pagination key.
-    pub fn pagination_key(&mut self, pagination_key: impl Into<String>) -> &mut Self {
-        self.pagination_key = Some(pagination_key.into());
-        self
-    }
-
-    /// Get prices daily quotes.
-    pub async fn send(&self) -> Result<R, crate::JQuantsError> {
-        self.client.inner.get("prices/daily_quotes", self).await
-    }
 }
 
 /// Prices daily quotes API.
 pub trait StockPricesApi: JQuantsPlanClient {
     /// Response type for listed info API.
-    type Response: DeserializeOwned + fmt::Debug;
+    type Response: DeserializeOwned + fmt::Debug + Clone;
 
     /// Prices daily quotes API.
     ///
@@ -106,7 +127,7 @@ pub trait StockPricesApi: JQuantsPlanClient {
 /// Stock prices (OHLC) response for standard plan.
 ///
 /// See: [API Reference](https://jpx.gitbook.io/j-quants-en/api-reference/daily_quotes)
-#[derive(Debug, PartialEq, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Deserialize)]
 pub struct StockPricesStandardPlanResponse {
     /// List of daily quotes
     pub daily_quotes: Vec<DailyQuoteStandardPlan>,
@@ -114,11 +135,25 @@ pub struct StockPricesStandardPlanResponse {
     /// Pagination key for fetching next set of data
     pub pagination_key: Option<String>,
 }
+impl MergePage for StockPricesStandardPlanResponse {
+    fn merge_page(
+        page: Result<Vec<Self>, crate::JQuantsError>,
+    ) -> Result<Self, crate::JQuantsError> {
+        let mut page = page?;
+        let mut merged = page.pop().unwrap();
+        for p in page {
+            merged.daily_quotes.extend(p.daily_quotes);
+        }
+        merged.pagination_key = None;
+
+        Ok(merged)
+    }
+}
 
 /// Stock prices (OHLC) response for premium plan.
 ///
 /// See: [API Reference](https://jpx.gitbook.io/j-quants-en/api-reference/daily_quotes)
-#[derive(Debug, PartialEq, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Deserialize)]
 pub struct StockPricesPremiumPlanResponse {
     /// List of daily quotes
     pub daily_quotes: Vec<DailyQuotePremiumPlan>,
@@ -126,9 +161,23 @@ pub struct StockPricesPremiumPlanResponse {
     /// Pagination key for fetching next set of data
     pub pagination_key: Option<String>,
 }
+impl MergePage for StockPricesPremiumPlanResponse {
+    fn merge_page(
+        page: Result<Vec<Self>, crate::JQuantsError>,
+    ) -> Result<Self, crate::JQuantsError> {
+        let mut page = page?;
+        let mut merged = page.pop().unwrap();
+        for p in page {
+            merged.daily_quotes.extend(p.daily_quotes);
+        }
+        merged.pagination_key = None;
+
+        Ok(merged)
+    }
+}
 
 /// Daily Quote for standard plan.
-#[derive(Debug, PartialEq, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Deserialize)]
 pub struct DailyQuoteStandardPlan {
     /// The common structure for daily quote
     #[serde(flatten)]
@@ -136,7 +185,7 @@ pub struct DailyQuoteStandardPlan {
 }
 
 /// Daily Quote for standard plan.
-#[derive(Debug, PartialEq, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Deserialize)]
 pub struct DailyQuotePremiumPlan {
     /// The common structure for daily quote
     #[serde(flatten)]
@@ -248,7 +297,7 @@ pub struct DailyQuotePremiumPlan {
 }
 
 /// Represents a single daily quote
-#[derive(Debug, PartialEq, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Deserialize)]
 pub struct DailyQuoteCommon {
     /// The date in YYYY-MM-DD format
     #[serde(rename = "Date")]

@@ -2,8 +2,10 @@
 //! The models are used to serialize and deserialize the data that is sent to and from the API.
 
 pub mod auth;
+pub mod builder;
 pub mod error_response;
 pub mod listed_issue_info;
+pub mod pagination;
 pub mod stock_prices;
 
 use auth::id_token::IdTokenResponse;
