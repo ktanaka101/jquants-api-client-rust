@@ -31,16 +31,19 @@ pub struct MorningSessionStockPricesApiBuilder<R: DeserializeOwned + fmt::Debug 
 impl<R: DeserializeOwned + fmt::Debug + Clone> JQuantsBuilder<R>
     for MorningSessionStockPricesApiBuilder<R>
 {
-    /// Get prices daily quotes.
-    async fn send(&self) -> Result<R, crate::JQuantsError> {
-        self.client.inner.get("/prices/prices_am", self).await
+    async fn send(self) -> Result<R, crate::JQuantsError> {
+        self.send_ref().await
+    }
+
+    async fn send_ref(&self) -> Result<R, crate::JQuantsError> {
+        self.client.inner.get("/prices/prices_am", &self).await
     }
 }
 
 impl<R: DeserializeOwned + fmt::Debug + Clone + HasPaginationKey + MergePage> Paginatable<R>
     for MorningSessionStockPricesApiBuilder<R>
 {
-    fn pagination_key(&mut self, pagination_key: impl Into<String>) -> &mut Self {
+    fn pagination_key(mut self, pagination_key: impl Into<String>) -> Self {
         self.pagination_key = Some(pagination_key.into());
         self
     }
@@ -57,7 +60,7 @@ impl<R: DeserializeOwned + fmt::Debug + Clone> MorningSessionStockPricesApiBuild
     }
 
     /// Issue code (e.g. 27800 or 2780)
-    pub fn code(&mut self, code: impl Into<String>) -> &mut Self {
+    pub fn code(mut self, code: impl Into<String>) -> Self {
         self.code = Some(code.into());
         self
     }

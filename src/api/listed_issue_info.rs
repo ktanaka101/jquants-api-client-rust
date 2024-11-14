@@ -39,21 +39,24 @@ impl<R: DeserializeOwned + fmt::Debug + Clone> ListedIssueInfoApiBuilder<R> {
     }
 
     /// Set issue code. (e.g. 27800 or 2780)
-    pub fn code(&mut self, code: impl Into<String>) -> &mut Self {
+    pub fn code(mut self, code: impl Into<String>) -> Self {
         self.code = Some(code.into());
         self
     }
 
     /// Set date. (e.g. 27800 or 2780)
-    pub fn date(&mut self, date: impl Into<String>) -> &mut Self {
+    pub fn date(mut self, date: impl Into<String>) -> Self {
         self.date = Some(date.into());
         self
     }
 }
 
 impl<R: DeserializeOwned + fmt::Debug + Clone> JQuantsBuilder<R> for ListedIssueInfoApiBuilder<R> {
-    /// Get listed information.
-    async fn send(&self) -> Result<R, crate::JQuantsError> {
+    async fn send(self) -> Result<R, crate::JQuantsError> {
+        self.send_ref().await
+    }
+
+    async fn send_ref(&self) -> Result<R, crate::JQuantsError> {
         self.client.inner.get("/listed/info", self).await
     }
 }

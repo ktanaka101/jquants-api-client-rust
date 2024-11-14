@@ -33,18 +33,18 @@ pub trait Paginatable<R: DeserializeOwned + fmt::Debug + HasPaginationKey + Merg
     JQuantsBuilder<R> + Clone
 {
     /// Set the pagination key.
-    fn pagination_key(&mut self, pagination_key: impl Into<String>) -> &mut Self;
+    fn pagination_key(self, pagination_key: impl Into<String>) -> Self;
 
     /// Fetch the pages stream.
-    fn fetch_pages_stream(&self) -> impl stream::Stream<Item = Result<R, JQuantsError>> {
+    fn fetch_pages_stream(self) -> impl stream::Stream<Item = Result<R, JQuantsError>> {
         let stream = try_stream! {
             let mut builder = self.clone();
 
             loop {
-                let response =  builder.send().await?;
+                let response =  builder.send_ref().await?;
                 let next_pagination_key = response.get_pagination_key();
                 if let Some(key) = next_pagination_key {
-                    builder.pagination_key(key.to_string());
+                    builder = builder.pagination_key(key.to_string());
 
                     yield response;
                     continue;
@@ -59,7 +59,7 @@ pub trait Paginatable<R: DeserializeOwned + fmt::Debug + HasPaginationKey + Merg
     }
 
     /// Fetch all pages.
-    fn fetch_all(&self) -> impl Future<Output = Result<Vec<R>, JQuantsError>> {
+    fn fetch_all(self) -> impl Future<Output = Result<Vec<R>, JQuantsError>> {
         async {
             let results: Vec<Result<R, JQuantsError>> = self.fetch_pages_stream().collect().await;
             let mut final_results = Vec::new();
@@ -74,7 +74,7 @@ pub trait Paginatable<R: DeserializeOwned + fmt::Debug + HasPaginationKey + Merg
     }
 
     /// Fetch all pages and merge them.
-    fn fetch_all_and_merge(&self) -> impl Future<Output = Result<R, JQuantsError>> {
+    fn fetch_all_and_merge(self) -> impl Future<Output = Result<R, JQuantsError>> {
         async {
             let results = self.fetch_all().await;
             R::merge_page(results)

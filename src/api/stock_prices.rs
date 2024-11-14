@@ -37,8 +37,11 @@ pub struct StockPricesBuilder<R: DeserializeOwned + fmt::Debug + Clone> {
 }
 
 impl<R: DeserializeOwned + fmt::Debug + Clone> JQuantsBuilder<R> for StockPricesBuilder<R> {
-    /// Get stock prices.
-    async fn send(&self) -> Result<R, crate::JQuantsError> {
+    async fn send(self) -> Result<R, crate::JQuantsError> {
+        self.send_ref().await
+    }
+
+    async fn send_ref(&self) -> Result<R, crate::JQuantsError> {
         self.client.inner.get("prices/daily_quotes", self).await
     }
 }
@@ -46,7 +49,7 @@ impl<R: DeserializeOwned + fmt::Debug + Clone> JQuantsBuilder<R> for StockPrices
 impl<R: DeserializeOwned + fmt::Debug + Clone + HasPaginationKey + MergePage> Paginatable<R>
     for StockPricesBuilder<R>
 {
-    fn pagination_key(&mut self, pagination_key: impl Into<String>) -> &mut Self {
+    fn pagination_key(mut self, pagination_key: impl Into<String>) -> Self {
         self.pagination_key = Some(pagination_key.into());
         self
     }
@@ -67,25 +70,25 @@ impl<R: DeserializeOwned + fmt::Debug + Clone> StockPricesBuilder<R> {
     }
 
     /// Set issue code (e.g. 27800 or 2780)
-    pub fn code(&mut self, code: impl Into<String>) -> &mut Self {
+    pub fn code(mut self, code: impl Into<String>) -> Self {
         self.code = Some(code.into());
         self
     }
 
     /// Set starting point of data period (e.g. 20210901 or 2021-09-01)
-    pub fn from(&mut self, from: impl Into<String>) -> &mut Self {
+    pub fn from(mut self, from: impl Into<String>) -> Self {
         self.from = Some(from.into());
         self
     }
 
     /// Set end point of data period (e.g. 20210907 or 2021-09-07)
-    pub fn to(&mut self, to: impl Into<String>) -> &mut Self {
+    pub fn to(mut self, to: impl Into<String>) -> Self {
         self.to = Some(to.into());
         self
     }
 
     /// Set date of data (e.g. 20210907 or 2021-09-07)
-    pub fn date(&mut self, date: impl Into<String>) -> &mut Self {
+    pub fn date(mut self, date: impl Into<String>) -> Self {
         self.date = Some(date.into());
         self
     }

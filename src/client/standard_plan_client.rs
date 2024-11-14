@@ -29,8 +29,7 @@ use crate::api::{
 ///     // Paginate stock prices.
 ///     let response = client.get_stock_prices().fetch_all().await.unwrap();
 ///     let response = client.get_stock_prices().fetch_all_and_merge().await.unwrap();
-///     let builder = client.get_stock_prices();
-///     let stream = builder.fetch_pages_stream();
+///     let stream = client.get_stock_prices().fetch_pages_stream();
 ///
 ///     // Get morning session stock prices.
 ///     let response = client.morning_session_stock_prices().send().await.unwrap();
@@ -38,8 +37,7 @@ use crate::api::{
 ///     // Paginate morning session stock prices.
 ///     let response = client.morning_session_stock_prices().fetch_all().await.unwrap();
 ///     let response = client.morning_session_stock_prices().fetch_all_and_merge().await.unwrap();
-///     let builder = client.morning_session_stock_prices();
-///     let stream = builder.fetch_pages_stream();
+///     let stream = client.morning_session_stock_prices().fetch_pages_stream();
 /// };
 /// ```
 #[derive(Clone)]
