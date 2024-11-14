@@ -2,6 +2,9 @@
 
 use crate::api::{
     listed_issue_info::{ListedIssueInfoApi, ListedIssueInfoLightPlanResponse},
+    morning_session_stock_prices::{
+        MorningSessionStockPricesApi, MorningSessionStockPricesLightPlanResponse,
+    },
     stock_prices::{StockPricesApi, StockPricesLightPlanResponse},
     JQuantsApiClient, JQuantsPlanClient,
 };
@@ -33,4 +36,8 @@ impl ListedIssueInfoApi for JQuantsLightPlanClient {
 
 impl StockPricesApi for JQuantsLightPlanClient {
     type Response = StockPricesLightPlanResponse;
+}
+
+impl MorningSessionStockPricesApi for JQuantsLightPlanClient {
+    type Response = MorningSessionStockPricesLightPlanResponse;
 }
