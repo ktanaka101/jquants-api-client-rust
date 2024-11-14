@@ -196,19 +196,19 @@ pub struct DailyQuotePremiumPlan {
 
     /// Open price of the morning session (before Adjustment)
     #[serde(rename = "MorningOpen")]
-    pub morning_open: f64,
+    pub morning_open: Option<f64>,
 
     /// High price of the morning session (before Adjustment)
     #[serde(rename = "MorningHigh")]
-    pub morning_high: f64,
+    pub morning_high: Option<f64>,
 
     /// Low price of the morning session (before Adjustment)
     #[serde(rename = "MorningLow")]
-    pub morning_low: f64,
+    pub morning_low: Option<f64>,
 
     /// Close price of the morning session (before Adjustment)
     #[serde(rename = "MorningClose")]
-    pub morning_close: f64,
+    pub morning_close: Option<f64>,
 
     /// Flag of hitting the upper price limit of the day in morning session
     #[serde(rename = "MorningUpperLimit")]
@@ -220,47 +220,47 @@ pub struct DailyQuotePremiumPlan {
 
     /// Trading volume of the morning session (before Adjustment)
     #[serde(rename = "MorningVolume")]
-    pub morning_volume: f64,
+    pub morning_volume: Option<f64>,
 
     /// Trading value of the morning session
     #[serde(rename = "MorningTurnoverValue")]
-    pub morning_turnover_value: f64,
+    pub morning_turnover_value: Option<f64>,
 
     /// Adjusted open price of the morning session
     #[serde(rename = "MorningAdjustmentOpen")]
-    pub morning_adjustment_open: f64,
+    pub morning_adjustment_open: Option<f64>,
 
     /// Adjusted high price of the morning session
     #[serde(rename = "MorningAdjustmentHigh")]
-    pub morning_adjustment_high: f64,
+    pub morning_adjustment_high: Option<f64>,
 
     /// Adjusted low price of the morning session
     #[serde(rename = "MorningAdjustmentLow")]
-    pub morning_adjustment_low: f64,
+    pub morning_adjustment_low: Option<f64>,
 
     /// Adjusted close price of the morning session
     #[serde(rename = "MorningAdjustmentClose")]
-    pub morning_adjustment_close: f64,
+    pub morning_adjustment_close: Option<f64>,
 
     /// Adjusted trading volume of the morning session
     #[serde(rename = "MorningAdjustmentVolume")]
-    pub morning_adjustment_volume: f64,
+    pub morning_adjustment_volume: Option<f64>,
 
     /// Open price of the afternoon session (before Adjustment)
     #[serde(rename = "AfternoonOpen")]
-    pub afternoon_open: f64,
+    pub afternoon_open: Option<f64>,
 
     /// High price of the afternoon session (before Adjustment)
     #[serde(rename = "AfternoonHigh")]
-    pub afternoon_high: f64,
+    pub afternoon_high: Option<f64>,
 
     /// Low price of the afternoon session (before Adjustment)
     #[serde(rename = "AfternoonLow")]
-    pub afternoon_low: f64,
+    pub afternoon_low: Option<f64>,
 
     /// Close price of the afternoon session (before Adjustment)
     #[serde(rename = "AfternoonClose")]
-    pub afternoon_close: f64,
+    pub afternoon_close: Option<f64>,
 
     /// Flag of hitting the upper price limit of the day in afternoon session
     #[serde(rename = "AfternoonUpperLimit")]
@@ -272,31 +272,31 @@ pub struct DailyQuotePremiumPlan {
 
     /// Trading volume of the afternoon session (before Adjustment)
     #[serde(rename = "AfternoonVolume")]
-    pub afternoon_volume: f64,
+    pub afternoon_volume: Option<f64>,
 
     /// Trading value of the afternoon session
     #[serde(rename = "AfternoonTurnoverValue")]
-    pub afternoon_turnover_value: f64,
+    pub afternoon_turnover_value: Option<f64>,
 
     /// Adjusted open price of the afternoon session
     #[serde(rename = "AfternoonAdjustmentOpen")]
-    pub afternoon_adjustment_open: f64,
+    pub afternoon_adjustment_open: Option<f64>,
 
     /// Adjusted high price of the afternoon session
     #[serde(rename = "AfternoonAdjustmentHigh")]
-    pub afternoon_adjustment_high: f64,
+    pub afternoon_adjustment_high: Option<f64>,
 
     /// Adjusted low price of the afternoon session
     #[serde(rename = "AfternoonAdjustmentLow")]
-    pub afternoon_adjustment_low: f64,
+    pub afternoon_adjustment_low: Option<f64>,
 
     /// Adjusted close price of the afternoon session
     #[serde(rename = "AfternoonAdjustmentClose")]
-    pub afternoon_adjustment_close: f64,
+    pub afternoon_adjustment_close: Option<f64>,
 
     /// Adjusted trading volume of the afternoon session
     #[serde(rename = "AfternoonAdjustmentVolume")]
-    pub afternoon_adjustment_volume: f64,
+    pub afternoon_adjustment_volume: Option<f64>,
 }
 
 /// Represents a single daily quote
@@ -312,19 +312,19 @@ pub struct DailyQuoteCommon {
 
     /// Open Price (before adjustment)
     #[serde(rename = "Open")]
-    pub open: f64,
+    pub open: Option<f64>,
 
     /// High price (before adjustment)
     #[serde(rename = "High")]
-    pub high: f64,
+    pub high: Option<f64>,
 
     /// Low price (before adjustment)
     #[serde(rename = "Low")]
-    pub low: f64,
+    pub low: Option<f64>,
 
     /// Close price (before adjustment)
     #[serde(rename = "Close")]
-    pub close: f64,
+    pub close: Option<f64>,
 
     /// Flag of hitting the upper price limit of the day
     #[serde(rename = "UpperLimit")]
@@ -336,11 +336,11 @@ pub struct DailyQuoteCommon {
 
     /// Trading volume (before Adjustment)
     #[serde(rename = "Volume")]
-    pub volume: f64,
+    pub volume: Option<f64>,
 
     /// Trading value
     #[serde(rename = "TurnoverValue")]
-    pub turnover_value: f64,
+    pub turnover_value: Option<f64>,
 
     /// Adjustment factor
     #[serde(rename = "AdjustmentFactor")]
@@ -348,23 +348,23 @@ pub struct DailyQuoteCommon {
 
     /// Adjusted open price
     #[serde(rename = "AdjustmentOpen")]
-    pub adjustment_open: f64,
+    pub adjustment_open: Option<f64>,
 
     /// Adjusted high price
     #[serde(rename = "AdjustmentHigh")]
-    pub adjustment_high: f64,
+    pub adjustment_high: Option<f64>,
 
     /// Adjusted low price
     #[serde(rename = "AdjustmentLow")]
-    pub adjustment_low: f64,
+    pub adjustment_low: Option<f64>,
 
     /// Adjusted close price
     #[serde(rename = "AdjustmentClose")]
-    pub adjustment_close: f64,
+    pub adjustment_close: Option<f64>,
 
     /// Adjusted volume
     #[serde(rename = "AdjustmentVolume")]
-    pub adjustment_volume: f64,
+    pub adjustment_volume: Option<f64>,
 }
 
 #[cfg(test)]
@@ -408,20 +408,20 @@ mod tests {
                 common: DailyQuoteCommon {
                     date: "2023-03-24".to_string(),
                     code: "86970".to_string(),
-                    open: 2047.0,
-                    high: 2069.0,
-                    low: 2035.0,
-                    close: 2045.0,
+                    open: Some(2047.0),
+                    high: Some(2069.0),
+                    low: Some(2035.0),
+                    close: Some(2045.0),
                     upper_limit: "0".to_string(),
                     lower_limit: "0".to_string(),
-                    volume: 2202500.0,
-                    turnover_value: 4507051850.0,
+                    volume: Some(2202500.0),
+                    turnover_value: Some(4507051850.0),
                     adjustment_factor: 1.0,
-                    adjustment_open: 2047.0,
-                    adjustment_high: 2069.0,
-                    adjustment_low: 2035.0,
-                    adjustment_close: 2045.0,
-                    adjustment_volume: 2202500.0,
+                    adjustment_open: Some(2047.0),
+                    adjustment_high: Some(2069.0),
+                    adjustment_low: Some(2035.0),
+                    adjustment_close: Some(2045.0),
+                    adjustment_volume: Some(2202500.0),
                 },
             }],
             pagination_key: Some("value1.value2.".to_string()),
@@ -463,20 +463,20 @@ mod tests {
                 common: DailyQuoteCommon {
                     date: "2023-03-24".to_string(),
                     code: "86970".to_string(),
-                    open: 2047.0,
-                    high: 2069.0,
-                    low: 2035.0,
-                    close: 2045.0,
+                    open: Some(2047.0),
+                    high: Some(2069.0),
+                    low: Some(2035.0),
+                    close: Some(2045.0),
                     upper_limit: "0".to_string(),
                     lower_limit: "0".to_string(),
-                    volume: 2202500.0,
-                    turnover_value: 4507051850.0,
+                    volume: Some(2202500.0),
+                    turnover_value: Some(4507051850.0),
                     adjustment_factor: 1.0,
-                    adjustment_open: 2047.0,
-                    adjustment_high: 2069.0,
-                    adjustment_low: 2035.0,
-                    adjustment_close: 2045.0,
-                    adjustment_volume: 2202500.0,
+                    adjustment_open: Some(2047.0),
+                    adjustment_high: Some(2069.0),
+                    adjustment_low: Some(2035.0),
+                    adjustment_close: Some(2045.0),
+                    adjustment_volume: Some(2202500.0),
                 },
             }],
             pagination_key: None,
@@ -545,47 +545,155 @@ mod tests {
                 common: DailyQuoteCommon {
                     date: "2023-03-24".to_string(),
                     code: "86970".to_string(),
-                    open: 2047.0,
-                    high: 2069.0,
-                    low: 2035.0,
-                    close: 2045.0,
+                    open: Some(2047.0),
+                    high: Some(2069.0),
+                    low: Some(2035.0),
+                    close: Some(2045.0),
                     upper_limit: "0".to_string(),
                     lower_limit: "0".to_string(),
-                    volume: 2202500.0,
-                    turnover_value: 4507051850.0,
+                    volume: Some(2202500.0),
+                    turnover_value: Some(4507051850.0),
                     adjustment_factor: 1.0,
-                    adjustment_open: 2047.0,
-                    adjustment_high: 2069.0,
-                    adjustment_low: 2035.0,
-                    adjustment_close: 2045.0,
-                    adjustment_volume: 2202500.0,
+                    adjustment_open: Some(2047.0),
+                    adjustment_high: Some(2069.0),
+                    adjustment_low: Some(2035.0),
+                    adjustment_close: Some(2045.0),
+                    adjustment_volume: Some(2202500.0),
                 },
-                morning_open: 2047.0,
-                morning_high: 2069.0,
-                morning_low: 2040.0,
-                morning_close: 2045.5,
+                morning_open: Some(2047.0),
+                morning_high: Some(2069.0),
+                morning_low: Some(2040.0),
+                morning_close: Some(2045.5),
                 morning_upper_limit: "0".to_string(),
                 morning_lower_limit: "0".to_string(),
-                morning_volume: 1121200.0,
-                morning_turnover_value: 2297525850.0,
-                morning_adjustment_open: 2047.0,
-                morning_adjustment_high: 2069.0,
-                morning_adjustment_low: 2040.0,
-                morning_adjustment_close: 2045.5,
-                morning_adjustment_volume: 1121200.0,
-                afternoon_open: 2047.0,
-                afternoon_high: 2047.0,
-                afternoon_low: 2035.0,
-                afternoon_close: 2045.0,
+                morning_volume: Some(1121200.0),
+                morning_turnover_value: Some(2297525850.0),
+                morning_adjustment_open: Some(2047.0),
+                morning_adjustment_high: Some(2069.0),
+                morning_adjustment_low: Some(2040.0),
+                morning_adjustment_close: Some(2045.5),
+                morning_adjustment_volume: Some(1121200.0),
+                afternoon_open: Some(2047.0),
+                afternoon_high: Some(2047.0),
+                afternoon_low: Some(2035.0),
+                afternoon_close: Some(2045.0),
                 afternoon_upper_limit: "0".to_string(),
                 afternoon_lower_limit: "0".to_string(),
-                afternoon_volume: 1081300.0,
-                afternoon_turnover_value: 2209526000.0,
-                afternoon_adjustment_open: 2047.0,
-                afternoon_adjustment_high: 2047.0,
-                afternoon_adjustment_low: 2035.0,
-                afternoon_adjustment_close: 2045.0,
-                afternoon_adjustment_volume: 1081300.0,
+                afternoon_volume: Some(1081300.0),
+                afternoon_turnover_value: Some(2209526000.0),
+                afternoon_adjustment_open: Some(2047.0),
+                afternoon_adjustment_high: Some(2047.0),
+                afternoon_adjustment_low: Some(2035.0),
+                afternoon_adjustment_close: Some(2045.0),
+                afternoon_adjustment_volume: Some(1081300.0),
+            }],
+            pagination_key: Some("value1.value2.".to_string()),
+        };
+
+        pretty_assertions::assert_eq!(response, expected_response);
+    }
+
+    #[test]
+    fn test_deserialize_stock_prices_premium_plan_response_no_data() {
+        let json = r#"
+            {
+                "daily_quotes": [
+                    {
+                        "Date": "2023-03-24",
+                        "Code": "86970",
+                        "Open": null,
+                        "High": null,
+                        "Low": null,
+                        "Close": null,
+                        "UpperLimit": "0",
+                        "LowerLimit": "0",
+                        "Volume": null,
+                        "TurnoverValue": null,
+                        "AdjustmentFactor": 1.0,
+                        "AdjustmentOpen": null,
+                        "AdjustmentHigh": null,
+                        "AdjustmentLow": null,
+                        "AdjustmentClose": null,
+                        "AdjustmentVolume": null,
+                        "MorningOpen": null,
+                        "MorningHigh": null,
+                        "MorningLow": null,
+                        "MorningClose": null,
+                        "MorningUpperLimit": "0",
+                        "MorningLowerLimit": "0",
+                        "MorningVolume": null,
+                        "MorningTurnoverValue": null,
+                        "MorningAdjustmentOpen": null,
+                        "MorningAdjustmentHigh": null,
+                        "MorningAdjustmentLow": null,
+                        "MorningAdjustmentClose": null,
+                        "MorningAdjustmentVolume": null,
+                        "AfternoonOpen": null,
+                        "AfternoonHigh": null,
+                        "AfternoonLow": null,
+                        "AfternoonClose": null,
+                        "AfternoonUpperLimit": "0",
+                        "AfternoonLowerLimit": "0",
+                        "AfternoonVolume": null,
+                        "AfternoonTurnoverValue": null,
+                        "AfternoonAdjustmentOpen": null,
+                        "AfternoonAdjustmentHigh": null,
+                        "AfternoonAdjustmentLow": null,
+                        "AfternoonAdjustmentClose": null,
+                        "AfternoonAdjustmentVolume": null
+                    }
+                ],
+                "pagination_key": "value1.value2."
+            }
+        "#;
+
+        let response: StockPricesPremiumPlanResponse = serde_json::from_str(json).unwrap();
+        let expected_response = StockPricesPremiumPlanResponse {
+            daily_quotes: vec![DailyQuotePremiumPlan {
+                common: DailyQuoteCommon {
+                    date: "2023-03-24".to_string(),
+                    code: "86970".to_string(),
+                    open: None,
+                    high: None,
+                    low: None,
+                    close: None,
+                    upper_limit: "0".to_string(),
+                    lower_limit: "0".to_string(),
+                    volume: None,
+                    turnover_value: None,
+                    adjustment_factor: 1.0,
+                    adjustment_open: None,
+                    adjustment_high: None,
+                    adjustment_low: None,
+                    adjustment_close: None,
+                    adjustment_volume: None,
+                },
+                morning_open: None,
+                morning_high: None,
+                morning_low: None,
+                morning_close: None,
+                morning_upper_limit: "0".to_string(),
+                morning_lower_limit: "0".to_string(),
+                morning_volume: None,
+                morning_turnover_value: None,
+                morning_adjustment_open: None,
+                morning_adjustment_high: None,
+                morning_adjustment_low: None,
+                morning_adjustment_close: None,
+                morning_adjustment_volume: None,
+                afternoon_open: None,
+                afternoon_high: None,
+                afternoon_low: None,
+                afternoon_close: None,
+                afternoon_upper_limit: "0".to_string(),
+                afternoon_lower_limit: "0".to_string(),
+                afternoon_volume: None,
+                afternoon_turnover_value: None,
+                afternoon_adjustment_open: None,
+                afternoon_adjustment_high: None,
+                afternoon_adjustment_low: None,
+                afternoon_adjustment_close: None,
+                afternoon_adjustment_volume: None,
             }],
             pagination_key: Some("value1.value2.".to_string()),
         };
@@ -652,47 +760,47 @@ mod tests {
                 common: DailyQuoteCommon {
                     date: "2023-03-24".to_string(),
                     code: "86970".to_string(),
-                    open: 2047.0,
-                    high: 2069.0,
-                    low: 2035.0,
-                    close: 2045.0,
+                    open: Some(2047.0),
+                    high: Some(2069.0),
+                    low: Some(2035.0),
+                    close: Some(2045.0),
                     upper_limit: "0".to_string(),
                     lower_limit: "0".to_string(),
-                    volume: 2202500.0,
-                    turnover_value: 4507051850.0,
+                    volume: Some(2202500.0),
+                    turnover_value: Some(4507051850.0),
                     adjustment_factor: 1.0,
-                    adjustment_open: 2047.0,
-                    adjustment_high: 2069.0,
-                    adjustment_low: 2035.0,
-                    adjustment_close: 2045.0,
-                    adjustment_volume: 2202500.0,
+                    adjustment_open: Some(2047.0),
+                    adjustment_high: Some(2069.0),
+                    adjustment_low: Some(2035.0),
+                    adjustment_close: Some(2045.0),
+                    adjustment_volume: Some(2202500.0),
                 },
-                morning_open: 2047.0,
-                morning_high: 2069.0,
-                morning_low: 2040.0,
-                morning_close: 2045.5,
+                morning_open: Some(2047.0),
+                morning_high: Some(2069.0),
+                morning_low: Some(2040.0),
+                morning_close: Some(2045.5),
                 morning_upper_limit: "0".to_string(),
                 morning_lower_limit: "0".to_string(),
-                morning_volume: 1121200.0,
-                morning_turnover_value: 2297525850.0,
-                morning_adjustment_open: 2047.0,
-                morning_adjustment_high: 2069.0,
-                morning_adjustment_low: 2040.0,
-                morning_adjustment_close: 2045.5,
-                morning_adjustment_volume: 1121200.0,
-                afternoon_open: 2047.0,
-                afternoon_high: 2047.0,
-                afternoon_low: 2035.0,
-                afternoon_close: 2045.0,
+                morning_volume: Some(1121200.0),
+                morning_turnover_value: Some(2297525850.0),
+                morning_adjustment_open: Some(2047.0),
+                morning_adjustment_high: Some(2069.0),
+                morning_adjustment_low: Some(2040.0),
+                morning_adjustment_close: Some(2045.5),
+                morning_adjustment_volume: Some(1121200.0),
+                afternoon_open: Some(2047.0),
+                afternoon_high: Some(2047.0),
+                afternoon_low: Some(2035.0),
+                afternoon_close: Some(2045.0),
                 afternoon_upper_limit: "0".to_string(),
                 afternoon_lower_limit: "0".to_string(),
-                afternoon_volume: 1081300.0,
-                afternoon_turnover_value: 2209526000.0,
-                afternoon_adjustment_open: 2047.0,
-                afternoon_adjustment_high: 2047.0,
-                afternoon_adjustment_low: 2035.0,
-                afternoon_adjustment_close: 2045.0,
-                afternoon_adjustment_volume: 1081300.0,
+                afternoon_volume: Some(1081300.0),
+                afternoon_turnover_value: Some(2209526000.0),
+                afternoon_adjustment_open: Some(2047.0),
+                afternoon_adjustment_high: Some(2047.0),
+                afternoon_adjustment_low: Some(2035.0),
+                afternoon_adjustment_close: Some(2045.0),
+                afternoon_adjustment_volume: Some(1081300.0),
             }],
             pagination_key: None,
         };
