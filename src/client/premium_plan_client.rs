@@ -1,7 +1,7 @@
 //! Premium plan client implementation for JQuants API.
 
 use crate::api::{
-    listed_issue_info::{ListedIssueInfoApi, ListedIssueInfoStandardPlanResponse},
+    listed_issue_info::{ListedIssueInfoApi, ListedIssueInfoPremiumPlanResponse},
     stock_prices::{StockPricesApi, StockPricesPremiumPlanResponse},
     JQuantsApiClient, JQuantsPlanClient,
 };
@@ -28,7 +28,7 @@ impl JQuantsPlanClient for JQuantsPremiumPlanClient {
 }
 
 impl ListedIssueInfoApi for JQuantsPremiumPlanClient {
-    type Response = ListedIssueInfoStandardPlanResponse;
+    type Response = ListedIssueInfoPremiumPlanResponse;
 }
 
 impl StockPricesApi for JQuantsPremiumPlanClient {

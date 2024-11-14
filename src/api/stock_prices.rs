@@ -43,18 +43,6 @@ impl<R: DeserializeOwned + fmt::Debug + Clone> JQuantsBuilder<R> for StockPrices
     }
 }
 
-impl HasPaginationKey for StockPricesStandardPlanResponse {
-    fn get_pagination_key(&self) -> Option<&str> {
-        self.pagination_key.as_deref()
-    }
-}
-
-impl HasPaginationKey for StockPricesPremiumPlanResponse {
-    fn get_pagination_key(&self) -> Option<&str> {
-        self.pagination_key.as_deref()
-    }
-}
-
 impl<R: DeserializeOwned + fmt::Debug + Clone + HasPaginationKey + MergePage> Paginatable<R>
     for StockPricesBuilder<R>
 {
@@ -124,6 +112,16 @@ pub trait StockPricesApi: JQuantsPlanClient {
     }
 }
 
+/// Prices daily quotes response for free plan.
+///
+/// See: [API Reference](https://jpx.gitbook.io/j-quants-en/api-reference/daily_quotes)
+pub type StockPricesFreePlanResponse = StockPricesStandardPlanResponse;
+
+/// Prices daily quotes response for light plan.
+///
+/// See: [API Reference](https://jpx.gitbook.io/j-quants-en/api-reference/daily_quotes)
+pub type StockPricesLightPlanResponse = StockPricesStandardPlanResponse;
+
 /// Stock prices (OHLC) response for standard plan.
 ///
 /// See: [API Reference](https://jpx.gitbook.io/j-quants-en/api-reference/daily_quotes)
@@ -134,6 +132,11 @@ pub struct StockPricesStandardPlanResponse {
 
     /// Pagination key for fetching next set of data
     pub pagination_key: Option<String>,
+}
+impl HasPaginationKey for StockPricesStandardPlanResponse {
+    fn get_pagination_key(&self) -> Option<&str> {
+        self.pagination_key.as_deref()
+    }
 }
 impl MergePage for StockPricesStandardPlanResponse {
     fn merge_page(
@@ -160,6 +163,11 @@ pub struct StockPricesPremiumPlanResponse {
 
     /// Pagination key for fetching next set of data
     pub pagination_key: Option<String>,
+}
+impl HasPaginationKey for StockPricesPremiumPlanResponse {
+    fn get_pagination_key(&self) -> Option<&str> {
+        self.pagination_key.as_deref()
+    }
 }
 impl MergePage for StockPricesPremiumPlanResponse {
     fn merge_page(

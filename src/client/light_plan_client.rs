@@ -1,8 +1,8 @@
 //! Light plan client implementation for JQuants API.
 
 use crate::api::{
-    listed_issue_info::{ListedIssueInfoApi, ListedIssueInfoFreePlanResponse},
-    stock_prices::{StockPricesApi, StockPricesStandardPlanResponse},
+    listed_issue_info::{ListedIssueInfoApi, ListedIssueInfoLightPlanResponse},
+    stock_prices::{StockPricesApi, StockPricesLightPlanResponse},
     JQuantsApiClient, JQuantsPlanClient,
 };
 
@@ -28,9 +28,9 @@ impl JQuantsPlanClient for JQuantsLightPlanClient {
 }
 
 impl ListedIssueInfoApi for JQuantsLightPlanClient {
-    type Response = ListedIssueInfoFreePlanResponse;
+    type Response = ListedIssueInfoLightPlanResponse;
 }
 
 impl StockPricesApi for JQuantsLightPlanClient {
-    type Response = StockPricesStandardPlanResponse;
+    type Response = StockPricesLightPlanResponse;
 }

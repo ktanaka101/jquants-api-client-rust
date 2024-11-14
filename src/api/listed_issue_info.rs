@@ -76,35 +76,51 @@ pub trait ListedIssueInfoApi: JQuantsPlanClient {
 /// Listed issue info response for free plan.
 ///
 /// See: [API Reference](https://jpx.gitbook.io/j-quants-en/api-reference/listed_info)
+pub type ListedIssueInfoFreePlanResponse = ListedIssueInfoLightPlanResponse;
+
+/// Listed issue info response for light plan.
+///
+/// See: [API Reference](https://jpx.gitbook.io/j-quants-en/api-reference/listed_info)
 #[derive(Debug, PartialEq, Eq, Deserialize)]
-pub struct ListedIssueInfoFreePlanResponse {
-    /// The listed info for free plan.
-    pub info: Vec<IssueInfoFreePlan>,
+pub struct ListedIssueInfoLightPlanResponse {
+    /// The listed info for light plan.
+    pub info: Vec<IssueInfoLightPlan>,
 }
 
 /// Listed issue info response for standard plan.
 ///
 /// See: [API Reference](https://jpx.gitbook.io/j-quants-en/api-reference/listed_info)
+pub type ListedIssueInfoStandardPlanResponse = ListedIssueInfoPremiumPlanResponse;
+
+/// Listed issue info response for premium plan.
+///
+/// See: [API Reference](https://jpx.gitbook.io/j-quants-en/api-reference/listed_info)
 #[derive(Debug, PartialEq, Eq, Deserialize)]
-pub struct ListedIssueInfoStandardPlanResponse {
-    /// The listed info for standard plan.
-    pub info: Vec<IssueInfoStandardPlan>,
+pub struct ListedIssueInfoPremiumPlanResponse {
+    /// The listed info for premium plan.
+    pub info: Vec<IssueInfoPremiumPlan>,
 }
 
 /// Issue info for free plan.
+pub type IssueInfoFreePlan = IssueInfoLightPlan;
+
+/// Issue info for light plan.
 #[derive(Debug, PartialEq, Eq, Deserialize)]
-pub struct IssueInfoFreePlan {
-    /// The common structure for listed info.
+pub struct IssueInfoLightPlan {
+    /// The common structure for issue info.
     #[serde(flatten)]
     pub common: IssueInfoCommon,
 }
 
 /// Issue info for standard plan.
+pub type IssueInfoStandardPlan = IssueInfoPremiumPlan;
+
+/// Issue info for standard plan.
 #[derive(Debug, PartialEq, Eq, Deserialize)]
-pub struct IssueInfoStandardPlan {
+pub struct IssueInfoPremiumPlan {
     /// The common structure for issue info.
     #[serde(flatten)]
-    common: IssueInfoCommon,
+    pub common: IssueInfoCommon,
 
     /// The margin code.
     #[serde(rename = "MarginCode")]
@@ -168,7 +184,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_deserialize_listed_issue_info_free_plan_response() {
+    fn test_deserialize_listed_issue_info_light_plan_response() {
         let json = r#"
             {
                 "info": [
@@ -189,30 +205,31 @@ mod tests {
             }
         "#;
 
-        let response: ListedIssueInfoFreePlanResponse = serde_json::from_str(json).unwrap();
-        let expected_response: ListedIssueInfoFreePlanResponse = ListedIssueInfoFreePlanResponse {
-            info: vec![IssueInfoFreePlan {
-                common: IssueInfoCommon {
-                    date: "2022-11-11".to_string(),
-                    code: "86970".to_string(),
-                    company_name: "日本取引所グループ".to_string(),
-                    company_name_english: "Japan Exchange Group,Inc.".to_string(),
-                    sector17_code: Sector17Code::FinancialsExBanks,
-                    sector17_code_name: "金融（除く銀行）".to_string(),
-                    sector33_code: Sector33Code::OtherFinancingBusiness,
-                    sector33_code_name: "その他金融業".to_string(),
-                    scale_category: "TOPIX Large70".to_string(),
-                    market_code: MarketCode::Prime,
-                    market_code_name: "プライム".to_string(),
-                },
-            }],
-        };
+        let response: ListedIssueInfoLightPlanResponse = serde_json::from_str(json).unwrap();
+        let expected_response: ListedIssueInfoLightPlanResponse =
+            ListedIssueInfoLightPlanResponse {
+                info: vec![IssueInfoLightPlan {
+                    common: IssueInfoCommon {
+                        date: "2022-11-11".to_string(),
+                        code: "86970".to_string(),
+                        company_name: "日本取引所グループ".to_string(),
+                        company_name_english: "Japan Exchange Group,Inc.".to_string(),
+                        sector17_code: Sector17Code::FinancialsExBanks,
+                        sector17_code_name: "金融（除く銀行）".to_string(),
+                        sector33_code: Sector33Code::OtherFinancingBusiness,
+                        sector33_code_name: "その他金融業".to_string(),
+                        scale_category: "TOPIX Large70".to_string(),
+                        market_code: MarketCode::Prime,
+                        market_code_name: "プライム".to_string(),
+                    },
+                }],
+            };
 
         pretty_assertions::assert_eq!(response, expected_response);
     }
 
     #[test]
-    fn test_deserialize_listed_issue_info_standard_plan_response() {
+    fn test_deserialize_listed_issue_info_premium_plan_response() {
         let json = r#"
             {
                 "info": [
@@ -235,10 +252,10 @@ mod tests {
             }
         "#;
 
-        let response: ListedIssueInfoStandardPlanResponse = serde_json::from_str(json).unwrap();
-        let expected_response: ListedIssueInfoStandardPlanResponse =
-            ListedIssueInfoStandardPlanResponse {
-                info: vec![IssueInfoStandardPlan {
+        let response: ListedIssueInfoPremiumPlanResponse = serde_json::from_str(json).unwrap();
+        let expected_response: ListedIssueInfoPremiumPlanResponse =
+            ListedIssueInfoPremiumPlanResponse {
+                info: vec![IssueInfoPremiumPlan {
                     common: IssueInfoCommon {
                         date: "2022-11-11".to_string(),
                         code: "86970".to_string(),
