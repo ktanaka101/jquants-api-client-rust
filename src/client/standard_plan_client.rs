@@ -10,6 +10,38 @@ use crate::api::{
 };
 
 /// Standard plan client for J-Quants API.
+///
+/// # Example
+///
+/// ```no_run
+/// use jquants_api_client::{JQuantsBuilder, JQuantsStandardPlanClient, ListedIssueInfoApi, MorningSessionStockPricesApi, Paginatable, StockPricesApi};
+///
+/// async {
+///     // Authenticate with a refresh token.
+///     let client = JQuantsStandardPlanClient::new_from_refresh_token("your_refresh_token".to_string());
+///
+///     // Get listed issue information.
+///     let response = client.get_listed_issue_info().send().await.unwrap();
+///
+///     // Get stock prices.
+///     let response = client.get_prices_daily_quotes().send().await.unwrap();
+///
+///     // Paginate stock prices.
+///     let response = client.get_prices_daily_quotes().fetch_all().await.unwrap();
+///     let response = client.get_prices_daily_quotes().fetch_all_and_merge().await.unwrap();
+///     let builder = client.get_prices_daily_quotes();
+///     let stream = builder.fetch_pages_stream();
+///
+///     // Get morning session stock prices.
+///     let response = client.morning_session_stock_prices().send().await.unwrap();
+///
+///     // Paginate morning session stock prices.
+///     let response = client.morning_session_stock_prices().fetch_all().await.unwrap();
+///     let response = client.morning_session_stock_prices().fetch_all_and_merge().await.unwrap();
+///     let builder = client.morning_session_stock_prices();
+///     let stream = builder.fetch_pages_stream();
+/// };
+/// ```
 #[derive(Clone)]
 pub struct JQuantsStandardPlanClient {
     api_client: JQuantsApiClient,
