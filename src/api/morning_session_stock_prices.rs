@@ -68,7 +68,7 @@ pub trait MorningSessionStockPricesApi: JQuantsPlanClient {
     /// Response type for morning session stock prices API.
     type Response: DeserializeOwned + fmt::Debug + Clone;
 
-    /// Get morning session stock prices.
+    /// Get api builder for morning session stock prices.
     fn morning_session_stock_prices(&self) -> MorningSessionStockPricesApiBuilder<Self::Response> {
         MorningSessionStockPricesApiBuilder::new(self.get_api_client().clone())
     }

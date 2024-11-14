@@ -37,7 +37,7 @@ pub struct StockPricesBuilder<R: DeserializeOwned + fmt::Debug + Clone> {
 }
 
 impl<R: DeserializeOwned + fmt::Debug + Clone> JQuantsBuilder<R> for StockPricesBuilder<R> {
-    /// Get prices daily quotes.
+    /// Get stock prices.
     async fn send(&self) -> Result<R, crate::JQuantsError> {
         self.client.inner.get("prices/daily_quotes", self).await
     }
@@ -91,33 +91,25 @@ impl<R: DeserializeOwned + fmt::Debug + Clone> StockPricesBuilder<R> {
     }
 }
 
-/// Prices daily quotes API.
+/// Builder for Stock Prices (OHLC) API.
 pub trait StockPricesApi: JQuantsPlanClient {
     /// Response type for listed info API.
     type Response: DeserializeOwned + fmt::Debug + Clone;
 
-    /// Prices daily quotes API.
+    /// Get api builder for stock prices.
     ///
     /// Use [Stock Prices (OHLC)(/prices/daily_quotes) API](https://jpx.gitbook.io/j-quants-en/api-reference/daily_quotes)
-    ///
-    /// # Parameters
-    ///
-    /// [API Param specification](https://jpx.gitbook.io/j-quants-en/api-reference/daily_quotes#parameter-and-response)
-    /// * `code` - Issue code (e.g. 27800 or 2780)
-    /// * `from` - Starting point of data period (e.g. 20210901 or 2021-09-01)
-    /// * `to` - End point of data period (e.g. 20210907 or 2021-09-07)
-    /// * `date` - Date (e.g. 20210907 or 2021-09-07)
-    fn get_prices_daily_quotes(&self) -> StockPricesBuilder<Self::Response> {
+    fn get_stock_prices(&self) -> StockPricesBuilder<Self::Response> {
         StockPricesBuilder::new(self.get_api_client().clone())
     }
 }
 
-/// Prices daily quotes response for free plan.
+/// Stock prices (OHLC) response for free plan.
 ///
 /// See: [API Reference](https://jpx.gitbook.io/j-quants-en/api-reference/daily_quotes)
 pub type StockPricesFreePlanResponse = StockPricesStandardPlanResponse;
 
-/// Prices daily quotes response for light plan.
+/// Stock prices (OHLC) response for light plan.
 ///
 /// See: [API Reference](https://jpx.gitbook.io/j-quants-en/api-reference/daily_quotes)
 pub type StockPricesLightPlanResponse = StockPricesStandardPlanResponse;

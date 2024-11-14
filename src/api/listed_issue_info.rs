@@ -63,13 +63,9 @@ pub trait ListedIssueInfoApi: JQuantsPlanClient {
     /// Response type for listed info API.
     type Response: DeserializeOwned + fmt::Debug + Clone;
 
-    /// Get listed issue information.
+    /// Get api builder for listed issue information.
     ///
     /// Use [Listed Issue Information (/listed/info) API](https://jpx.gitbook.io/j-quants-en/api-reference/listed_info)
-    ///
-    /// # Parameters
-    ///
-    /// [API Param specification](https://jpx.gitbook.io/j-quants-en/api-reference/listed_info#parameter-and-response)
     fn get_listed_issue_info(&self) -> ListedIssueInfoApiBuilder<Self::Response> {
         ListedIssueInfoApiBuilder::new(self.get_api_client().clone())
     }

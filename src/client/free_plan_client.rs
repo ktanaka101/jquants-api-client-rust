@@ -24,12 +24,12 @@ use crate::api::{
 ///     let response = client.get_listed_issue_info().send().await.unwrap();
 ///
 ///     // Get stock prices.
-///     let response = client.get_prices_daily_quotes().send().await.unwrap();
+///     let response = client.get_stock_prices().send().await.unwrap();
 ///
 ///     // Paginate stock prices.
-///     let response = client.get_prices_daily_quotes().fetch_all().await.unwrap();
-///     let response = client.get_prices_daily_quotes().fetch_all_and_merge().await.unwrap();
-///     let builder = client.get_prices_daily_quotes();
+///     let response = client.get_stock_prices().fetch_all().await.unwrap();
+///     let response = client.get_stock_prices().fetch_all_and_merge().await.unwrap();
+///     let builder = client.get_stock_prices();
 ///     let stream = builder.fetch_pages_stream();
 ///
 ///     // Get morning session stock prices.

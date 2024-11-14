@@ -64,7 +64,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 /// Fetch pages stream.
 #[allow(dead_code)]
 async fn fetch_pages_stream(client: JQuantsFreePlanClient) -> Result<(), JQuantsError> {
-    let mut builder = client.get_prices_daily_quotes();
+    let mut builder = client.get_stock_prices();
     let mut stream = builder
         .code("27890")
         .date("2024-08-01")
@@ -95,7 +95,7 @@ async fn fetch_pages_stream(client: JQuantsFreePlanClient) -> Result<(), JQuants
 async fn fetch_all(
     client: JQuantsFreePlanClient,
 ) -> Result<Vec<StockPricesStandardPlanResponse>, JQuantsError> {
-    let mut builder = client.get_prices_daily_quotes();
+    let mut builder = client.get_stock_prices();
     return builder.code("27890").date("2024-08-01").fetch_all().await;
 }
 
@@ -104,7 +104,7 @@ async fn fetch_all(
 async fn fetch_all_and_merge(
     client: JQuantsFreePlanClient,
 ) -> Result<StockPricesStandardPlanResponse, JQuantsError> {
-    let mut builder = client.get_prices_daily_quotes();
+    let mut builder = client.get_stock_prices();
     return builder
         .code("27890")
         .date("2024-08-01")
