@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 /// Represents the market codes.
 ///
 /// See: https://jpx.gitbook.io/j-quants-en/api-reference/listed_info/marketcode
-#[derive(Debug, Deserialize, Serialize, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]
 pub enum MarketCode {
     /// 0101
     /// * en: 1st Section

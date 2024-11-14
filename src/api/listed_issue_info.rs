@@ -7,15 +7,15 @@ use sector17_code::Sector17Code;
 use sector33_code::Sector33Code;
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 
-use super::{JQuantsApiClient, JQuantsPlanClient};
+use super::{builder::JQuantsBuilder, JQuantsApiClient, JQuantsPlanClient};
 
 mod market_code;
 mod sector17_code;
 mod sector33_code;
 
 /// Builder for Listed Issue Info API.
-#[derive(Serialize)]
-pub struct ListedIssueInfoApiBuilder<R: DeserializeOwned + fmt::Debug> {
+#[derive(Clone, Serialize)]
+pub struct ListedIssueInfoApiBuilder<R: DeserializeOwned + fmt::Debug + Clone> {
     #[serde(skip)]
     client: JQuantsApiClient,
     #[serde(skip)]
@@ -28,7 +28,7 @@ pub struct ListedIssueInfoApiBuilder<R: DeserializeOwned + fmt::Debug> {
     #[serde(skip_serializing_if = "Option::is_none")]
     date: Option<String>,
 }
-impl<R: DeserializeOwned + fmt::Debug> ListedIssueInfoApiBuilder<R> {
+impl<R: DeserializeOwned + fmt::Debug + Clone> ListedIssueInfoApiBuilder<R> {
     pub(crate) fn new(client: JQuantsApiClient) -> Self {
         Self {
             client,
@@ -49,17 +49,19 @@ impl<R: DeserializeOwned + fmt::Debug> ListedIssueInfoApiBuilder<R> {
         self.date = Some(date.into());
         self
     }
+}
 
+impl<R: DeserializeOwned + fmt::Debug + Clone> JQuantsBuilder<R> for ListedIssueInfoApiBuilder<R> {
     /// Get listed information.
-    pub async fn send(&self) -> Result<R, crate::JQuantsError> {
-        self.client.inner.get::<R>("listed/info", self).await
+    async fn send(&self) -> Result<R, crate::JQuantsError> {
+        self.client.inner.get("/listed/info", self).await
     }
 }
 
 /// Listed issue info API endpoints.
 pub trait ListedIssueInfoApi: JQuantsPlanClient {
     /// Response type for listed info API.
-    type Response: DeserializeOwned + fmt::Debug;
+    type Response: DeserializeOwned + fmt::Debug + Clone;
 
     /// Get listed issue information.
     ///
@@ -81,7 +83,7 @@ pub type ListedIssueInfoFreePlanResponse = ListedIssueInfoLightPlanResponse;
 /// Listed issue info response for light plan.
 ///
 /// See: [API Reference](https://jpx.gitbook.io/j-quants-en/api-reference/listed_info)
-#[derive(Debug, PartialEq, Eq, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
 pub struct ListedIssueInfoLightPlanResponse {
     /// The listed info for light plan.
     pub info: Vec<IssueInfoLightPlan>,
@@ -95,7 +97,7 @@ pub type ListedIssueInfoStandardPlanResponse = ListedIssueInfoPremiumPlanRespons
 /// Listed issue info response for premium plan.
 ///
 /// See: [API Reference](https://jpx.gitbook.io/j-quants-en/api-reference/listed_info)
-#[derive(Debug, PartialEq, Eq, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
 pub struct ListedIssueInfoPremiumPlanResponse {
     /// The listed info for premium plan.
     pub info: Vec<IssueInfoPremiumPlan>,
@@ -105,7 +107,7 @@ pub struct ListedIssueInfoPremiumPlanResponse {
 pub type IssueInfoFreePlan = IssueInfoLightPlan;
 
 /// Issue info for light plan.
-#[derive(Debug, PartialEq, Eq, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
 pub struct IssueInfoLightPlan {
     /// The common structure for issue info.
     #[serde(flatten)]
@@ -116,7 +118,7 @@ pub struct IssueInfoLightPlan {
 pub type IssueInfoStandardPlan = IssueInfoPremiumPlan;
 
 /// Issue info for standard plan.
-#[derive(Debug, PartialEq, Eq, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
 pub struct IssueInfoPremiumPlan {
     /// The common structure for issue info.
     #[serde(flatten)]
@@ -132,7 +134,7 @@ pub struct IssueInfoPremiumPlan {
 }
 
 /// Common structure for issue info.
-#[derive(Debug, PartialEq, Eq, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
 pub struct IssueInfoCommon {
     /// The date.
     #[serde(rename = "Date")]
