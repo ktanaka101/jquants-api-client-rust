@@ -19,21 +19,21 @@ pub struct StockPricesBuilder<R: DeserializeOwned + fmt::Debug + Clone> {
 
     /// Issue code (e.g. 27800 or 2780)
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub code: Option<String>,
+    code: Option<String>,
     /// Starting point of data period (e.g. 20210901 or 2021-09-01)
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub from: Option<String>,
+    from: Option<String>,
     /// End point of data period (e.g. 20210907 or 2021-09-07)
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub to: Option<String>,
+    to: Option<String>,
     /// Date of data (e.g. 20210907 or 2021-09-07)
     /// Used when `from` and `to` are not specified.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub date: Option<String>,
+    date: Option<String>,
 
     /// Pagination key.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub(crate) pagination_key: Option<String>,
+    pagination_key: Option<String>,
 }
 
 impl<R: DeserializeOwned + fmt::Debug + Clone> JQuantsBuilder<R> for StockPricesBuilder<R> {

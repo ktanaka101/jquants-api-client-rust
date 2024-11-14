@@ -23,10 +23,10 @@ pub struct ListedIssueInfoApiBuilder<R: DeserializeOwned + fmt::Debug> {
 
     /// Issue code (e.g. 27800 or 2780)
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub code: Option<String>,
+    code: Option<String>,
     /// Date (e.g. 27800 or 2780)
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub date: Option<String>,
+    date: Option<String>,
 }
 impl<R: DeserializeOwned + fmt::Debug> ListedIssueInfoApiBuilder<R> {
     pub(crate) fn new(client: JQuantsApiClient) -> Self {
