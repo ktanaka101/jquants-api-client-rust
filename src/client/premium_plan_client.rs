@@ -1,12 +1,15 @@
 //! Premium plan client implementation for JQuants API.
 
-use crate::api::{
-    listed_issue_info::{ListedIssueInfoApi, ListedIssueInfoPremiumPlanResponse},
-    morning_session_stock_prices::{
-        MorningSessionStockPricesApi, MorningSessionStockPricesPremiumPlanResponse,
+use crate::{
+    api::{
+        listed_issue_info::{ListedIssueInfoApi, ListedIssueInfoPremiumPlanResponse},
+        morning_session_stock_prices::{
+            MorningSessionStockPricesApi, MorningSessionStockPricesPremiumPlanResponse,
+        },
+        stock_prices::{StockPricesApi, StockPricesPremiumPlanResponse},
+        JQuantsApiClient, JQuantsPlanClient,
     },
-    stock_prices::{StockPricesApi, StockPricesPremiumPlanResponse},
-    JQuantsApiClient, JQuantsPlanClient,
+    TradingByInvestorTypeApi, TradingByInvestorTypePremiumPlanResponse,
 };
 
 /// Premium plan client for J-Quants API.
@@ -14,7 +17,7 @@ use crate::api::{
 /// # Example
 ///
 /// ```no_run
-/// use jquants_api_client::{JQuantsBuilder, JQuantsPremiumPlanClient, ListedIssueInfoApi, MorningSessionStockPricesApi, Paginatable, StockPricesApi};
+/// use jquants_api_client::{JQuantsBuilder, JQuantsPremiumPlanClient, ListedIssueInfoApi, MorningSessionStockPricesApi, TradingByInvestorTypeApi, Paginatable, StockPricesApi};
 ///
 /// async {
 ///     // Authenticate with a refresh token.
@@ -38,6 +41,14 @@ use crate::api::{
 ///     let response = client.morning_session_stock_prices().fetch_all().await.unwrap();
 ///     let response = client.morning_session_stock_prices().fetch_all_and_merge().await.unwrap();
 ///     let stream = client.morning_session_stock_prices().fetch_pages_stream();
+///
+///     // Get trading by investor type.
+///     let response = client.get_trading_by_investor_type().send().await.unwrap();
+///
+///     // Paginate trading by investor type.
+///     let response = client.get_trading_by_investor_type().fetch_all().await.unwrap();
+///     let response = client.get_trading_by_investor_type().fetch_all_and_merge().await.unwrap();
+///     let stream = client.get_trading_by_investor_type().fetch_pages_stream();
 /// };
 /// ```
 #[derive(Clone)]
@@ -70,4 +81,8 @@ impl StockPricesApi for JQuantsPremiumPlanClient {
 
 impl MorningSessionStockPricesApi for JQuantsPremiumPlanClient {
     type Response = MorningSessionStockPricesPremiumPlanResponse;
+}
+
+impl TradingByInvestorTypeApi for JQuantsPremiumPlanClient {
+    type Response = TradingByInvestorTypePremiumPlanResponse;
 }
