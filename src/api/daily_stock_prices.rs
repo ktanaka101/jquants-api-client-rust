@@ -9,9 +9,9 @@ use super::{
     JQuantsApiClient, JQuantsPlanClient,
 };
 
-/// Builder for Stock Prices (OHLC) API.
+/// Builder for Daily Stock Prices (OHLC) API.
 #[derive(Clone, Serialize)]
-pub struct StockPricesBuilder<R: DeserializeOwned + fmt::Debug + Clone> {
+pub struct DailyStockPricesBuilder<R: DeserializeOwned + fmt::Debug + Clone> {
     #[serde(skip)]
     client: JQuantsApiClient,
     #[serde(skip)]
@@ -36,7 +36,7 @@ pub struct StockPricesBuilder<R: DeserializeOwned + fmt::Debug + Clone> {
     pagination_key: Option<String>,
 }
 
-impl<R: DeserializeOwned + fmt::Debug + Clone> JQuantsBuilder<R> for StockPricesBuilder<R> {
+impl<R: DeserializeOwned + fmt::Debug + Clone> JQuantsBuilder<R> for DailyStockPricesBuilder<R> {
     async fn send(self) -> Result<R, crate::JQuantsError> {
         self.send_ref().await
     }
@@ -47,7 +47,7 @@ impl<R: DeserializeOwned + fmt::Debug + Clone> JQuantsBuilder<R> for StockPrices
 }
 
 impl<R: DeserializeOwned + fmt::Debug + Clone + HasPaginationKey + MergePage> Paginatable<R>
-    for StockPricesBuilder<R>
+    for DailyStockPricesBuilder<R>
 {
     fn pagination_key(mut self, pagination_key: impl Into<String>) -> Self {
         self.pagination_key = Some(pagination_key.into());
@@ -55,7 +55,7 @@ impl<R: DeserializeOwned + fmt::Debug + Clone + HasPaginationKey + MergePage> Pa
     }
 }
 
-impl<R: DeserializeOwned + fmt::Debug + Clone> StockPricesBuilder<R> {
+impl<R: DeserializeOwned + fmt::Debug + Clone> DailyStockPricesBuilder<R> {
     /// Create a new builder.
     pub(crate) fn new(client: JQuantsApiClient) -> Self {
         Self {
@@ -94,46 +94,46 @@ impl<R: DeserializeOwned + fmt::Debug + Clone> StockPricesBuilder<R> {
     }
 }
 
-/// Builder for Stock Prices (OHLC) API.
-pub trait StockPricesApi: JQuantsPlanClient {
+/// Builder for Daily Stock Prices (OHLC) API.
+pub trait DailyStockPricesApi: JQuantsPlanClient {
     /// Response type for listed info API.
     type Response: DeserializeOwned + fmt::Debug + Clone;
 
-    /// Get api builder for stock prices.
+    /// Get api builder for daily stock prices.
     ///
-    /// Use [Stock Prices (OHLC)(/prices/daily_quotes) API](https://jpx.gitbook.io/j-quants-en/api-reference/daily_quotes)
-    fn get_stock_prices(&self) -> StockPricesBuilder<Self::Response> {
-        StockPricesBuilder::new(self.get_api_client().clone())
+    /// Use [Daily Stock Prices (OHLC)(/prices/daily_quotes) API](https://jpx.gitbook.io/j-quants-en/api-reference/daily_quotes)
+    fn get_daily_stock_prices(&self) -> DailyStockPricesBuilder<Self::Response> {
+        DailyStockPricesBuilder::new(self.get_api_client().clone())
     }
 }
 
-/// Stock prices (OHLC) response for free plan.
+/// Daily Stock prices (OHLC) response for free plan.
 ///
 /// See: [API Reference](https://jpx.gitbook.io/j-quants-en/api-reference/daily_quotes)
-pub type StockPricesFreePlanResponse = StockPricesStandardPlanResponse;
+pub type DailyStockPricesFreePlanResponse = DailyStockPricesStandardPlanResponse;
 
-/// Stock prices (OHLC) response for light plan.
+/// Daily Stock prices (OHLC) response for light plan.
 ///
 /// See: [API Reference](https://jpx.gitbook.io/j-quants-en/api-reference/daily_quotes)
-pub type StockPricesLightPlanResponse = StockPricesStandardPlanResponse;
+pub type DailyStockPricesLightPlanResponse = DailyStockPricesStandardPlanResponse;
 
-/// Stock prices (OHLC) response for standard plan.
+/// Daily Stock prices (OHLC) response for standard plan.
 ///
 /// See: [API Reference](https://jpx.gitbook.io/j-quants-en/api-reference/daily_quotes)
 #[derive(Debug, Clone, PartialEq, Deserialize)]
-pub struct StockPricesStandardPlanResponse {
+pub struct DailyStockPricesStandardPlanResponse {
     /// List of daily quotes
     pub daily_quotes: Vec<DailyQuoteStandardPlan>,
 
     /// Pagination key for fetching next set of data
     pub pagination_key: Option<String>,
 }
-impl HasPaginationKey for StockPricesStandardPlanResponse {
+impl HasPaginationKey for DailyStockPricesStandardPlanResponse {
     fn get_pagination_key(&self) -> Option<&str> {
         self.pagination_key.as_deref()
     }
 }
-impl MergePage for StockPricesStandardPlanResponse {
+impl MergePage for DailyStockPricesStandardPlanResponse {
     fn merge_page(
         page: Result<Vec<Self>, crate::JQuantsError>,
     ) -> Result<Self, crate::JQuantsError> {
@@ -148,23 +148,23 @@ impl MergePage for StockPricesStandardPlanResponse {
     }
 }
 
-/// Stock prices (OHLC) response for premium plan.
+/// Daily Stock prices (OHLC) response for premium plan.
 ///
 /// See: [API Reference](https://jpx.gitbook.io/j-quants-en/api-reference/daily_quotes)
 #[derive(Debug, Clone, PartialEq, Deserialize)]
-pub struct StockPricesPremiumPlanResponse {
+pub struct DailyStockPricesPremiumPlanResponse {
     /// List of daily quotes
     pub daily_quotes: Vec<DailyQuotePremiumPlan>,
 
     /// Pagination key for fetching next set of data
     pub pagination_key: Option<String>,
 }
-impl HasPaginationKey for StockPricesPremiumPlanResponse {
+impl HasPaginationKey for DailyStockPricesPremiumPlanResponse {
     fn get_pagination_key(&self) -> Option<&str> {
         self.pagination_key.as_deref()
     }
 }
-impl MergePage for StockPricesPremiumPlanResponse {
+impl MergePage for DailyStockPricesPremiumPlanResponse {
     fn merge_page(
         page: Result<Vec<Self>, crate::JQuantsError>,
     ) -> Result<Self, crate::JQuantsError> {
@@ -369,13 +369,13 @@ pub struct DailyQuoteCommon {
 
 #[cfg(test)]
 mod tests {
-    use crate::api::stock_prices::{
+    use crate::api::daily_stock_prices::{
         DailyQuoteCommon, DailyQuotePremiumPlan, DailyQuoteStandardPlan,
-        StockPricesPremiumPlanResponse, StockPricesStandardPlanResponse,
+        DailyStockPricesPremiumPlanResponse, DailyStockPricesStandardPlanResponse,
     };
 
     #[test]
-    fn test_deserialize_stock_prices_standard_plan_response() {
+    fn test_deserialize_daily_stock_prices_standard_plan_response() {
         let json = r#"
             {
                 "daily_quotes": [
@@ -402,8 +402,8 @@ mod tests {
             }
         "#;
 
-        let response: StockPricesStandardPlanResponse = serde_json::from_str(json).unwrap();
-        let expected_response = StockPricesStandardPlanResponse {
+        let response: DailyStockPricesStandardPlanResponse = serde_json::from_str(json).unwrap();
+        let expected_response = DailyStockPricesStandardPlanResponse {
             daily_quotes: vec![DailyQuoteStandardPlan {
                 common: DailyQuoteCommon {
                     date: "2023-03-24".to_string(),
@@ -431,7 +431,7 @@ mod tests {
     }
 
     #[test]
-    fn test_deserialize_stock_prices_standard_plan_response_no_pagination_key() {
+    fn test_deserialize_daily_stock_prices_standard_plan_response_no_pagination_key() {
         let json = r#"
             {
                 "daily_quotes": [
@@ -457,8 +457,8 @@ mod tests {
             }
         "#;
 
-        let response: StockPricesStandardPlanResponse = serde_json::from_str(json).unwrap();
-        let expected_response = StockPricesStandardPlanResponse {
+        let response: DailyStockPricesStandardPlanResponse = serde_json::from_str(json).unwrap();
+        let expected_response = DailyStockPricesStandardPlanResponse {
             daily_quotes: vec![DailyQuoteStandardPlan {
                 common: DailyQuoteCommon {
                     date: "2023-03-24".to_string(),
@@ -486,7 +486,7 @@ mod tests {
     }
 
     #[test]
-    fn test_deserialize_stock_prices_premium_plan_response() {
+    fn test_deserialize_daily_stock_prices_premium_plan_response() {
         let json = r#"
             {
                 "daily_quotes": [
@@ -539,8 +539,8 @@ mod tests {
             }
         "#;
 
-        let response: StockPricesPremiumPlanResponse = serde_json::from_str(json).unwrap();
-        let expected_response = StockPricesPremiumPlanResponse {
+        let response: DailyStockPricesPremiumPlanResponse = serde_json::from_str(json).unwrap();
+        let expected_response = DailyStockPricesPremiumPlanResponse {
             daily_quotes: vec![DailyQuotePremiumPlan {
                 common: DailyQuoteCommon {
                     date: "2023-03-24".to_string(),
@@ -594,7 +594,7 @@ mod tests {
     }
 
     #[test]
-    fn test_deserialize_stock_prices_premium_plan_response_no_data() {
+    fn test_deserialize_daily_stock_prices_premium_plan_response_no_data() {
         let json = r#"
             {
                 "daily_quotes": [
@@ -647,8 +647,8 @@ mod tests {
             }
         "#;
 
-        let response: StockPricesPremiumPlanResponse = serde_json::from_str(json).unwrap();
-        let expected_response = StockPricesPremiumPlanResponse {
+        let response: DailyStockPricesPremiumPlanResponse = serde_json::from_str(json).unwrap();
+        let expected_response = DailyStockPricesPremiumPlanResponse {
             daily_quotes: vec![DailyQuotePremiumPlan {
                 common: DailyQuoteCommon {
                     date: "2023-03-24".to_string(),
@@ -702,7 +702,7 @@ mod tests {
     }
 
     #[test]
-    fn test_deserialize_stock_prices_premium_plan_response_no_pagination_key() {
+    fn test_deserialize_daily_stock_prices_premium_plan_response_no_pagination_key() {
         let json = r#"
             {
                 "daily_quotes": [
@@ -754,8 +754,8 @@ mod tests {
             }
         "#;
 
-        let response: StockPricesPremiumPlanResponse = serde_json::from_str(json).unwrap();
-        let expected_response = StockPricesPremiumPlanResponse {
+        let response: DailyStockPricesPremiumPlanResponse = serde_json::from_str(json).unwrap();
+        let expected_response = DailyStockPricesPremiumPlanResponse {
             daily_quotes: vec![DailyQuotePremiumPlan {
                 common: DailyQuoteCommon {
                     date: "2023-03-24".to_string(),

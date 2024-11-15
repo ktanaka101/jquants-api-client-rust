@@ -2,11 +2,11 @@
 
 use crate::{
     api::{
+        daily_stock_prices::{DailyStockPricesApi, DailyStockPricesFreePlanResponse},
         listed_issue_info::{ListedIssueInfoApi, ListedIssueInfoFreePlanResponse},
         morning_session_stock_prices::{
             MorningSessionStockPricesApi, MorningSessionStockPricesFreePlanResponse,
         },
-        stock_prices::{StockPricesApi, StockPricesFreePlanResponse},
         JQuantsApiClient, JQuantsPlanClient,
     },
     TradingByInvestorTypeApi, TradingByInvestorTypeFreePlanResponse,
@@ -17,7 +17,7 @@ use crate::{
 /// # Example
 ///
 /// ```no_run
-/// use jquants_api_client::{JQuantsBuilder, JQuantsFreePlanClient, ListedIssueInfoApi, MorningSessionStockPricesApi, TradingByInvestorTypeApi, Paginatable, StockPricesApi};
+/// use jquants_api_client::{DailyStockPricesApi, JQuantsBuilder, JQuantsFreePlanClient, ListedIssueInfoApi, MorningSessionStockPricesApi, TradingByInvestorTypeApi, Paginatable};
 ///
 /// async {
 ///     // Authenticate with a refresh token.
@@ -27,12 +27,12 @@ use crate::{
 ///     let response = client.get_listed_issue_info().send().await.unwrap();
 ///
 ///     // Get stock prices.
-///     let response = client.get_stock_prices().send().await.unwrap();
+///     let response = client.get_daily_stock_prices().send().await.unwrap();
 ///
 ///     // Paginate stock prices.
-///     let response = client.get_stock_prices().fetch_all().await.unwrap();
-///     let response = client.get_stock_prices().fetch_all_and_merge().await.unwrap();
-///     let stream = client.get_stock_prices().fetch_pages_stream();
+///     let response = client.get_daily_stock_prices().fetch_all().await.unwrap();
+///     let response = client.get_daily_stock_prices().fetch_all_and_merge().await.unwrap();
+///     let stream = client.get_daily_stock_prices().fetch_pages_stream();
 ///
 ///     // Get morning session stock prices.
 ///     let response = client.morning_session_stock_prices().send().await.unwrap();
@@ -75,8 +75,8 @@ impl ListedIssueInfoApi for JQuantsFreePlanClient {
     type Response = ListedIssueInfoFreePlanResponse;
 }
 
-impl StockPricesApi for JQuantsFreePlanClient {
-    type Response = StockPricesFreePlanResponse;
+impl DailyStockPricesApi for JQuantsFreePlanClient {
+    type Response = DailyStockPricesFreePlanResponse;
 }
 
 impl MorningSessionStockPricesApi for JQuantsFreePlanClient {

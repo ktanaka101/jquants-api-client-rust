@@ -23,10 +23,7 @@
 //!
 //! - [JQuants API documentation](https://jpx.gitbook.io/j-quants-en)
 
-use jquants_api_client::{
-    api::{builder::JQuantsBuilder, listed_issue_info::ListedIssueInfoApi},
-    JQuantsFreePlanClient,
-};
+use jquants_api_client::{JQuantsBuilder, JQuantsFreePlanClient, ListedIssueInfoApi};
 use std::env;
 use tracing::Level;
 use tracing_subscriber::FmtSubscriber;

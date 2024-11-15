@@ -3,11 +3,11 @@
 
 pub mod auth;
 pub mod builder;
+pub mod daily_stock_prices;
 pub mod error_response;
 pub mod listed_issue_info;
 pub mod morning_session_stock_prices;
 pub mod pagination;
-pub mod stock_prices;
 pub mod trading_by_type_of_investors;
 
 use auth::id_token::IdTokenResponse;

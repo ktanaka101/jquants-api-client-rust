@@ -25,11 +25,8 @@
 
 use futures::stream::StreamExt;
 use jquants_api_client::{
-    api::{
-        pagination::Paginatable,
-        stock_prices::{StockPricesApi, StockPricesStandardPlanResponse},
-    },
-    JQuantsError, JQuantsFreePlanClient,
+    DailyStockPricesApi, DailyStockPricesStandardPlanResponse, JQuantsError, JQuantsFreePlanClient,
+    Paginatable,
 };
 use std::env;
 use tracing::Level;
@@ -65,7 +62,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 #[allow(dead_code)]
 async fn fetch_pages_stream(client: JQuantsFreePlanClient) -> Result<(), JQuantsError> {
     let mut stream = client
-        .get_stock_prices()
+        .get_daily_stock_prices()
         .code("27890")
         .date("2024-08-01")
         .fetch_pages_stream();
@@ -94,9 +91,9 @@ async fn fetch_pages_stream(client: JQuantsFreePlanClient) -> Result<(), JQuants
 #[allow(dead_code)]
 async fn fetch_all(
     client: JQuantsFreePlanClient,
-) -> Result<Vec<StockPricesStandardPlanResponse>, JQuantsError> {
+) -> Result<Vec<DailyStockPricesStandardPlanResponse>, JQuantsError> {
     client
-        .get_stock_prices()
+        .get_daily_stock_prices()
         .code("27890")
         .date("2024-08-01")
         .fetch_all()
@@ -107,9 +104,9 @@ async fn fetch_all(
 #[allow(dead_code)]
 async fn fetch_all_and_merge(
     client: JQuantsFreePlanClient,
-) -> Result<StockPricesStandardPlanResponse, JQuantsError> {
+) -> Result<DailyStockPricesStandardPlanResponse, JQuantsError> {
     client
-        .get_stock_prices()
+        .get_daily_stock_prices()
         .code("27890")
         .date("2024-08-01")
         .fetch_all_and_merge()
