@@ -74,7 +74,7 @@ pub trait MorningSessionStockPricesApi: JQuantsPlanClient {
 #[derive(Debug, Clone, PartialEq, Deserialize)]
 pub struct MorningSessionStockPricesResponse {
     /// List of morning session stock prices.
-    prices_am: Vec<MorningStockPrice>,
+    prices_am: Vec<MorningStockPriceItem>,
     /// Pagination key for fetching next set of data.
     pagination_key: Option<String>,
 }
@@ -100,7 +100,7 @@ impl MergePage for MorningSessionStockPricesResponse {
 
 /// Morning session stock price.
 #[derive(Debug, Clone, PartialEq, Deserialize)]
-pub struct MorningStockPrice {
+pub struct MorningStockPriceItem {
     /// Date
     #[serde(rename = "Date")]
     pub date: String,
@@ -153,7 +153,7 @@ mod tests {
         let response: MorningSessionStockPricesResponse = serde_json::from_str(json).unwrap();
         let expected_response: MorningSessionStockPricesResponse =
             MorningSessionStockPricesResponse {
-                prices_am: vec![MorningStockPrice {
+                prices_am: vec![MorningStockPriceItem {
                     date: "2023-03-20".to_string(),
                     code: "39400".to_string(),
                     morning_open: Some(232.0),
@@ -191,7 +191,7 @@ mod tests {
         let response: MorningSessionStockPricesResponse = serde_json::from_str(json).unwrap();
         let expected_response: MorningSessionStockPricesResponse =
             MorningSessionStockPricesResponse {
-                prices_am: vec![MorningStockPrice {
+                prices_am: vec![MorningStockPriceItem {
                     date: "2023-03-20".to_string(),
                     code: "39400".to_string(),
                     morning_open: None,

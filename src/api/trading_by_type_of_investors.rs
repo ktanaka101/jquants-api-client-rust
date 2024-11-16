@@ -98,7 +98,7 @@ pub trait TradingByInvestorTypeApi: JQuantsPlanClient {
 #[derive(Debug, Clone, PartialEq, Deserialize)]
 pub struct TradingByInvestorTypeResponse {
     /// List of trades specifications
-    pub trades_spec: Vec<TradingByInvestorType>,
+    pub trades_spec: Vec<TradingByInvestorTypeItem>,
     /// Pagination key for fetching next set of data
     pub pagination_key: Option<String>,
 }
@@ -126,7 +126,7 @@ impl MergePage for TradingByInvestorTypeResponse {
 
 /// Trades Specification.
 #[derive(Debug, Clone, PartialEq, Deserialize)]
-pub struct TradingByInvestorType {
+pub struct TradingByInvestorTypeItem {
     /// Published Date (YY-MM-DD)
     #[serde(rename = "PublishedDate")]
     pub published_date: String,
@@ -426,7 +426,7 @@ mod tests {
 
         let response: TradingByInvestorTypeResponse = serde_json::from_str(json).unwrap();
         let expected_response = TradingByInvestorTypeResponse {
-            trades_spec: vec![TradingByInvestorType {
+            trades_spec: vec![TradingByInvestorTypeItem {
                 published_date: "2017-01-13".to_string(),
                 start_date: "2017-01-04".to_string(),
                 end_date: "2017-01-06".to_string(),
@@ -559,7 +559,7 @@ mod tests {
 
         let response: TradingByInvestorTypeResponse = serde_json::from_str(json).unwrap();
         let expected_response = TradingByInvestorTypeResponse {
-            trades_spec: vec![TradingByInvestorType {
+            trades_spec: vec![TradingByInvestorTypeItem {
                 published_date: "2017-01-13".to_string(),
                 start_date: "2017-01-04".to_string(),
                 end_date: "2017-01-06".to_string(),

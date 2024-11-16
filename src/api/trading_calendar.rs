@@ -83,12 +83,12 @@ pub trait TradingCalendarApi: JQuantsPlanClient {
 #[derive(Debug, Clone, PartialEq, Deserialize)]
 pub struct TradingCalendarResponse {
     /// List of trading calendar data
-    pub trading_calendar: Vec<TradingCalendar>,
+    pub trading_calendar: Vec<TradingCalendarItem>,
 }
 
 /// Represents a single trading calendar data.
 #[derive(Debug, Clone, PartialEq, Deserialize)]
-pub struct TradingCalendar {
+pub struct TradingCalendarItem {
     /// Trade date (YYYY-MM-DD)
     #[serde(rename = "Date")]
     pub date: String,
@@ -117,7 +117,7 @@ mod tests {
 
         let response: TradingCalendarResponse = serde_json::from_str(json).unwrap();
         let expected_response = TradingCalendarResponse {
-            trading_calendar: vec![TradingCalendar {
+            trading_calendar: vec![TradingCalendarItem {
                 date: "2015-04-01".to_string(),
                 holiday_division: HolidayDivision::BusinessDay,
             }],
@@ -146,11 +146,11 @@ mod tests {
         let response: TradingCalendarResponse = serde_json::from_str(json).unwrap();
         let expected_response = TradingCalendarResponse {
             trading_calendar: vec![
-                TradingCalendar {
+                TradingCalendarItem {
                     date: "2015-03-25".to_string(),
                     holiday_division: HolidayDivision::HalfDayTrading,
                 },
-                TradingCalendar {
+                TradingCalendarItem {
                     date: "2015-04-01".to_string(),
                     holiday_division: HolidayDivision::BusinessDay,
                 },

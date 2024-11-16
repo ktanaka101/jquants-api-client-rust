@@ -125,7 +125,7 @@ pub type DailyStockPricesLightPlanResponse = DailyStockPricesStandardPlanRespons
 #[derive(Debug, Clone, PartialEq, Deserialize)]
 pub struct DailyStockPricesStandardPlanResponse {
     /// List of daily quotes
-    pub daily_quotes: Vec<DailyQuoteStandardPlan>,
+    pub daily_quotes: Vec<DailyQuoteStandardPlanItem>,
 
     /// Pagination key for fetching next set of data
     pub pagination_key: Option<String>,
@@ -156,7 +156,7 @@ impl MergePage for DailyStockPricesStandardPlanResponse {
 #[derive(Debug, Clone, PartialEq, Deserialize)]
 pub struct DailyStockPricesPremiumPlanResponse {
     /// List of daily quotes
-    pub daily_quotes: Vec<DailyQuotePremiumPlan>,
+    pub daily_quotes: Vec<DailyQuotePremiumPlanItem>,
 
     /// Pagination key for fetching next set of data
     pub pagination_key: Option<String>,
@@ -183,18 +183,18 @@ impl MergePage for DailyStockPricesPremiumPlanResponse {
 
 /// Daily Quote for standard plan.
 #[derive(Debug, Clone, PartialEq, Deserialize)]
-pub struct DailyQuoteStandardPlan {
+pub struct DailyQuoteStandardPlanItem {
     /// The common structure for daily quote
     #[serde(flatten)]
-    pub common: DailyQuoteCommon,
+    pub common: DailyQuoteCommonItem,
 }
 
 /// Daily Quote for premium plan.
 #[derive(Debug, Clone, PartialEq, Deserialize)]
-pub struct DailyQuotePremiumPlan {
+pub struct DailyQuotePremiumPlanItem {
     /// The common structure for daily quote
     #[serde(flatten)]
-    pub common: DailyQuoteCommon,
+    pub common: DailyQuoteCommonItem,
 
     /// Open price of the morning session (before Adjustment)
     #[serde(rename = "MorningOpen")]
@@ -303,7 +303,7 @@ pub struct DailyQuotePremiumPlan {
 
 /// Represents a single daily quote
 #[derive(Debug, Clone, PartialEq, Deserialize)]
-pub struct DailyQuoteCommon {
+pub struct DailyQuoteCommonItem {
     /// The date in YYYY-MM-DD format
     #[serde(rename = "Date")]
     pub date: String,
@@ -372,7 +372,7 @@ pub struct DailyQuoteCommon {
 #[cfg(test)]
 mod tests {
     use crate::api::daily_stock_prices::{
-        DailyQuoteCommon, DailyQuotePremiumPlan, DailyQuoteStandardPlan,
+        DailyQuoteCommonItem, DailyQuotePremiumPlanItem, DailyQuoteStandardPlanItem,
         DailyStockPricesPremiumPlanResponse, DailyStockPricesStandardPlanResponse,
     };
 
@@ -406,8 +406,8 @@ mod tests {
 
         let response: DailyStockPricesStandardPlanResponse = serde_json::from_str(json).unwrap();
         let expected_response = DailyStockPricesStandardPlanResponse {
-            daily_quotes: vec![DailyQuoteStandardPlan {
-                common: DailyQuoteCommon {
+            daily_quotes: vec![DailyQuoteStandardPlanItem {
+                common: DailyQuoteCommonItem {
                     date: "2023-03-24".to_string(),
                     code: "86970".to_string(),
                     open: Some(2047.0),
@@ -461,8 +461,8 @@ mod tests {
 
         let response: DailyStockPricesStandardPlanResponse = serde_json::from_str(json).unwrap();
         let expected_response = DailyStockPricesStandardPlanResponse {
-            daily_quotes: vec![DailyQuoteStandardPlan {
-                common: DailyQuoteCommon {
+            daily_quotes: vec![DailyQuoteStandardPlanItem {
+                common: DailyQuoteCommonItem {
                     date: "2023-03-24".to_string(),
                     code: "86970".to_string(),
                     open: Some(2047.0),
@@ -543,8 +543,8 @@ mod tests {
 
         let response: DailyStockPricesPremiumPlanResponse = serde_json::from_str(json).unwrap();
         let expected_response = DailyStockPricesPremiumPlanResponse {
-            daily_quotes: vec![DailyQuotePremiumPlan {
-                common: DailyQuoteCommon {
+            daily_quotes: vec![DailyQuotePremiumPlanItem {
+                common: DailyQuoteCommonItem {
                     date: "2023-03-24".to_string(),
                     code: "86970".to_string(),
                     open: Some(2047.0),
@@ -651,8 +651,8 @@ mod tests {
 
         let response: DailyStockPricesPremiumPlanResponse = serde_json::from_str(json).unwrap();
         let expected_response = DailyStockPricesPremiumPlanResponse {
-            daily_quotes: vec![DailyQuotePremiumPlan {
-                common: DailyQuoteCommon {
+            daily_quotes: vec![DailyQuotePremiumPlanItem {
+                common: DailyQuoteCommonItem {
                     date: "2023-03-24".to_string(),
                     code: "86970".to_string(),
                     open: None,
@@ -758,8 +758,8 @@ mod tests {
 
         let response: DailyStockPricesPremiumPlanResponse = serde_json::from_str(json).unwrap();
         let expected_response = DailyStockPricesPremiumPlanResponse {
-            daily_quotes: vec![DailyQuotePremiumPlan {
-                common: DailyQuoteCommon {
+            daily_quotes: vec![DailyQuotePremiumPlanItem {
+                common: DailyQuoteCommonItem {
                     date: "2023-03-24".to_string(),
                     code: "86970".to_string(),
                     open: Some(2047.0),

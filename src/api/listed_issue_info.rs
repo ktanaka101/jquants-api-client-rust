@@ -86,7 +86,7 @@ pub type ListedIssueInfoFreePlanResponse = ListedIssueInfoLightPlanResponse;
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
 pub struct ListedIssueInfoLightPlanResponse {
     /// The listed info for light plan.
-    pub info: Vec<IssueInfoLightPlan>,
+    pub info: Vec<IssueInfoLightPlanItem>,
 }
 
 /// Listed issue info response for standard plan.
@@ -100,29 +100,29 @@ pub type ListedIssueInfoStandardPlanResponse = ListedIssueInfoPremiumPlanRespons
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
 pub struct ListedIssueInfoPremiumPlanResponse {
     /// The listed info for premium plan.
-    pub info: Vec<IssueInfoPremiumPlan>,
+    pub info: Vec<IssueInfoPremiumPlanItem>,
 }
 
 /// Issue info for free plan.
-pub type IssueInfoFreePlan = IssueInfoLightPlan;
+pub type IssueInfoFreePlanItem = IssueInfoLightPlanItem;
 
 /// Issue info for light plan.
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
-pub struct IssueInfoLightPlan {
+pub struct IssueInfoLightPlanItem {
     /// The common structure for issue info.
     #[serde(flatten)]
-    pub common: IssueInfoCommon,
+    pub common: IssueInfoCommonItem,
 }
 
 /// Issue info for standard plan.
-pub type IssueInfoStandardPlan = IssueInfoPremiumPlan;
+pub type IssueInfoStandardPlanItem = IssueInfoPremiumPlanItem;
 
 /// Issue info for standard plan.
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
-pub struct IssueInfoPremiumPlan {
+pub struct IssueInfoPremiumPlanItem {
     /// The common structure for issue info.
     #[serde(flatten)]
-    pub common: IssueInfoCommon,
+    pub common: IssueInfoCommonItem,
 
     /// The margin code.
     #[serde(rename = "MarginCode")]
@@ -135,7 +135,7 @@ pub struct IssueInfoPremiumPlan {
 
 /// Common structure for issue info.
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
-pub struct IssueInfoCommon {
+pub struct IssueInfoCommonItem {
     /// The date.
     #[serde(rename = "Date")]
     pub date: String,
@@ -210,8 +210,8 @@ mod tests {
         let response: ListedIssueInfoLightPlanResponse = serde_json::from_str(json).unwrap();
         let expected_response: ListedIssueInfoLightPlanResponse =
             ListedIssueInfoLightPlanResponse {
-                info: vec![IssueInfoLightPlan {
-                    common: IssueInfoCommon {
+                info: vec![IssueInfoLightPlanItem {
+                    common: IssueInfoCommonItem {
                         date: "2022-11-11".to_string(),
                         code: "86970".to_string(),
                         company_name: "日本取引所グループ".to_string(),
@@ -257,8 +257,8 @@ mod tests {
         let response: ListedIssueInfoPremiumPlanResponse = serde_json::from_str(json).unwrap();
         let expected_response: ListedIssueInfoPremiumPlanResponse =
             ListedIssueInfoPremiumPlanResponse {
-                info: vec![IssueInfoPremiumPlan {
-                    common: IssueInfoCommon {
+                info: vec![IssueInfoPremiumPlanItem {
+                    common: IssueInfoCommonItem {
                         date: "2022-11-11".to_string(),
                         code: "86970".to_string(),
                         company_name: "日本取引所グループ".to_string(),

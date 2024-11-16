@@ -117,7 +117,7 @@ pub trait WeeklyMarginTradingOutstandingsApi: JQuantsPlanClient {
 #[derive(Debug, Clone, PartialEq, Deserialize)]
 pub struct WeeklyMarginTradingOutstandingsResponse {
     /// List of weekly margin trading outstanding
-    pub weekly_margin_interest: Vec<WeeklyMarginTradingOutstanding>,
+    pub weekly_margin_interest: Vec<WeeklyMarginTradingOutstandingItem>,
     /// Pagination key for fetching next set of data
     pub pagination_key: Option<String>,
 }
@@ -147,7 +147,7 @@ impl MergePage for WeeklyMarginTradingOutstandingsResponse {
 
 /// Represents a single weekly margin trading outstanding.
 #[derive(Debug, Clone, PartialEq, Deserialize)]
-pub struct WeeklyMarginTradingOutstanding {
+pub struct WeeklyMarginTradingOutstandingItem {
     /// Record Date (YYYY-MM-DD)
     #[serde(rename = "Date")]
     pub date: String,
@@ -212,7 +212,7 @@ mod tests {
 
         let response: WeeklyMarginTradingOutstandingsResponse = serde_json::from_str(json).unwrap();
         let expected_response = WeeklyMarginTradingOutstandingsResponse {
-            weekly_margin_interest: vec![WeeklyMarginTradingOutstanding {
+            weekly_margin_interest: vec![WeeklyMarginTradingOutstandingItem {
                 date: "2023-02-17".to_string(),
                 code: "13010".to_string(),
                 short_margin_trade_volume: 4100.0,
@@ -251,7 +251,7 @@ mod tests {
 
         let response: WeeklyMarginTradingOutstandingsResponse = serde_json::from_str(json).unwrap();
         let expected_response = WeeklyMarginTradingOutstandingsResponse {
-            weekly_margin_interest: vec![WeeklyMarginTradingOutstanding {
+            weekly_margin_interest: vec![WeeklyMarginTradingOutstandingItem {
                 date: "2023-02-17".to_string(),
                 code: "13010".to_string(),
                 short_margin_trade_volume: 4100.0,
@@ -303,7 +303,7 @@ mod tests {
         let response: WeeklyMarginTradingOutstandingsResponse = serde_json::from_str(json).unwrap();
         let expected_response = WeeklyMarginTradingOutstandingsResponse {
             weekly_margin_interest: vec![
-                WeeklyMarginTradingOutstanding {
+                WeeklyMarginTradingOutstandingItem {
                     date: "2023-02-10".to_string(),
                     code: "13010".to_string(),
                     short_margin_trade_volume: 4000.0,
@@ -314,7 +314,7 @@ mod tests {
                     long_standardized_margin_trade_volume: 19500.0,
                     issue_type: IssueType::Loan, // Assuming "2" corresponds to Loan
                 },
-                WeeklyMarginTradingOutstanding {
+                WeeklyMarginTradingOutstandingItem {
                     date: "2023-02-17".to_string(),
                     code: "13010".to_string(),
                     short_margin_trade_volume: 4100.0,
