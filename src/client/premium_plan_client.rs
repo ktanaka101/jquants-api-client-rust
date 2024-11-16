@@ -7,6 +7,7 @@ use crate::{
         morning_session_stock_prices::{
             MorningSessionStockPricesApi, MorningSessionStockPricesPremiumPlanResponse,
         },
+        short_sale_by_sector::{ShortSaleBySectorApi, ShortSaleBySectorPremiumPlanResponse},
         weekly_margin_trading_outstandings::{
             WeeklyMarginTradingOutstandingsApi, WeeklyMarginTradingOutstandingsPremiumPlanResponse,
         },
@@ -20,7 +21,7 @@ use crate::{
 /// # Example
 ///
 /// ```no_run
-/// use jquants_api_client::{DailyStockPricesApi, JQuantsBuilder, JQuantsPremiumPlanClient, ListedIssueInfoApi, MorningSessionStockPricesApi, TradingByInvestorTypeApi, Paginatable, WeeklyMarginTradingOutstandingsApi};
+/// use jquants_api_client::{DailyStockPricesApi, JQuantsBuilder, JQuantsPremiumPlanClient, ListedIssueInfoApi, MorningSessionStockPricesApi, ShortSaleBySectorApi, TradingByInvestorTypeApi, Paginatable, WeeklyMarginTradingOutstandingsApi};
 ///
 /// async {
 ///     // Authenticate with a refresh token.
@@ -60,6 +61,14 @@ use crate::{
 ///     let response = client.get_weekly_margin_trading_outstandings().fetch_all().await.unwrap();
 ///     let response = client.get_weekly_margin_trading_outstandings().fetch_all_and_merge().await.unwrap();
 ///     let stream = client.get_weekly_margin_trading_outstandings().fetch_pages_stream();
+///
+///     // Get short sale value and ratio by sector.
+///     let response = client.get_short_sale_by_sector().send().await.unwrap();
+///
+///     // Paginate short sale value and ratio by sector.
+///     let response = client.get_short_sale_by_sector().fetch_all().await.unwrap();
+///     let response = client.get_short_sale_by_sector().fetch_all_and_merge().await.unwrap();
+///     let stream = client.get_short_sale_by_sector().fetch_pages_stream();
 /// };
 /// ```
 #[derive(Clone)]
@@ -100,4 +109,8 @@ impl TradingByInvestorTypeApi for JQuantsPremiumPlanClient {
 
 impl WeeklyMarginTradingOutstandingsApi for JQuantsPremiumPlanClient {
     type Response = WeeklyMarginTradingOutstandingsPremiumPlanResponse;
+}
+
+impl ShortSaleBySectorApi for JQuantsPremiumPlanClient {
+    type Response = ShortSaleBySectorPremiumPlanResponse;
 }

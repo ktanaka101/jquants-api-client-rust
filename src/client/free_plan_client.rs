@@ -7,6 +7,7 @@ use crate::{
         morning_session_stock_prices::{
             MorningSessionStockPricesApi, MorningSessionStockPricesFreePlanResponse,
         },
+        short_sale_by_sector::{ShortSaleBySectorApi, ShortSaleBySectorFreePlanResponse},
         weekly_margin_trading_outstandings::{
             WeeklyMarginTradingOutstandingsApi, WeeklyMarginTradingOutstandingsFreePlanResponse,
         },
@@ -20,7 +21,7 @@ use crate::{
 /// # Example
 ///
 /// ```no_run
-/// use jquants_api_client::{DailyStockPricesApi, JQuantsBuilder, JQuantsFreePlanClient, ListedIssueInfoApi, MorningSessionStockPricesApi, TradingByInvestorTypeApi, Paginatable, WeeklyMarginTradingOutstandingsApi};
+/// use jquants_api_client::{DailyStockPricesApi, JQuantsBuilder, JQuantsFreePlanClient, ListedIssueInfoApi, MorningSessionStockPricesApi, ShortSaleBySectorApi, TradingByInvestorTypeApi, Paginatable, WeeklyMarginTradingOutstandingsApi};
 ///
 /// async {
 ///     // Authenticate with a refresh token.
@@ -57,6 +58,14 @@ use crate::{
 ///     let response = client.get_weekly_margin_trading_outstandings().send().await.unwrap();
 ///
 ///     // Paginate margin trading outstandings.
+///     let response = client.get_weekly_margin_trading_outstandings().fetch_all().await.unwrap();
+///     let response = client.get_weekly_margin_trading_outstandings().fetch_all_and_merge().await.unwrap();
+///     let stream = client.get_weekly_margin_trading_outstandings().fetch_pages_stream();
+///
+///     // Get short sale value and ratio by sector.
+///     let response = client.get_weekly_margin_trading_outstandings().send().await.unwrap();
+///
+///     // Paginate short sale value and ratio by sector.
 ///     let response = client.get_weekly_margin_trading_outstandings().fetch_all().await.unwrap();
 ///     let response = client.get_weekly_margin_trading_outstandings().fetch_all_and_merge().await.unwrap();
 ///     let stream = client.get_weekly_margin_trading_outstandings().fetch_pages_stream();
@@ -100,4 +109,8 @@ impl TradingByInvestorTypeApi for JQuantsFreePlanClient {
 
 impl WeeklyMarginTradingOutstandingsApi for JQuantsFreePlanClient {
     type Response = WeeklyMarginTradingOutstandingsFreePlanResponse;
+}
+
+impl ShortSaleBySectorApi for JQuantsFreePlanClient {
+    type Response = ShortSaleBySectorFreePlanResponse;
 }
