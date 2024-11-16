@@ -8,6 +8,7 @@ pub mod morning_session_stock_prices;
 pub mod shared;
 pub mod short_sale_by_sector;
 pub mod trading_by_type_of_investors;
+pub mod trading_calendar;
 pub mod weekly_margin_trading_outstandings;
 
 use shared::{auth::id_token::IdTokenResponse, responses::error_response::ErrorResponse};

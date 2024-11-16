@@ -10,7 +10,8 @@ use crate::{
         },
         JQuantsApiClient, JQuantsPlanClient,
     },
-    TradingByInvestorTypeApi, TradingByInvestorTypeStandardPlanResponse,
+    TradingByInvestorTypeApi, TradingByInvestorTypeStandardPlanResponse, TradingCalendarApi,
+    TradingCalendarStandardPlanResponse,
 };
 
 /// Standard plan client for J-Quants API.
@@ -18,7 +19,10 @@ use crate::{
 /// # Example
 ///
 /// ```no_run
-/// use jquants_api_client::{DailyStockPricesApi, JQuantsBuilder, JQuantsStandardPlanClient, ListedIssueInfoApi, ShortSaleBySectorApi, TradingByInvestorTypeApi, Paginatable, WeeklyMarginTradingOutstandingsApi};
+/// use jquants_api_client::{
+///     DailyStockPricesApi, JQuantsBuilder, JQuantsStandardPlanClient, ListedIssueInfoApi, ShortSaleBySectorApi,
+///     TradingByInvestorTypeApi, TradingCalendarApi, Paginatable, WeeklyMarginTradingOutstandingsApi
+/// };
 ///
 /// async {
 ///     // Authenticate with a refresh token.
@@ -58,6 +62,9 @@ use crate::{
 ///     let response = client.get_weekly_margin_trading_outstandings().fetch_all().await.unwrap();
 ///     let response = client.get_weekly_margin_trading_outstandings().fetch_all_and_merge().await.unwrap();
 ///     let stream = client.get_weekly_margin_trading_outstandings().fetch_pages_stream();
+///
+///     // Get trading calendar.
+///     let response = client.get_trading_calendar().send().await.unwrap();
 /// };
 /// ```
 #[derive(Clone)]
@@ -98,4 +105,8 @@ impl WeeklyMarginTradingOutstandingsApi for JQuantsStandardPlanClient {
 
 impl ShortSaleBySectorApi for JQuantsStandardPlanClient {
     type Response = ShortSaleBySectorStandardPlanResponse;
+}
+
+impl TradingCalendarApi for JQuantsStandardPlanClient {
+    type Response = TradingCalendarStandardPlanResponse;
 }

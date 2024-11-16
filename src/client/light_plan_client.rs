@@ -6,7 +6,8 @@ use crate::{
         listed_issue_info::{ListedIssueInfoApi, ListedIssueInfoLightPlanResponse},
         JQuantsApiClient, JQuantsPlanClient,
     },
-    TradingByInvestorTypeApi, TradingByInvestorTypeLightPlanResponse,
+    TradingByInvestorTypeApi, TradingByInvestorTypeLightPlanResponse, TradingCalendarApi,
+    TradingCalendarLightPlanResponse,
 };
 
 /// Light plan client for J-Quants API.
@@ -14,7 +15,10 @@ use crate::{
 /// # Example
 ///
 /// ```no_run
-/// use jquants_api_client::{DailyStockPricesApi, JQuantsBuilder, JQuantsLightPlanClient, ListedIssueInfoApi, TradingByInvestorTypeApi, Paginatable};
+/// use jquants_api_client::{
+///     DailyStockPricesApi, JQuantsBuilder, JQuantsLightPlanClient, ListedIssueInfoApi,
+///     TradingByInvestorTypeApi, TradingCalendarApi, Paginatable
+/// };
 ///
 /// async {
 ///     // Authenticate with a refresh token.
@@ -38,6 +42,9 @@ use crate::{
 ///     let response = client.get_trading_by_investor_type().fetch_all().await.unwrap();
 ///     let response = client.get_trading_by_investor_type().fetch_all_and_merge().await.unwrap();
 ///     let stream = client.get_trading_by_investor_type().fetch_pages_stream();
+///
+///     // Get trading calendar.
+///     let response = client.get_trading_calendar().send().await.unwrap();
 /// };
 /// ```
 #[derive(Clone)]
@@ -70,4 +77,8 @@ impl DailyStockPricesApi for JQuantsLightPlanClient {
 
 impl TradingByInvestorTypeApi for JQuantsLightPlanClient {
     type Response = TradingByInvestorTypeLightPlanResponse;
+}
+
+impl TradingCalendarApi for JQuantsLightPlanClient {
+    type Response = TradingCalendarLightPlanResponse;
 }

@@ -16,6 +16,7 @@ pub use api::shared::{
 };
 pub use api::short_sale_by_sector::*;
 pub use api::trading_by_type_of_investors::*;
+pub use api::trading_calendar::*;
 pub use api::weekly_margin_trading_outstandings::*;
 pub use client::{
     free_plan_client::JQuantsFreePlanClient, light_plan_client::JQuantsLightPlanClient,

@@ -1,9 +1,12 @@
 //! Free plan client implementation for JQuants API.
 
-use crate::api::{
-    daily_stock_prices::{DailyStockPricesApi, DailyStockPricesFreePlanResponse},
-    listed_issue_info::{ListedIssueInfoApi, ListedIssueInfoFreePlanResponse},
-    JQuantsApiClient, JQuantsPlanClient,
+use crate::{
+    api::{
+        daily_stock_prices::{DailyStockPricesApi, DailyStockPricesFreePlanResponse},
+        listed_issue_info::{ListedIssueInfoApi, ListedIssueInfoFreePlanResponse},
+        JQuantsApiClient, JQuantsPlanClient,
+    },
+    TradingCalendarApi, TradingCalendarFreePlanResponse,
 };
 
 /// Free plan client for J-Quants API.
@@ -11,7 +14,10 @@ use crate::api::{
 /// # Example
 ///
 /// ```no_run
-/// use jquants_api_client::{DailyStockPricesApi, JQuantsBuilder, JQuantsFreePlanClient, ListedIssueInfoApi, Paginatable};
+/// use jquants_api_client::{
+///     DailyStockPricesApi, JQuantsBuilder, JQuantsFreePlanClient, ListedIssueInfoApi,
+///     TradingCalendarApi, Paginatable
+/// };
 ///
 /// async {
 ///     // Authenticate with a refresh token.
@@ -27,6 +33,9 @@ use crate::api::{
 ///     let response = client.get_daily_stock_prices().fetch_all().await.unwrap();
 ///     let response = client.get_daily_stock_prices().fetch_all_and_merge().await.unwrap();
 ///     let stream = client.get_daily_stock_prices().fetch_pages_stream();
+///
+///     // Get trading calendar.
+///     let response = client.get_trading_calendar().send().await.unwrap();
 /// };
 /// ```
 #[derive(Clone)]
@@ -55,4 +64,8 @@ impl ListedIssueInfoApi for JQuantsFreePlanClient {
 
 impl DailyStockPricesApi for JQuantsFreePlanClient {
     type Response = DailyStockPricesFreePlanResponse;
+}
+
+impl TradingCalendarApi for JQuantsFreePlanClient {
+    type Response = TradingCalendarFreePlanResponse;
 }
