@@ -1,11 +1,11 @@
 //! 33 sector codes.
 
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 /// Represents the 33 sector codes.
 ///
 /// See: https://jpx.gitbook.io/j-quants-ja/api-reference/listed_info/sector33code
-#[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]
 pub enum Sector33Code {
     /// code: 0050
     /// * en: Fishery, Agriculture & Forestry

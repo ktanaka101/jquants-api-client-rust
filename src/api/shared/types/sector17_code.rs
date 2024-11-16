@@ -1,11 +1,11 @@
 //! 17 sector codes
 
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 /// Represents the 17 sector codes
 ///
 /// See: https://jpx.gitbook.io/j-quants-ja/api-reference/listed_info/sector17code
-#[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]
 pub enum Sector17Code {
     /// code: 1
     /// * en: FOODS
