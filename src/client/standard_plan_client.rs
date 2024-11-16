@@ -4,15 +4,11 @@ use crate::{
     api::{
         daily_stock_prices::{DailyStockPricesApi, DailyStockPricesStandardPlanResponse},
         listed_issue_info::{ListedIssueInfoApi, ListedIssueInfoStandardPlanResponse},
-        short_sale_by_sector::{ShortSaleBySectorApi, ShortSaleBySectorStandardPlanResponse},
-        weekly_margin_trading_outstandings::{
-            WeeklyMarginTradingOutstandingsApi, WeeklyMarginTradingOutstandingsStandardPlanResponse,
-        },
+        short_sale_by_sector::ShortSaleBySectorApi,
+        weekly_margin_trading_outstandings::WeeklyMarginTradingOutstandingsApi,
         JQuantsApiClient, JQuantsPlanClient,
     },
-    IndicesApi, IndicesStandardPlanResponse, TradingByInvestorTypeApi,
-    TradingByInvestorTypeStandardPlanResponse, TradingCalendarApi,
-    TradingCalendarStandardPlanResponse,
+    IndicesApi, TradingByInvestorTypeApi, TradingCalendarApi,
 };
 
 /// Standard plan client for J-Quants API.
@@ -105,22 +101,12 @@ impl DailyStockPricesApi for JQuantsStandardPlanClient {
     type Response = DailyStockPricesStandardPlanResponse;
 }
 
-impl TradingByInvestorTypeApi for JQuantsStandardPlanClient {
-    type Response = TradingByInvestorTypeStandardPlanResponse;
-}
+impl TradingByInvestorTypeApi for JQuantsStandardPlanClient {}
 
-impl WeeklyMarginTradingOutstandingsApi for JQuantsStandardPlanClient {
-    type Response = WeeklyMarginTradingOutstandingsStandardPlanResponse;
-}
+impl WeeklyMarginTradingOutstandingsApi for JQuantsStandardPlanClient {}
 
-impl ShortSaleBySectorApi for JQuantsStandardPlanClient {
-    type Response = ShortSaleBySectorStandardPlanResponse;
-}
+impl ShortSaleBySectorApi for JQuantsStandardPlanClient {}
 
-impl TradingCalendarApi for JQuantsStandardPlanClient {
-    type Response = TradingCalendarStandardPlanResponse;
-}
+impl TradingCalendarApi for JQuantsStandardPlanClient {}
 
-impl IndicesApi for JQuantsStandardPlanClient {
-    type Response = IndicesStandardPlanResponse;
-}
+impl IndicesApi for JQuantsStandardPlanClient {}

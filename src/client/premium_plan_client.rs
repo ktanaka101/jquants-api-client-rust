@@ -2,23 +2,15 @@
 
 use crate::{
     api::{
-        breakdown_trading_data::{
-            BreakdownTradingDataApi, BreakdownTradingDataPremiumPlanResponse,
-        },
+        breakdown_trading_data::BreakdownTradingDataApi,
         daily_stock_prices::{DailyStockPricesApi, DailyStockPricesPremiumPlanResponse},
         listed_issue_info::{ListedIssueInfoApi, ListedIssueInfoPremiumPlanResponse},
-        morning_session_stock_prices::{
-            MorningSessionStockPricesApi, MorningSessionStockPricesPremiumPlanResponse,
-        },
-        short_sale_by_sector::{ShortSaleBySectorApi, ShortSaleBySectorPremiumPlanResponse},
-        weekly_margin_trading_outstandings::{
-            WeeklyMarginTradingOutstandingsApi, WeeklyMarginTradingOutstandingsPremiumPlanResponse,
-        },
+        morning_session_stock_prices::MorningSessionStockPricesApi,
+        short_sale_by_sector::ShortSaleBySectorApi,
+        weekly_margin_trading_outstandings::WeeklyMarginTradingOutstandingsApi,
         JQuantsApiClient, JQuantsPlanClient,
     },
-    IndicesApi, IndicesPremiumPlanResponse, TradingByInvestorTypeApi,
-    TradingByInvestorTypePremiumPlanResponse, TradingCalendarApi,
-    TradingCalendarPremiumPlanResponse,
+    IndicesApi, TradingByInvestorTypeApi, TradingCalendarApi,
 };
 
 /// Premium plan client for J-Quants API.
@@ -119,30 +111,16 @@ impl DailyStockPricesApi for JQuantsPremiumPlanClient {
     type Response = DailyStockPricesPremiumPlanResponse;
 }
 
-impl MorningSessionStockPricesApi for JQuantsPremiumPlanClient {
-    type Response = MorningSessionStockPricesPremiumPlanResponse;
-}
+impl MorningSessionStockPricesApi for JQuantsPremiumPlanClient {}
 
-impl TradingByInvestorTypeApi for JQuantsPremiumPlanClient {
-    type Response = TradingByInvestorTypePremiumPlanResponse;
-}
+impl TradingByInvestorTypeApi for JQuantsPremiumPlanClient {}
 
-impl WeeklyMarginTradingOutstandingsApi for JQuantsPremiumPlanClient {
-    type Response = WeeklyMarginTradingOutstandingsPremiumPlanResponse;
-}
+impl WeeklyMarginTradingOutstandingsApi for JQuantsPremiumPlanClient {}
 
-impl ShortSaleBySectorApi for JQuantsPremiumPlanClient {
-    type Response = ShortSaleBySectorPremiumPlanResponse;
-}
+impl ShortSaleBySectorApi for JQuantsPremiumPlanClient {}
 
-impl BreakdownTradingDataApi for JQuantsPremiumPlanClient {
-    type Response = BreakdownTradingDataPremiumPlanResponse;
-}
+impl BreakdownTradingDataApi for JQuantsPremiumPlanClient {}
 
-impl TradingCalendarApi for JQuantsPremiumPlanClient {
-    type Response = TradingCalendarPremiumPlanResponse;
-}
+impl TradingCalendarApi for JQuantsPremiumPlanClient {}
 
-impl IndicesApi for JQuantsPremiumPlanClient {
-    type Response = IndicesPremiumPlanResponse;
-}
+impl IndicesApi for JQuantsPremiumPlanClient {}

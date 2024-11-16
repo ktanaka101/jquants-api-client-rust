@@ -1,8 +1,6 @@
 //! Trading Calendar API.
 
-use std::{fmt, marker::PhantomData};
-
-use serde::{de::DeserializeOwned, Deserialize, Serialize};
+use serde::{Deserialize, Serialize};
 
 use super::{
     shared::{traits::builder::JQuantsBuilder, types::holiday_division::HolidayDivision},
@@ -11,11 +9,9 @@ use super::{
 
 /// Builder for Trading Calendar API.
 #[derive(Clone, Serialize)]
-pub struct TradingCalendarBuilder<R: DeserializeOwned + fmt::Debug + Clone> {
+pub struct TradingCalendarBuilder {
     #[serde(skip)]
     client: JQuantsApiClient,
-    #[serde(skip)]
-    phantom: PhantomData<R>,
 
     /// Holiday division.
     #[serde(skip_serializing_if = "Option::is_none", rename = "holidaydivision")]
@@ -28,12 +24,12 @@ pub struct TradingCalendarBuilder<R: DeserializeOwned + fmt::Debug + Clone> {
     to: Option<String>,
 }
 
-impl<R: DeserializeOwned + fmt::Debug + Clone> JQuantsBuilder<R> for TradingCalendarBuilder<R> {
-    async fn send(self) -> Result<R, crate::JQuantsError> {
+impl JQuantsBuilder<TradingCalendarResponse> for TradingCalendarBuilder {
+    async fn send(self) -> Result<TradingCalendarResponse, crate::JQuantsError> {
         self.send_ref().await
     }
 
-    async fn send_ref(&self) -> Result<R, crate::JQuantsError> {
+    async fn send_ref(&self) -> Result<TradingCalendarResponse, crate::JQuantsError> {
         self.client
             .inner
             .get("markets/trading_calendar", self)
@@ -41,12 +37,11 @@ impl<R: DeserializeOwned + fmt::Debug + Clone> JQuantsBuilder<R> for TradingCale
     }
 }
 
-impl<R: DeserializeOwned + fmt::Debug + Clone> TradingCalendarBuilder<R> {
+impl TradingCalendarBuilder {
     /// Create a new builder.
     pub(crate) fn new(client: JQuantsApiClient) -> Self {
         Self {
             client,
-            phantom: PhantomData,
             holiday_division: None,
             from: None,
             to: None,
@@ -74,44 +69,26 @@ impl<R: DeserializeOwned + fmt::Debug + Clone> TradingCalendarBuilder<R> {
 
 /// Builder for Trading Calendar API.
 pub trait TradingCalendarApi: JQuantsPlanClient {
-    /// Response type for Trading Calendar API.
-    type Response: DeserializeOwned + fmt::Debug + Clone;
-
     /// Get API builder for Trading Calendar.
     ///
     /// Use [Trading Calendar (/markets/trading_calendar) API](https://jpx.gitbook.io/j-quants-en/api-reference/trading_calendar)
-    fn get_trading_calendar(&self) -> TradingCalendarBuilder<Self::Response> {
+    fn get_trading_calendar(&self) -> TradingCalendarBuilder {
         TradingCalendarBuilder::new(self.get_api_client().clone())
     }
 }
 
-/// Trading Calendar response for free plan.
-///
-/// See: [API Reference](https://jpx.gitbook.io/j-quants-en/api-reference/trading_calendar)
-pub type TradingCalendarFreePlanResponse = TradingCalendarPremiumPlanResponse;
-
-/// Trading Calendar response for light plan.
-///
-/// See: [API Reference](https://jpx.gitbook.io/j-quants-en/api-reference/trading_calendar)
-pub type TradingCalendarLightPlanResponse = TradingCalendarPremiumPlanResponse;
-
-/// Trading Calendar response for standard plan.
-///
-/// See: [API Reference](https://jpx.gitbook.io/j-quants-en/api-reference/trading_calendar)
-pub type TradingCalendarStandardPlanResponse = TradingCalendarPremiumPlanResponse;
-
-/// Trading Calendar response for premium plan.
+/// Trading Calendar response.
 ///
 /// See: [API Reference](https://jpx.gitbook.io/j-quants-en/api-reference/trading_calendar)
 #[derive(Debug, Clone, PartialEq, Deserialize)]
-pub struct TradingCalendarPremiumPlanResponse {
+pub struct TradingCalendarResponse {
     /// List of trading calendar data
-    pub trading_calendar: Vec<TradingCalendarItem>,
+    pub trading_calendar: Vec<TradingCalendar>,
 }
 
-/// Represents a single trading calendar data item.
+/// Represents a single trading calendar data.
 #[derive(Debug, Clone, PartialEq, Deserialize)]
-pub struct TradingCalendarItem {
+pub struct TradingCalendar {
     /// Trade date (YYYY-MM-DD)
     #[serde(rename = "Date")]
     pub date: String,
@@ -126,7 +103,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_deserialize_trading_calendar_premium_plan_response() {
+    fn test_deserialize_trading_calendar_response() {
         let json = r#"
             {
                 "trading_calendar": [
@@ -138,9 +115,9 @@ mod tests {
             }
         "#;
 
-        let response: TradingCalendarPremiumPlanResponse = serde_json::from_str(json).unwrap();
-        let expected_response = TradingCalendarPremiumPlanResponse {
-            trading_calendar: vec![TradingCalendarItem {
+        let response: TradingCalendarResponse = serde_json::from_str(json).unwrap();
+        let expected_response = TradingCalendarResponse {
+            trading_calendar: vec![TradingCalendar {
                 date: "2015-04-01".to_string(),
                 holiday_division: HolidayDivision::BusinessDay,
             }],
@@ -150,7 +127,7 @@ mod tests {
     }
 
     #[test]
-    fn test_deserialize_trading_calendar_premium_plan_response_multiple_items() {
+    fn test_deserialize_trading_calendar_response_multiple_items() {
         let json = r#"
             {
                 "trading_calendar": [
@@ -166,14 +143,14 @@ mod tests {
             }
         "#;
 
-        let response: TradingCalendarPremiumPlanResponse = serde_json::from_str(json).unwrap();
-        let expected_response = TradingCalendarPremiumPlanResponse {
+        let response: TradingCalendarResponse = serde_json::from_str(json).unwrap();
+        let expected_response = TradingCalendarResponse {
             trading_calendar: vec![
-                TradingCalendarItem {
+                TradingCalendar {
                     date: "2015-03-25".to_string(),
                     holiday_division: HolidayDivision::HalfDayTrading,
                 },
-                TradingCalendarItem {
+                TradingCalendar {
                     date: "2015-04-01".to_string(),
                     holiday_division: HolidayDivision::BusinessDay,
                 },
@@ -184,15 +161,15 @@ mod tests {
     }
 
     #[test]
-    fn test_deserialize_trading_calendar_premium_plan_response_no_data() {
+    fn test_deserialize_trading_calendar_response_no_data() {
         let json = r#"
             {
                 "trading_calendar": []
             }
         "#;
 
-        let response: TradingCalendarPremiumPlanResponse = serde_json::from_str(json).unwrap();
-        let expected_response = TradingCalendarPremiumPlanResponse {
+        let response: TradingCalendarResponse = serde_json::from_str(json).unwrap();
+        let expected_response = TradingCalendarResponse {
             trading_calendar: vec![],
         };
 

@@ -189,7 +189,7 @@ pub struct DailyQuoteStandardPlan {
     pub common: DailyQuoteCommon,
 }
 
-/// Daily Quote for standard plan.
+/// Daily Quote for premium plan.
 #[derive(Debug, Clone, PartialEq, Deserialize)]
 pub struct DailyQuotePremiumPlan {
     /// The common structure for daily quote

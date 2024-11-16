@@ -6,7 +6,7 @@ use crate::{
         listed_issue_info::{ListedIssueInfoApi, ListedIssueInfoFreePlanResponse},
         JQuantsApiClient, JQuantsPlanClient,
     },
-    TradingCalendarApi, TradingCalendarFreePlanResponse,
+    TradingCalendarApi,
 };
 
 /// Free plan client for J-Quants API.
@@ -66,6 +66,4 @@ impl DailyStockPricesApi for JQuantsFreePlanClient {
     type Response = DailyStockPricesFreePlanResponse;
 }
 
-impl TradingCalendarApi for JQuantsFreePlanClient {
-    type Response = TradingCalendarFreePlanResponse;
-}
+impl TradingCalendarApi for JQuantsFreePlanClient {}

@@ -1,8 +1,6 @@
 //! Trading by Type of Investors API.
 
-use std::{fmt, marker::PhantomData};
-
-use serde::{de::DeserializeOwned, Deserialize, Serialize};
+use serde::{Deserialize, Serialize};
 
 use super::{
     shared::{
@@ -17,11 +15,9 @@ use super::{
 
 /// Builder for Trading by Type of Investors API.
 #[derive(Clone, Serialize)]
-pub struct TradingByInvestorTypeBuilder<R: DeserializeOwned + fmt::Debug + Clone> {
+pub struct TradingByInvestorTypeBuilder {
     #[serde(skip)]
     client: JQuantsApiClient,
-    #[serde(skip)]
-    phantom: PhantomData<R>,
 
     /// Section name (e.g. TSEPrime)
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -38,33 +34,28 @@ pub struct TradingByInvestorTypeBuilder<R: DeserializeOwned + fmt::Debug + Clone
     pagination_key: Option<String>,
 }
 
-impl<R: DeserializeOwned + fmt::Debug + Clone> JQuantsBuilder<R>
-    for TradingByInvestorTypeBuilder<R>
-{
-    async fn send(self) -> Result<R, crate::JQuantsError> {
+impl JQuantsBuilder<TradingByInvestorTypeResponse> for TradingByInvestorTypeBuilder {
+    async fn send(self) -> Result<TradingByInvestorTypeResponse, crate::JQuantsError> {
         self.send_ref().await
     }
 
-    async fn send_ref(&self) -> Result<R, crate::JQuantsError> {
+    async fn send_ref(&self) -> Result<TradingByInvestorTypeResponse, crate::JQuantsError> {
         self.client.inner.get("markets/trades_spec", self).await
     }
 }
 
-impl<R: DeserializeOwned + fmt::Debug + Clone + HasPaginationKey + MergePage> Paginatable<R>
-    for TradingByInvestorTypeBuilder<R>
-{
+impl Paginatable<TradingByInvestorTypeResponse> for TradingByInvestorTypeBuilder {
     fn pagination_key(mut self, pagination_key: impl Into<String>) -> Self {
         self.pagination_key = Some(pagination_key.into());
         self
     }
 }
 
-impl<R: DeserializeOwned + fmt::Debug + Clone> TradingByInvestorTypeBuilder<R> {
+impl TradingByInvestorTypeBuilder {
     /// Create a new builder.
     pub(crate) fn new(client: JQuantsApiClient) -> Self {
         Self {
             client,
-            phantom: PhantomData,
             section: None,
             from: None,
             to: None,
@@ -93,45 +84,32 @@ impl<R: DeserializeOwned + fmt::Debug + Clone> TradingByInvestorTypeBuilder<R> {
 
 /// Builder for Trading by Type of Investors API.
 pub trait TradingByInvestorTypeApi: JQuantsPlanClient {
-    /// Response type for Trading by Type of Investors API.
-    type Response: DeserializeOwned + fmt::Debug + Clone;
-
     /// Get API builder for Trading by Type of Investors.
     ///
     /// Use [Trading by Type of Investors (/markets/trades_spec) API](https://jpx.gitbook.io/j-quants-en/api-reference/trades_spec)
-    fn get_trading_by_investor_type(&self) -> TradingByInvestorTypeBuilder<Self::Response> {
+    fn get_trading_by_investor_type(&self) -> TradingByInvestorTypeBuilder {
         TradingByInvestorTypeBuilder::new(self.get_api_client().clone())
     }
 }
 
-/// Trading by Type of Investors response for light plan.
-///
-/// See: [API Reference](https://jpx.gitbook.io/j-quants-en/api-reference/trades_spec)
-pub type TradingByInvestorTypeLightPlanResponse = TradingByInvestorTypePremiumPlanResponse;
-
-/// Trading by Type of Investors response for standard plan.
-///
-/// See: [API Reference](https://jpx.gitbook.io/j-quants-en/api-reference/trades_spec)
-pub type TradingByInvestorTypeStandardPlanResponse = TradingByInvestorTypePremiumPlanResponse;
-
-/// Trading by Type of Investors response for premium plan.
+/// Trading by Type of Investors response.
 ///
 /// See: [API Reference](https://jpx.gitbook.io/j-quants-en/api-reference/trades_spec)
 #[derive(Debug, Clone, PartialEq, Deserialize)]
-pub struct TradingByInvestorTypePremiumPlanResponse {
+pub struct TradingByInvestorTypeResponse {
     /// List of trades specifications
-    pub trades_spec: Vec<TradingByInvestorTypePremiumPlan>,
+    pub trades_spec: Vec<TradingByInvestorType>,
     /// Pagination key for fetching next set of data
     pub pagination_key: Option<String>,
 }
 
-impl HasPaginationKey for TradingByInvestorTypePremiumPlanResponse {
+impl HasPaginationKey for TradingByInvestorTypeResponse {
     fn get_pagination_key(&self) -> Option<&str> {
         self.pagination_key.as_deref()
     }
 }
 
-impl MergePage for TradingByInvestorTypePremiumPlanResponse {
+impl MergePage for TradingByInvestorTypeResponse {
     fn merge_page(
         page: Result<Vec<Self>, crate::JQuantsError>,
     ) -> Result<Self, crate::JQuantsError> {
@@ -146,18 +124,9 @@ impl MergePage for TradingByInvestorTypePremiumPlanResponse {
     }
 }
 
-/// Trades Specification for premium plan.
+/// Trades Specification.
 #[derive(Debug, Clone, PartialEq, Deserialize)]
-pub struct TradingByInvestorTypePremiumPlan {
-    /// The common structure for trades specification
-    #[serde(flatten)]
-    pub common: TradingByInvestorTypeCommon,
-    // Add any additional fields for premium plan here if applicable
-}
-
-/// Common structure for trades specification.
-#[derive(Debug, Clone, PartialEq, Deserialize)]
-pub struct TradingByInvestorTypeCommon {
+pub struct TradingByInvestorType {
     /// Published Date (YY-MM-DD)
     #[serde(rename = "PublishedDate")]
     pub published_date: String,
@@ -388,7 +357,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_deserialize_trades_spec_premium_plan_response() {
+    fn test_deserialize_trades_spec_response() {
         let json = r#"
             {
                 "trades_spec": [
@@ -455,68 +424,65 @@ mod tests {
             }
         "#;
 
-        let response: TradingByInvestorTypePremiumPlanResponse =
-            serde_json::from_str(json).unwrap();
-        let expected_response = TradingByInvestorTypePremiumPlanResponse {
-            trades_spec: vec![TradingByInvestorTypePremiumPlan {
-                common: TradingByInvestorTypeCommon {
-                    published_date: "2017-01-13".to_string(),
-                    start_date: "2017-01-04".to_string(),
-                    end_date: "2017-01-06".to_string(),
-                    section: "TSE1st".to_string(),
-                    proprietary_sales: 1311271004.0,
-                    proprietary_purchases: 1453326508.0,
-                    proprietary_total: 2764597512.0,
-                    proprietary_balance: 142055504.0,
-                    brokerage_sales: 7165529005.0,
-                    brokerage_purchases: 7030019854.0,
-                    brokerage_total: 14195548859.0,
-                    brokerage_balance: -135509151.0,
-                    total_sales: 8476800009.0,
-                    total_purchases: 8483346362.0,
-                    total_total: 16960146371.0,
-                    total_balance: 6546353.0,
-                    individuals_sales: 1401711615.0,
-                    individuals_purchases: 1161801155.0,
-                    individuals_total: 2563512770.0,
-                    individuals_balance: -239910460.0,
-                    foreigners_sales: 5094891735.0,
-                    foreigners_purchases: 5317151774.0,
-                    foreigners_total: 10412043509.0,
-                    foreigners_balance: 222260039.0,
-                    securities_cos_sales: 76381455.0,
-                    securities_cos_purchases: 61700100.0,
-                    securities_cos_total: 138081555.0,
-                    securities_cos_balance: -14681355.0,
-                    investment_trusts_sales: 168705109.0,
-                    investment_trusts_purchases: 124389642.0,
-                    investment_trusts_total: 293094751.0,
-                    investment_trusts_balance: -44315467.0,
-                    business_cos_sales: 71217959.0,
-                    business_cos_purchases: 63526641.0,
-                    business_cos_total: 134744600.0,
-                    business_cos_balance: -7691318.0,
-                    other_cos_sales: 10745152.0,
-                    other_cos_purchases: 15687836.0,
-                    other_cos_total: 26432988.0,
-                    other_cos_balance: 4942684.0,
-                    insurance_cos_sales: 15926202.0,
-                    insurance_cos_purchases: 9831555.0,
-                    insurance_cos_total: 25757757.0,
-                    insurance_cos_balance: -6094647.0,
-                    city_bks_regional_bks_etc_sales: 10606789.0,
-                    city_bks_regional_bks_etc_purchases: 8843871.0,
-                    city_bks_regional_bks_etc_total: 19450660.0,
-                    city_bks_regional_bks_etc_balance: -1762918.0,
-                    trust_banks_sales: 292932297.0,
-                    trust_banks_purchases: 245322795.0,
-                    trust_banks_total: 538255092.0,
-                    trust_banks_balance: -47609502.0,
-                    other_financial_institutions_sales: 22410692.0,
-                    other_financial_institutions_purchases: 21764485.0,
-                    other_financial_institutions_total: 44175177.0,
-                    other_financial_institutions_balance: -646207.0,
-                },
+        let response: TradingByInvestorTypeResponse = serde_json::from_str(json).unwrap();
+        let expected_response = TradingByInvestorTypeResponse {
+            trades_spec: vec![TradingByInvestorType {
+                published_date: "2017-01-13".to_string(),
+                start_date: "2017-01-04".to_string(),
+                end_date: "2017-01-06".to_string(),
+                section: "TSE1st".to_string(),
+                proprietary_sales: 1311271004.0,
+                proprietary_purchases: 1453326508.0,
+                proprietary_total: 2764597512.0,
+                proprietary_balance: 142055504.0,
+                brokerage_sales: 7165529005.0,
+                brokerage_purchases: 7030019854.0,
+                brokerage_total: 14195548859.0,
+                brokerage_balance: -135509151.0,
+                total_sales: 8476800009.0,
+                total_purchases: 8483346362.0,
+                total_total: 16960146371.0,
+                total_balance: 6546353.0,
+                individuals_sales: 1401711615.0,
+                individuals_purchases: 1161801155.0,
+                individuals_total: 2563512770.0,
+                individuals_balance: -239910460.0,
+                foreigners_sales: 5094891735.0,
+                foreigners_purchases: 5317151774.0,
+                foreigners_total: 10412043509.0,
+                foreigners_balance: 222260039.0,
+                securities_cos_sales: 76381455.0,
+                securities_cos_purchases: 61700100.0,
+                securities_cos_total: 138081555.0,
+                securities_cos_balance: -14681355.0,
+                investment_trusts_sales: 168705109.0,
+                investment_trusts_purchases: 124389642.0,
+                investment_trusts_total: 293094751.0,
+                investment_trusts_balance: -44315467.0,
+                business_cos_sales: 71217959.0,
+                business_cos_purchases: 63526641.0,
+                business_cos_total: 134744600.0,
+                business_cos_balance: -7691318.0,
+                other_cos_sales: 10745152.0,
+                other_cos_purchases: 15687836.0,
+                other_cos_total: 26432988.0,
+                other_cos_balance: 4942684.0,
+                insurance_cos_sales: 15926202.0,
+                insurance_cos_purchases: 9831555.0,
+                insurance_cos_total: 25757757.0,
+                insurance_cos_balance: -6094647.0,
+                city_bks_regional_bks_etc_sales: 10606789.0,
+                city_bks_regional_bks_etc_purchases: 8843871.0,
+                city_bks_regional_bks_etc_total: 19450660.0,
+                city_bks_regional_bks_etc_balance: -1762918.0,
+                trust_banks_sales: 292932297.0,
+                trust_banks_purchases: 245322795.0,
+                trust_banks_total: 538255092.0,
+                trust_banks_balance: -47609502.0,
+                other_financial_institutions_sales: 22410692.0,
+                other_financial_institutions_purchases: 21764485.0,
+                other_financial_institutions_total: 44175177.0,
+                other_financial_institutions_balance: -646207.0,
             }],
             pagination_key: Some("value1.value2.".to_string()),
         };
@@ -525,7 +491,7 @@ mod tests {
     }
 
     #[test]
-    fn test_deserialize_trades_spec_premium_plan_response_no_pagination_key() {
+    fn test_deserialize_trades_spec_response_no_pagination_key() {
         let json = r#"
             {
                 "trades_spec": [
@@ -591,68 +557,65 @@ mod tests {
             }
         "#;
 
-        let response: TradingByInvestorTypePremiumPlanResponse =
-            serde_json::from_str(json).unwrap();
-        let expected_response = TradingByInvestorTypePremiumPlanResponse {
-            trades_spec: vec![TradingByInvestorTypePremiumPlan {
-                common: TradingByInvestorTypeCommon {
-                    published_date: "2017-01-13".to_string(),
-                    start_date: "2017-01-04".to_string(),
-                    end_date: "2017-01-06".to_string(),
-                    section: "TSE1st".to_string(),
-                    proprietary_sales: 1311271004.0,
-                    proprietary_purchases: 1453326508.0,
-                    proprietary_total: 2764597512.0,
-                    proprietary_balance: 142055504.0,
-                    brokerage_sales: 7165529005.0,
-                    brokerage_purchases: 7030019854.0,
-                    brokerage_total: 14195548859.0,
-                    brokerage_balance: -135509151.0,
-                    total_sales: 8476800009.0,
-                    total_purchases: 8483346362.0,
-                    total_total: 16960146371.0,
-                    total_balance: 6546353.0,
-                    individuals_sales: 1401711615.0,
-                    individuals_purchases: 1161801155.0,
-                    individuals_total: 2563512770.0,
-                    individuals_balance: -239910460.0,
-                    foreigners_sales: 5094891735.0,
-                    foreigners_purchases: 5317151774.0,
-                    foreigners_total: 10412043509.0,
-                    foreigners_balance: 222260039.0,
-                    securities_cos_sales: 76381455.0,
-                    securities_cos_purchases: 61700100.0,
-                    securities_cos_total: 138081555.0,
-                    securities_cos_balance: -14681355.0,
-                    investment_trusts_sales: 168705109.0,
-                    investment_trusts_purchases: 124389642.0,
-                    investment_trusts_total: 293094751.0,
-                    investment_trusts_balance: -44315467.0,
-                    business_cos_sales: 71217959.0,
-                    business_cos_purchases: 63526641.0,
-                    business_cos_total: 134744600.0,
-                    business_cos_balance: -7691318.0,
-                    other_cos_sales: 10745152.0,
-                    other_cos_purchases: 15687836.0,
-                    other_cos_total: 26432988.0,
-                    other_cos_balance: 4942684.0,
-                    insurance_cos_sales: 15926202.0,
-                    insurance_cos_purchases: 9831555.0,
-                    insurance_cos_total: 25757757.0,
-                    insurance_cos_balance: -6094647.0,
-                    city_bks_regional_bks_etc_sales: 10606789.0,
-                    city_bks_regional_bks_etc_purchases: 8843871.0,
-                    city_bks_regional_bks_etc_total: 19450660.0,
-                    city_bks_regional_bks_etc_balance: -1762918.0,
-                    trust_banks_sales: 292932297.0,
-                    trust_banks_purchases: 245322795.0,
-                    trust_banks_total: 538255092.0,
-                    trust_banks_balance: -47609502.0,
-                    other_financial_institutions_sales: 22410692.0,
-                    other_financial_institutions_purchases: 21764485.0,
-                    other_financial_institutions_total: 44175177.0,
-                    other_financial_institutions_balance: -646207.0,
-                },
+        let response: TradingByInvestorTypeResponse = serde_json::from_str(json).unwrap();
+        let expected_response = TradingByInvestorTypeResponse {
+            trades_spec: vec![TradingByInvestorType {
+                published_date: "2017-01-13".to_string(),
+                start_date: "2017-01-04".to_string(),
+                end_date: "2017-01-06".to_string(),
+                section: "TSE1st".to_string(),
+                proprietary_sales: 1311271004.0,
+                proprietary_purchases: 1453326508.0,
+                proprietary_total: 2764597512.0,
+                proprietary_balance: 142055504.0,
+                brokerage_sales: 7165529005.0,
+                brokerage_purchases: 7030019854.0,
+                brokerage_total: 14195548859.0,
+                brokerage_balance: -135509151.0,
+                total_sales: 8476800009.0,
+                total_purchases: 8483346362.0,
+                total_total: 16960146371.0,
+                total_balance: 6546353.0,
+                individuals_sales: 1401711615.0,
+                individuals_purchases: 1161801155.0,
+                individuals_total: 2563512770.0,
+                individuals_balance: -239910460.0,
+                foreigners_sales: 5094891735.0,
+                foreigners_purchases: 5317151774.0,
+                foreigners_total: 10412043509.0,
+                foreigners_balance: 222260039.0,
+                securities_cos_sales: 76381455.0,
+                securities_cos_purchases: 61700100.0,
+                securities_cos_total: 138081555.0,
+                securities_cos_balance: -14681355.0,
+                investment_trusts_sales: 168705109.0,
+                investment_trusts_purchases: 124389642.0,
+                investment_trusts_total: 293094751.0,
+                investment_trusts_balance: -44315467.0,
+                business_cos_sales: 71217959.0,
+                business_cos_purchases: 63526641.0,
+                business_cos_total: 134744600.0,
+                business_cos_balance: -7691318.0,
+                other_cos_sales: 10745152.0,
+                other_cos_purchases: 15687836.0,
+                other_cos_total: 26432988.0,
+                other_cos_balance: 4942684.0,
+                insurance_cos_sales: 15926202.0,
+                insurance_cos_purchases: 9831555.0,
+                insurance_cos_total: 25757757.0,
+                insurance_cos_balance: -6094647.0,
+                city_bks_regional_bks_etc_sales: 10606789.0,
+                city_bks_regional_bks_etc_purchases: 8843871.0,
+                city_bks_regional_bks_etc_total: 19450660.0,
+                city_bks_regional_bks_etc_balance: -1762918.0,
+                trust_banks_sales: 292932297.0,
+                trust_banks_purchases: 245322795.0,
+                trust_banks_total: 538255092.0,
+                trust_banks_balance: -47609502.0,
+                other_financial_institutions_sales: 22410692.0,
+                other_financial_institutions_purchases: 21764485.0,
+                other_financial_institutions_total: 44175177.0,
+                other_financial_institutions_balance: -646207.0,
             }],
             pagination_key: None,
         };

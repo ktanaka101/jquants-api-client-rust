@@ -1,8 +1,6 @@
 //! Short Sale Value and Ratio by Sector API.
 
-use std::{fmt, marker::PhantomData};
-
-use serde::{de::DeserializeOwned, Deserialize, Serialize};
+use serde::{Deserialize, Serialize};
 
 use crate::Sector33Code;
 
@@ -16,11 +14,9 @@ use super::{
 
 /// Builder for Short Sale Value and Ratio by Sector API.
 #[derive(Clone, Serialize)]
-pub struct ShortSaleBySectorBuilder<R: DeserializeOwned + fmt::Debug + Clone> {
+pub struct ShortSaleBySectorBuilder {
     #[serde(skip)]
     client: JQuantsApiClient,
-    #[serde(skip)]
-    phantom: PhantomData<R>,
 
     /// 33-sector code (e.g. "0050" or "50")
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -40,31 +36,28 @@ pub struct ShortSaleBySectorBuilder<R: DeserializeOwned + fmt::Debug + Clone> {
     pagination_key: Option<String>,
 }
 
-impl<R: DeserializeOwned + fmt::Debug + Clone> JQuantsBuilder<R> for ShortSaleBySectorBuilder<R> {
-    async fn send(self) -> Result<R, crate::JQuantsError> {
+impl JQuantsBuilder<ShortSaleBySectorResponse> for ShortSaleBySectorBuilder {
+    async fn send(self) -> Result<ShortSaleBySectorResponse, crate::JQuantsError> {
         self.send_ref().await
     }
 
-    async fn send_ref(&self) -> Result<R, crate::JQuantsError> {
+    async fn send_ref(&self) -> Result<ShortSaleBySectorResponse, crate::JQuantsError> {
         self.client.inner.get("markets/short_selling", self).await
     }
 }
 
-impl<R: DeserializeOwned + fmt::Debug + Clone + HasPaginationKey + MergePage> Paginatable<R>
-    for ShortSaleBySectorBuilder<R>
-{
+impl Paginatable<ShortSaleBySectorResponse> for ShortSaleBySectorBuilder {
     fn pagination_key(mut self, pagination_key: impl Into<String>) -> Self {
         self.pagination_key = Some(pagination_key.into());
         self
     }
 }
 
-impl<R: DeserializeOwned + fmt::Debug + Clone> ShortSaleBySectorBuilder<R> {
+impl ShortSaleBySectorBuilder {
     /// Create a new builder.
     pub(crate) fn new(client: JQuantsApiClient) -> Self {
         Self {
             client,
-            phantom: PhantomData,
             sector33code: None,
             from: None,
             to: None,
@@ -100,40 +93,32 @@ impl<R: DeserializeOwned + fmt::Debug + Clone> ShortSaleBySectorBuilder<R> {
 
 /// Builder for Short Sale Value and Ratio by Sector API.
 pub trait ShortSaleBySectorApi: JQuantsPlanClient {
-    /// Response type for Short Sale Value and Ratio by Sector API.
-    type Response: DeserializeOwned + fmt::Debug + Clone;
-
     /// Get API builder for Short Sale Value and Ratio by Sector.
     ///
     /// Use [Short Sale Value and Ratio by Sector (/markets/short_selling) API](https://jpx.gitbook.io/j-quants-en/api-reference/short_selling)
-    fn get_short_sale_by_sector(&self) -> ShortSaleBySectorBuilder<Self::Response> {
+    fn get_short_sale_by_sector(&self) -> ShortSaleBySectorBuilder {
         ShortSaleBySectorBuilder::new(self.get_api_client().clone())
     }
 }
 
-/// Short Sale Value and Ratio by Sector response for standard plan.
-///
-/// See: [API Reference](https://jpx.gitbook.io/j-quants-en/api-reference/short_selling)
-pub type ShortSaleBySectorStandardPlanResponse = ShortSaleBySectorPremiumPlanResponse;
-
-/// Short Sale Value and Ratio by Sector response for premium plan.
+/// Short Sale Value and Ratio by Sector response.
 ///
 /// See: [API Reference](https://jpx.gitbook.io/j-quants-en/api-reference/short_selling)
 #[derive(Debug, Clone, PartialEq, Deserialize)]
-pub struct ShortSaleBySectorPremiumPlanResponse {
+pub struct ShortSaleBySectorResponse {
     /// List of short selling data
     pub short_selling: Vec<ShortSaleBySectorItem>,
     /// Pagination key for fetching next set of data
     pub pagination_key: Option<String>,
 }
 
-impl HasPaginationKey for ShortSaleBySectorPremiumPlanResponse {
+impl HasPaginationKey for ShortSaleBySectorResponse {
     fn get_pagination_key(&self) -> Option<&str> {
         self.pagination_key.as_deref()
     }
 }
 
-impl MergePage for ShortSaleBySectorPremiumPlanResponse {
+impl MergePage for ShortSaleBySectorResponse {
     fn merge_page(
         page: Result<Vec<Self>, crate::JQuantsError>,
     ) -> Result<Self, crate::JQuantsError> {
@@ -177,7 +162,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_deserialize_short_sale_by_sector_premium_plan_response() {
+    fn test_deserialize_short_sale_by_sector_response() {
         let json = r#"
             {
                 "short_selling": [
@@ -193,8 +178,8 @@ mod tests {
             }
         "#;
 
-        let response: ShortSaleBySectorPremiumPlanResponse = serde_json::from_str(json).unwrap();
-        let expected_response = ShortSaleBySectorPremiumPlanResponse {
+        let response: ShortSaleBySectorResponse = serde_json::from_str(json).unwrap();
+        let expected_response = ShortSaleBySectorResponse {
             short_selling: vec![ShortSaleBySectorItem {
                 date: "2022-10-25".to_string(),
                 sector33code: Sector33Code::FisheryAgricultureForestry,
@@ -209,7 +194,7 @@ mod tests {
     }
 
     #[test]
-    fn test_deserialize_short_sale_by_sector_premium_plan_response_no_pagination_key() {
+    fn test_deserialize_short_sale_by_sector_response_no_pagination_key() {
         let json = r#"
             {
                 "short_selling": [
@@ -224,8 +209,8 @@ mod tests {
             }
         "#;
 
-        let response: ShortSaleBySectorPremiumPlanResponse = serde_json::from_str(json).unwrap();
-        let expected_response = ShortSaleBySectorPremiumPlanResponse {
+        let response: ShortSaleBySectorResponse = serde_json::from_str(json).unwrap();
+        let expected_response = ShortSaleBySectorResponse {
             short_selling: vec![ShortSaleBySectorItem {
                 date: "2022-10-25".to_string(),
                 sector33code: Sector33Code::FisheryAgricultureForestry,
@@ -240,7 +225,7 @@ mod tests {
     }
 
     #[test]
-    fn test_deserialize_short_sale_by_sector_premium_plan_response_multiple_items() {
+    fn test_deserialize_short_sale_by_sector_response_multiple_items() {
         let json = r#"
             {
                 "short_selling": [
@@ -263,8 +248,8 @@ mod tests {
             }
         "#;
 
-        let response: ShortSaleBySectorPremiumPlanResponse = serde_json::from_str(json).unwrap();
-        let expected_response = ShortSaleBySectorPremiumPlanResponse {
+        let response: ShortSaleBySectorResponse = serde_json::from_str(json).unwrap();
+        let expected_response = ShortSaleBySectorResponse {
             short_selling: vec![
                 ShortSaleBySectorItem {
                     date: "2022-10-18".to_string(),
@@ -288,15 +273,15 @@ mod tests {
     }
 
     #[test]
-    fn test_deserialize_short_sale_by_sector_premium_plan_response_no_data() {
+    fn test_deserialize_short_sale_by_sector_response_no_data() {
         let json = r#"
             {
                 "short_selling": []
             }
         "#;
 
-        let response: ShortSaleBySectorPremiumPlanResponse = serde_json::from_str(json).unwrap();
-        let expected_response = ShortSaleBySectorPremiumPlanResponse {
+        let response: ShortSaleBySectorResponse = serde_json::from_str(json).unwrap();
+        let expected_response = ShortSaleBySectorResponse {
             short_selling: vec![],
             pagination_key: None,
         };

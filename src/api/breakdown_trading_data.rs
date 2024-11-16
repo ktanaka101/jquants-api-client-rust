@@ -1,8 +1,6 @@
 //! Breakdown Trading Data API.
 
-use std::{fmt, marker::PhantomData};
-
-use serde::{de::DeserializeOwned, Deserialize, Serialize};
+use serde::{Deserialize, Serialize};
 
 use super::{
     shared::traits::{
@@ -14,11 +12,9 @@ use super::{
 
 /// Builder for Breakdown Trading Data API.
 #[derive(Clone, Serialize)]
-pub struct BreakdownTradingDataBuilder<R: DeserializeOwned + fmt::Debug + Clone> {
+pub struct BreakdownTradingDataBuilder {
     #[serde(skip)]
     client: JQuantsApiClient,
-    #[serde(skip)]
-    phantom: PhantomData<R>,
 
     /// Issue code (e.g. "27890" or "2789")
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -38,33 +34,28 @@ pub struct BreakdownTradingDataBuilder<R: DeserializeOwned + fmt::Debug + Clone>
     pagination_key: Option<String>,
 }
 
-impl<R: DeserializeOwned + fmt::Debug + Clone> JQuantsBuilder<R>
-    for BreakdownTradingDataBuilder<R>
-{
-    async fn send(self) -> Result<R, crate::JQuantsError> {
+impl JQuantsBuilder<BreakdownTradingDataResponse> for BreakdownTradingDataBuilder {
+    async fn send(self) -> Result<BreakdownTradingDataResponse, crate::JQuantsError> {
         self.send_ref().await
     }
 
-    async fn send_ref(&self) -> Result<R, crate::JQuantsError> {
+    async fn send_ref(&self) -> Result<BreakdownTradingDataResponse, crate::JQuantsError> {
         self.client.inner.get("markets/breakdown", self).await
     }
 }
 
-impl<R: DeserializeOwned + fmt::Debug + Clone + HasPaginationKey + MergePage> Paginatable<R>
-    for BreakdownTradingDataBuilder<R>
-{
+impl Paginatable<BreakdownTradingDataResponse> for BreakdownTradingDataBuilder {
     fn pagination_key(mut self, pagination_key: impl Into<String>) -> Self {
         self.pagination_key = Some(pagination_key.into());
         self
     }
 }
 
-impl<R: DeserializeOwned + fmt::Debug + Clone> BreakdownTradingDataBuilder<R> {
+impl BreakdownTradingDataBuilder {
     /// Create a new builder.
     pub(crate) fn new(client: JQuantsApiClient) -> Self {
         Self {
             client,
-            phantom: PhantomData,
             code: None,
             from: None,
             to: None,
@@ -100,35 +91,32 @@ impl<R: DeserializeOwned + fmt::Debug + Clone> BreakdownTradingDataBuilder<R> {
 
 /// Builder for Breakdown Trading Data API.
 pub trait BreakdownTradingDataApi: JQuantsPlanClient {
-    /// Response type for Breakdown Trading Data API.
-    type Response: DeserializeOwned + fmt::Debug + Clone;
-
     /// Get API builder for Breakdown Trading Data.
     ///
     /// Use [Breakdown Trading Data (/markets/breakdown) API](https://jpx.gitbook.io/j-quants-en/api-reference/breakdown)
-    fn get_breakdown_trading_data(&self) -> BreakdownTradingDataBuilder<Self::Response> {
+    fn get_breakdown_trading_data(&self) -> BreakdownTradingDataBuilder {
         BreakdownTradingDataBuilder::new(self.get_api_client().clone())
     }
 }
 
-/// Breakdown Trading Data response for premium plan.
+/// Breakdown Trading Data response.
 ///
 /// See: [API Reference](https://jpx.gitbook.io/j-quants-en/api-reference/breakdown)
 #[derive(Debug, Clone, PartialEq, Deserialize)]
-pub struct BreakdownTradingDataPremiumPlanResponse {
+pub struct BreakdownTradingDataResponse {
     /// List of breakdown trading data
     pub breakdown: Vec<BreakdownTradingDataItem>,
     /// Pagination key for fetching next set of data
     pub pagination_key: Option<String>,
 }
 
-impl HasPaginationKey for BreakdownTradingDataPremiumPlanResponse {
+impl HasPaginationKey for BreakdownTradingDataResponse {
     fn get_pagination_key(&self) -> Option<&str> {
         self.pagination_key.as_deref()
     }
 }
 
-impl MergePage for BreakdownTradingDataPremiumPlanResponse {
+impl MergePage for BreakdownTradingDataResponse {
     fn merge_page(
         page: Result<Vec<Self>, crate::JQuantsError>,
     ) -> Result<Self, crate::JQuantsError> {
@@ -216,7 +204,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_deserialize_breakdown_trading_data_premium_plan_response() {
+    fn test_deserialize_breakdown_trading_data_response() {
         let json = r#"
             {
                 "breakdown": [
@@ -243,8 +231,8 @@ mod tests {
             }
         "#;
 
-        let response: BreakdownTradingDataPremiumPlanResponse = serde_json::from_str(json).unwrap();
-        let expected_response = BreakdownTradingDataPremiumPlanResponse {
+        let response: BreakdownTradingDataResponse = serde_json::from_str(json).unwrap();
+        let expected_response = BreakdownTradingDataResponse {
             breakdown: vec![BreakdownTradingDataItem {
                 date: "2015-04-01".to_string(),
                 code: "13010".to_string(),
@@ -270,7 +258,7 @@ mod tests {
     }
 
     #[test]
-    fn test_deserialize_breakdown_trading_data_premium_plan_response_no_pagination_key() {
+    fn test_deserialize_breakdown_trading_data_response_no_pagination_key() {
         let json = r#"
             {
                 "breakdown": [
@@ -296,8 +284,8 @@ mod tests {
             }
         "#;
 
-        let response: BreakdownTradingDataPremiumPlanResponse = serde_json::from_str(json).unwrap();
-        let expected_response = BreakdownTradingDataPremiumPlanResponse {
+        let response: BreakdownTradingDataResponse = serde_json::from_str(json).unwrap();
+        let expected_response = BreakdownTradingDataResponse {
             breakdown: vec![BreakdownTradingDataItem {
                 date: "2015-04-01".to_string(),
                 code: "13010".to_string(),
@@ -323,7 +311,7 @@ mod tests {
     }
 
     #[test]
-    fn test_deserialize_breakdown_trading_data_premium_plan_response_multiple_items() {
+    fn test_deserialize_breakdown_trading_data_response_multiple_items() {
         let json = r#"
             {
                 "breakdown": [
@@ -368,8 +356,8 @@ mod tests {
             }
         "#;
 
-        let response: BreakdownTradingDataPremiumPlanResponse = serde_json::from_str(json).unwrap();
-        let expected_response = BreakdownTradingDataPremiumPlanResponse {
+        let response: BreakdownTradingDataResponse = serde_json::from_str(json).unwrap();
+        let expected_response = BreakdownTradingDataResponse {
             breakdown: vec![
                 BreakdownTradingDataItem {
                     date: "2015-03-25".to_string(),
@@ -415,15 +403,15 @@ mod tests {
     }
 
     #[test]
-    fn test_deserialize_breakdown_trading_data_premium_plan_response_no_data() {
+    fn test_deserialize_breakdown_trading_data_response_no_data() {
         let json = r#"
             {
                 "breakdown": []
             }
         "#;
 
-        let response: BreakdownTradingDataPremiumPlanResponse = serde_json::from_str(json).unwrap();
-        let expected_response = BreakdownTradingDataPremiumPlanResponse {
+        let response: BreakdownTradingDataResponse = serde_json::from_str(json).unwrap();
+        let expected_response = BreakdownTradingDataResponse {
             breakdown: vec![],
             pagination_key: None,
         };

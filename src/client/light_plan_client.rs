@@ -6,8 +6,7 @@ use crate::{
         listed_issue_info::{ListedIssueInfoApi, ListedIssueInfoLightPlanResponse},
         JQuantsApiClient, JQuantsPlanClient,
     },
-    TradingByInvestorTypeApi, TradingByInvestorTypeLightPlanResponse, TradingCalendarApi,
-    TradingCalendarLightPlanResponse,
+    TradingByInvestorTypeApi, TradingCalendarApi,
 };
 
 /// Light plan client for J-Quants API.
@@ -75,10 +74,6 @@ impl DailyStockPricesApi for JQuantsLightPlanClient {
     type Response = DailyStockPricesLightPlanResponse;
 }
 
-impl TradingByInvestorTypeApi for JQuantsLightPlanClient {
-    type Response = TradingByInvestorTypeLightPlanResponse;
-}
+impl TradingByInvestorTypeApi for JQuantsLightPlanClient {}
 
-impl TradingCalendarApi for JQuantsLightPlanClient {
-    type Response = TradingCalendarLightPlanResponse;
-}
+impl TradingCalendarApi for JQuantsLightPlanClient {}

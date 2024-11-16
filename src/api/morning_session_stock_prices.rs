@@ -1,7 +1,6 @@
 //! Morning Session Stock Prices API.
-use std::{fmt, marker::PhantomData};
 
-use serde::{de::DeserializeOwned, Deserialize, Serialize};
+use serde::{Deserialize, Serialize};
 
 use super::{
     shared::traits::{
@@ -15,11 +14,9 @@ use super::{
 ///
 /// See: [API Reference](https://jpx.gitbook.io/j-quants-en/api-reference/prices_am)
 #[derive(Clone, Serialize)]
-pub struct MorningSessionStockPricesApiBuilder<R: DeserializeOwned + fmt::Debug + Clone> {
+pub struct MorningSessionStockPricesApiBuilder {
     #[serde(skip)]
     client: JQuantsApiClient,
-    #[serde(skip)]
-    phantom: PhantomData<R>,
 
     /// Issue code (e.g. 27800 or 2780)
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -30,32 +27,27 @@ pub struct MorningSessionStockPricesApiBuilder<R: DeserializeOwned + fmt::Debug 
     pagination_key: Option<String>,
 }
 
-impl<R: DeserializeOwned + fmt::Debug + Clone> JQuantsBuilder<R>
-    for MorningSessionStockPricesApiBuilder<R>
-{
-    async fn send(self) -> Result<R, crate::JQuantsError> {
+impl JQuantsBuilder<MorningSessionStockPricesResponse> for MorningSessionStockPricesApiBuilder {
+    async fn send(self) -> Result<MorningSessionStockPricesResponse, crate::JQuantsError> {
         self.send_ref().await
     }
 
-    async fn send_ref(&self) -> Result<R, crate::JQuantsError> {
+    async fn send_ref(&self) -> Result<MorningSessionStockPricesResponse, crate::JQuantsError> {
         self.client.inner.get("/prices/prices_am", &self).await
     }
 }
 
-impl<R: DeserializeOwned + fmt::Debug + Clone + HasPaginationKey + MergePage> Paginatable<R>
-    for MorningSessionStockPricesApiBuilder<R>
-{
+impl Paginatable<MorningSessionStockPricesResponse> for MorningSessionStockPricesApiBuilder {
     fn pagination_key(mut self, pagination_key: impl Into<String>) -> Self {
         self.pagination_key = Some(pagination_key.into());
         self
     }
 }
 
-impl<R: DeserializeOwned + fmt::Debug + Clone> MorningSessionStockPricesApiBuilder<R> {
+impl MorningSessionStockPricesApiBuilder {
     pub(crate) fn new(client: JQuantsApiClient) -> Self {
         Self {
             client,
-            phantom: PhantomData,
             code: None,
             pagination_key: None,
         }
@@ -70,31 +62,28 @@ impl<R: DeserializeOwned + fmt::Debug + Clone> MorningSessionStockPricesApiBuild
 
 /// Morning Session Stock Prices API.
 pub trait MorningSessionStockPricesApi: JQuantsPlanClient {
-    /// Response type for morning session stock prices API.
-    type Response: DeserializeOwned + fmt::Debug + Clone;
-
     /// Get api builder for morning session stock prices.
-    fn morning_session_stock_prices(&self) -> MorningSessionStockPricesApiBuilder<Self::Response> {
+    fn morning_session_stock_prices(&self) -> MorningSessionStockPricesApiBuilder {
         MorningSessionStockPricesApiBuilder::new(self.get_api_client().clone())
     }
 }
 
-/// Morning Session Stock Prices response for premium plan.
+/// Morning Session Stock Prices response.
 ///
 /// See: [API Reference](https://jpx.gitbook.io/j-quants-en/api-reference/prices_am)
 #[derive(Debug, Clone, PartialEq, Deserialize)]
-pub struct MorningSessionStockPricesPremiumPlanResponse {
+pub struct MorningSessionStockPricesResponse {
     /// List of morning session stock prices.
-    prices_am: Vec<MorningAmCommon>,
+    prices_am: Vec<MorningStockPrice>,
     /// Pagination key for fetching next set of data.
     pagination_key: Option<String>,
 }
-impl HasPaginationKey for MorningSessionStockPricesPremiumPlanResponse {
+impl HasPaginationKey for MorningSessionStockPricesResponse {
     fn get_pagination_key(&self) -> Option<&str> {
         self.pagination_key.as_deref()
     }
 }
-impl MergePage for MorningSessionStockPricesPremiumPlanResponse {
+impl MergePage for MorningSessionStockPricesResponse {
     fn merge_page(
         page: Result<Vec<Self>, crate::JQuantsError>,
     ) -> Result<Self, crate::JQuantsError> {
@@ -109,16 +98,9 @@ impl MergePage for MorningSessionStockPricesPremiumPlanResponse {
     }
 }
 
-/// Morning session stock prices for premium plan.
+/// Morning session stock price.
 #[derive(Debug, Clone, PartialEq, Deserialize)]
-pub struct MorningAmPremiumPlan {
-    /// Common fields
-    pub common: MorningAmCommon,
-}
-
-/// Morning session stock prices.
-#[derive(Debug, Clone, PartialEq, Deserialize)]
-pub struct MorningAmCommon {
+pub struct MorningStockPrice {
     /// Date
     #[serde(rename = "Date")]
     pub date: String,
@@ -150,7 +132,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_deserialize_morning_session_stock_prices_premium_plan_response() {
+    fn test_deserialize_morning_session_stock_prices_response() {
         let json = r#"
             {
                 "prices_am": [
@@ -168,11 +150,10 @@ mod tests {
                 "pagination_key": "value1.value2."
             }
         "#;
-        let response: MorningSessionStockPricesPremiumPlanResponse =
-            serde_json::from_str(json).unwrap();
-        let expected_response: MorningSessionStockPricesPremiumPlanResponse =
-            MorningSessionStockPricesPremiumPlanResponse {
-                prices_am: vec![MorningAmCommon {
+        let response: MorningSessionStockPricesResponse = serde_json::from_str(json).unwrap();
+        let expected_response: MorningSessionStockPricesResponse =
+            MorningSessionStockPricesResponse {
+                prices_am: vec![MorningStockPrice {
                     date: "2023-03-20".to_string(),
                     code: "39400".to_string(),
                     morning_open: Some(232.0),
@@ -189,7 +170,7 @@ mod tests {
     }
 
     #[test]
-    fn test_deserialize_morning_session_stock_prices_premium_plan_response_no_data() {
+    fn test_deserialize_morning_session_stock_prices_response_no_data() {
         let json = r#"
             {
                 "prices_am": [
@@ -207,11 +188,10 @@ mod tests {
                 "pagination_key": "value1.value2."
             }
         "#;
-        let response: MorningSessionStockPricesPremiumPlanResponse =
-            serde_json::from_str(json).unwrap();
-        let expected_response: MorningSessionStockPricesPremiumPlanResponse =
-            MorningSessionStockPricesPremiumPlanResponse {
-                prices_am: vec![MorningAmCommon {
+        let response: MorningSessionStockPricesResponse = serde_json::from_str(json).unwrap();
+        let expected_response: MorningSessionStockPricesResponse =
+            MorningSessionStockPricesResponse {
+                prices_am: vec![MorningStockPrice {
                     date: "2023-03-20".to_string(),
                     code: "39400".to_string(),
                     morning_open: None,

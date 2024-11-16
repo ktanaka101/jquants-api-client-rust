@@ -1,8 +1,6 @@
 //! Margin Trading Outstandings API.
 
-use std::{fmt, marker::PhantomData};
-
-use serde::{de::DeserializeOwned, Deserialize, Serialize};
+use serde::{Deserialize, Serialize};
 
 use super::{
     shared::{
@@ -17,11 +15,9 @@ use super::{
 
 /// Builder for Margin Trading Outstandings API.
 #[derive(Clone, Serialize)]
-pub struct WeeklyMarginTradingOutstandingsBuilder<R: DeserializeOwned + fmt::Debug + Clone> {
+pub struct WeeklyMarginTradingOutstandingsBuilder {
     #[serde(skip)]
     client: JQuantsApiClient,
-    #[serde(skip)]
-    phantom: PhantomData<R>,
 
     /// Issue code (e.g. 27800 or 2780)
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -41,14 +37,16 @@ pub struct WeeklyMarginTradingOutstandingsBuilder<R: DeserializeOwned + fmt::Deb
     pagination_key: Option<String>,
 }
 
-impl<R: DeserializeOwned + fmt::Debug + Clone> JQuantsBuilder<R>
-    for WeeklyMarginTradingOutstandingsBuilder<R>
+impl JQuantsBuilder<WeeklyMarginTradingOutstandingsResponse>
+    for WeeklyMarginTradingOutstandingsBuilder
 {
-    async fn send(self) -> Result<R, crate::JQuantsError> {
+    async fn send(self) -> Result<WeeklyMarginTradingOutstandingsResponse, crate::JQuantsError> {
         self.send_ref().await
     }
 
-    async fn send_ref(&self) -> Result<R, crate::JQuantsError> {
+    async fn send_ref(
+        &self,
+    ) -> Result<WeeklyMarginTradingOutstandingsResponse, crate::JQuantsError> {
         self.client
             .inner
             .get("markets/weekly_margin_interest", self)
@@ -56,8 +54,8 @@ impl<R: DeserializeOwned + fmt::Debug + Clone> JQuantsBuilder<R>
     }
 }
 
-impl<R: DeserializeOwned + fmt::Debug + Clone + HasPaginationKey + MergePage> Paginatable<R>
-    for WeeklyMarginTradingOutstandingsBuilder<R>
+impl Paginatable<WeeklyMarginTradingOutstandingsResponse>
+    for WeeklyMarginTradingOutstandingsBuilder
 {
     fn pagination_key(mut self, pagination_key: impl Into<String>) -> Self {
         self.pagination_key = Some(pagination_key.into());
@@ -65,12 +63,11 @@ impl<R: DeserializeOwned + fmt::Debug + Clone + HasPaginationKey + MergePage> Pa
     }
 }
 
-impl<R: DeserializeOwned + fmt::Debug + Clone> WeeklyMarginTradingOutstandingsBuilder<R> {
+impl WeeklyMarginTradingOutstandingsBuilder {
     /// Create a new builder.
     pub(crate) fn new(client: JQuantsApiClient) -> Self {
         Self {
             client,
-            phantom: PhantomData,
             code: None,
             date: None,
             from: None,
@@ -106,43 +103,32 @@ impl<R: DeserializeOwned + fmt::Debug + Clone> WeeklyMarginTradingOutstandingsBu
 
 /// Builder for Margin Trading Outstandings API.
 pub trait WeeklyMarginTradingOutstandingsApi: JQuantsPlanClient {
-    /// Response type for Margin Trading Outstandings API.
-    type Response: DeserializeOwned + fmt::Debug + Clone;
-
     /// Get API builder for Margin Trading Outstandings.
     ///
     /// Use [Margin Trading Outstandings (/markets/weekly_margin_interest) API](https://jpx.gitbook.io/j-quants-en/api-reference/weekly_margin_interest)
-    fn get_weekly_margin_trading_outstandings(
-        &self,
-    ) -> WeeklyMarginTradingOutstandingsBuilder<Self::Response> {
+    fn get_weekly_margin_trading_outstandings(&self) -> WeeklyMarginTradingOutstandingsBuilder {
         WeeklyMarginTradingOutstandingsBuilder::new(self.get_api_client().clone())
     }
 }
 
-/// Margin Trading Outstandings response for standard plan.
-///
-/// See: [API Reference](https://jpx.gitbook.io/j-quants-en/api-reference/weekly_margin_interest)
-pub type WeeklyMarginTradingOutstandingsStandardPlanResponse =
-    WeeklyMarginTradingOutstandingsPremiumPlanResponse;
-
-/// Margin Trading Outstandings response for premium plan.
+/// Margin Trading Outstandings response.
 ///
 /// See: [API Reference](https://jpx.gitbook.io/j-quants-en/api-reference/weekly_margin_interest)
 #[derive(Debug, Clone, PartialEq, Deserialize)]
-pub struct WeeklyMarginTradingOutstandingsPremiumPlanResponse {
-    /// List of weekly margin trading outstandings
-    pub weekly_margin_interest: Vec<WeeklyMarginTradingOutstandingsItem>,
+pub struct WeeklyMarginTradingOutstandingsResponse {
+    /// List of weekly margin trading outstanding
+    pub weekly_margin_interest: Vec<WeeklyMarginTradingOutstanding>,
     /// Pagination key for fetching next set of data
     pub pagination_key: Option<String>,
 }
 
-impl HasPaginationKey for WeeklyMarginTradingOutstandingsPremiumPlanResponse {
+impl HasPaginationKey for WeeklyMarginTradingOutstandingsResponse {
     fn get_pagination_key(&self) -> Option<&str> {
         self.pagination_key.as_deref()
     }
 }
 
-impl MergePage for WeeklyMarginTradingOutstandingsPremiumPlanResponse {
+impl MergePage for WeeklyMarginTradingOutstandingsResponse {
     fn merge_page(
         page: Result<Vec<Self>, crate::JQuantsError>,
     ) -> Result<Self, crate::JQuantsError> {
@@ -159,9 +145,9 @@ impl MergePage for WeeklyMarginTradingOutstandingsPremiumPlanResponse {
     }
 }
 
-/// Represents a single weekly margin trading outstandings item.
+/// Represents a single weekly margin trading outstanding.
 #[derive(Debug, Clone, PartialEq, Deserialize)]
-pub struct WeeklyMarginTradingOutstandingsItem {
+pub struct WeeklyMarginTradingOutstanding {
     /// Record Date (YYYY-MM-DD)
     #[serde(rename = "Date")]
     pub date: String,
@@ -204,7 +190,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_deserialize_weekly_margin_trading_outstandings_premium_plan_response() {
+    fn test_deserialize_weekly_margin_trading_outstandings_response() {
         let json = r#"
             {
                 "weekly_margin_interest": [
@@ -224,10 +210,9 @@ mod tests {
             }
         "#;
 
-        let response: WeeklyMarginTradingOutstandingsPremiumPlanResponse =
-            serde_json::from_str(json).unwrap();
-        let expected_response = WeeklyMarginTradingOutstandingsPremiumPlanResponse {
-            weekly_margin_interest: vec![WeeklyMarginTradingOutstandingsItem {
+        let response: WeeklyMarginTradingOutstandingsResponse = serde_json::from_str(json).unwrap();
+        let expected_response = WeeklyMarginTradingOutstandingsResponse {
+            weekly_margin_interest: vec![WeeklyMarginTradingOutstanding {
                 date: "2023-02-17".to_string(),
                 code: "13010".to_string(),
                 short_margin_trade_volume: 4100.0,
@@ -245,8 +230,7 @@ mod tests {
     }
 
     #[test]
-    fn test_deserialize_weekly_margin_trading_outstandings_premium_plan_response_no_pagination_key()
-    {
+    fn test_deserialize_weekly_margin_trading_outstandings_response_no_pagination_key() {
         let json = r#"
             {
                 "weekly_margin_interest": [
@@ -265,10 +249,9 @@ mod tests {
             }
         "#;
 
-        let response: WeeklyMarginTradingOutstandingsPremiumPlanResponse =
-            serde_json::from_str(json).unwrap();
-        let expected_response = WeeklyMarginTradingOutstandingsPremiumPlanResponse {
-            weekly_margin_interest: vec![WeeklyMarginTradingOutstandingsItem {
+        let response: WeeklyMarginTradingOutstandingsResponse = serde_json::from_str(json).unwrap();
+        let expected_response = WeeklyMarginTradingOutstandingsResponse {
+            weekly_margin_interest: vec![WeeklyMarginTradingOutstanding {
                 date: "2023-02-17".to_string(),
                 code: "13010".to_string(),
                 short_margin_trade_volume: 4100.0,
@@ -286,7 +269,7 @@ mod tests {
     }
 
     #[test]
-    fn test_deserialize_weekly_margin_trading_outstandings_premium_plan_response_multiple_items() {
+    fn test_deserialize_weekly_margin_trading_outstandings_response_multiple_items() {
         let json = r#"
             {
                 "weekly_margin_interest": [
@@ -317,11 +300,10 @@ mod tests {
             }
         "#;
 
-        let response: WeeklyMarginTradingOutstandingsPremiumPlanResponse =
-            serde_json::from_str(json).unwrap();
-        let expected_response = WeeklyMarginTradingOutstandingsPremiumPlanResponse {
+        let response: WeeklyMarginTradingOutstandingsResponse = serde_json::from_str(json).unwrap();
+        let expected_response = WeeklyMarginTradingOutstandingsResponse {
             weekly_margin_interest: vec![
-                WeeklyMarginTradingOutstandingsItem {
+                WeeklyMarginTradingOutstanding {
                     date: "2023-02-10".to_string(),
                     code: "13010".to_string(),
                     short_margin_trade_volume: 4000.0,
@@ -332,7 +314,7 @@ mod tests {
                     long_standardized_margin_trade_volume: 19500.0,
                     issue_type: IssueType::Loan, // Assuming "2" corresponds to Loan
                 },
-                WeeklyMarginTradingOutstandingsItem {
+                WeeklyMarginTradingOutstanding {
                     date: "2023-02-17".to_string(),
                     code: "13010".to_string(),
                     short_margin_trade_volume: 4100.0,
@@ -351,16 +333,15 @@ mod tests {
     }
 
     #[test]
-    fn test_deserialize_weekly_margin_trading_outstandings_premium_plan_response_no_data() {
+    fn test_deserialize_weekly_margin_trading_outstandings_response_no_data() {
         let json = r#"
             {
                 "weekly_margin_interest": []
             }
         "#;
 
-        let response: WeeklyMarginTradingOutstandingsPremiumPlanResponse =
-            serde_json::from_str(json).unwrap();
-        let expected_response = WeeklyMarginTradingOutstandingsPremiumPlanResponse {
+        let response: WeeklyMarginTradingOutstandingsResponse = serde_json::from_str(json).unwrap();
+        let expected_response = WeeklyMarginTradingOutstandingsResponse {
             weekly_margin_interest: vec![],
             pagination_key: None,
         };

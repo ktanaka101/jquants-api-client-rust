@@ -1,8 +1,6 @@
 //! Indices (OHLC) API.
 
-use std::{fmt, marker::PhantomData};
-
-use serde::{de::DeserializeOwned, Deserialize, Serialize};
+use serde::{Deserialize, Serialize};
 
 use super::{
     shared::{
@@ -17,11 +15,9 @@ use super::{
 
 /// Builder for Indices (OHLC) API.
 #[derive(Clone, Serialize)]
-pub struct IndicesBuilder<R: DeserializeOwned + fmt::Debug + Clone> {
+pub struct IndicesBuilder {
     #[serde(skip)]
     client: JQuantsApiClient,
-    #[serde(skip)]
-    phantom: PhantomData<R>,
 
     /// Index code (e.g., "0000" or "0028")
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -41,31 +37,28 @@ pub struct IndicesBuilder<R: DeserializeOwned + fmt::Debug + Clone> {
     pagination_key: Option<String>,
 }
 
-impl<R: DeserializeOwned + fmt::Debug + Clone> JQuantsBuilder<R> for IndicesBuilder<R> {
-    async fn send(self) -> Result<R, crate::JQuantsError> {
+impl JQuantsBuilder<IndicesResponse> for IndicesBuilder {
+    async fn send(self) -> Result<IndicesResponse, crate::JQuantsError> {
         self.send_ref().await
     }
 
-    async fn send_ref(&self) -> Result<R, crate::JQuantsError> {
+    async fn send_ref(&self) -> Result<IndicesResponse, crate::JQuantsError> {
         self.client.inner.get("indices", self).await
     }
 }
 
-impl<R: DeserializeOwned + fmt::Debug + Clone + HasPaginationKey + MergePage> Paginatable<R>
-    for IndicesBuilder<R>
-{
+impl Paginatable<IndicesResponse> for IndicesBuilder {
     fn pagination_key(mut self, pagination_key: impl Into<String>) -> Self {
         self.pagination_key = Some(pagination_key.into());
         self
     }
 }
 
-impl<R: DeserializeOwned + fmt::Debug + Clone> IndicesBuilder<R> {
+impl IndicesBuilder {
     /// Create a new builder.
     pub(crate) fn new(client: JQuantsApiClient) -> Self {
         Self {
             client,
-            phantom: PhantomData,
             code: None,
             from: None,
             to: None,
@@ -101,40 +94,32 @@ impl<R: DeserializeOwned + fmt::Debug + Clone> IndicesBuilder<R> {
 
 /// Builder for Indices (OHLC) API.
 pub trait IndicesApi: JQuantsPlanClient {
-    /// Response type for Indices (OHLC) API.
-    type Response: DeserializeOwned + fmt::Debug + Clone;
-
     /// Get API builder for Indices (OHLC).
     ///
     /// Use [Indices (OHLC) (/indices) API](https://jpx.gitbook.io/j-quants-en/api-reference/indices)
-    fn get_indices(&self) -> IndicesBuilder<Self::Response> {
+    fn get_indices(&self) -> IndicesBuilder {
         IndicesBuilder::new(self.get_api_client().clone())
     }
 }
 
-/// Indices (OHLC) response for standard plan.
-///
-/// See: [API Reference](https://jpx.gitbook.io/j-quants-en/api-reference/indices)
-pub type IndicesStandardPlanResponse = IndicesPremiumPlanResponse;
-
-/// Indices (OHLC) response for premium plan.
+/// Indices (OHLC) response.
 ///
 /// See: [API Reference](https://jpx.gitbook.io/j-quants-en/api-reference/indices)
 #[derive(Debug, Clone, PartialEq, Deserialize)]
-pub struct IndicesPremiumPlanResponse {
+pub struct IndicesResponse {
     /// List of indices data
     pub indices: Vec<IndexItem>,
     /// Pagination key for fetching next set of data
     pub pagination_key: Option<String>,
 }
 
-impl HasPaginationKey for IndicesPremiumPlanResponse {
+impl HasPaginationKey for IndicesResponse {
     fn get_pagination_key(&self) -> Option<&str> {
         self.pagination_key.as_deref()
     }
 }
 
-impl MergePage for IndicesPremiumPlanResponse {
+impl MergePage for IndicesResponse {
     fn merge_page(
         page: Result<Vec<Self>, crate::JQuantsError>,
     ) -> Result<Self, crate::JQuantsError> {
@@ -182,7 +167,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_deserialize_indices_premium_plan_response() {
+    fn test_deserialize_indices_response() {
         let json = r#"
             {
                 "indices": [
@@ -199,8 +184,8 @@ mod tests {
             }
         "#;
 
-        let response: IndicesPremiumPlanResponse = serde_json::from_str(json).unwrap();
-        let expected_response = IndicesPremiumPlanResponse {
+        let response: IndicesResponse = serde_json::from_str(json).unwrap();
+        let expected_response = IndicesResponse {
             indices: vec![IndexItem {
                 date: "2023-12-01".to_string(),
                 code: IndexCode::TOPIXCore30,
@@ -216,7 +201,7 @@ mod tests {
     }
 
     #[test]
-    fn test_deserialize_indices_premium_plan_response_no_pagination_key() {
+    fn test_deserialize_indices_response_no_pagination_key() {
         let json = r#"
             {
                 "indices": [
@@ -232,8 +217,8 @@ mod tests {
             }
         "#;
 
-        let response: IndicesPremiumPlanResponse = serde_json::from_str(json).unwrap();
-        let expected_response = IndicesPremiumPlanResponse {
+        let response: IndicesResponse = serde_json::from_str(json).unwrap();
+        let expected_response = IndicesResponse {
             indices: vec![IndexItem {
                 date: "2023-12-01".to_string(),
                 code: IndexCode::TOPIXCore30,
@@ -249,7 +234,7 @@ mod tests {
     }
 
     #[test]
-    fn test_deserialize_indices_premium_plan_response_multiple_items() {
+    fn test_deserialize_indices_response_multiple_items() {
         let json = r#"
             {
                 "indices": [
@@ -274,8 +259,8 @@ mod tests {
             }
         "#;
 
-        let response: IndicesPremiumPlanResponse = serde_json::from_str(json).unwrap();
-        let expected_response = IndicesPremiumPlanResponse {
+        let response: IndicesResponse = serde_json::from_str(json).unwrap();
+        let expected_response = IndicesResponse {
             indices: vec![
                 IndexItem {
                     date: "2023-11-30".to_string(),
@@ -301,15 +286,15 @@ mod tests {
     }
 
     #[test]
-    fn test_deserialize_indices_premium_plan_response_no_data() {
+    fn test_deserialize_indices_response_no_data() {
         let json = r#"
             {
                 "indices": []
             }
         "#;
 
-        let response: IndicesPremiumPlanResponse = serde_json::from_str(json).unwrap();
-        let expected_response = IndicesPremiumPlanResponse {
+        let response: IndicesResponse = serde_json::from_str(json).unwrap();
+        let expected_response = IndicesResponse {
             indices: vec![],
             pagination_key: None,
         };
