@@ -8,7 +8,7 @@ use crate::{
         weekly_margin_trading_outstandings::WeeklyMarginTradingOutstandingsApi,
         JQuantsApiClient, JQuantsPlanClient,
     },
-    IndicesApi, TradingByInvestorTypeApi, TradingCalendarApi,
+    IndicesApi, TopixPricesApi, TradingByInvestorTypeApi, TradingCalendarApi,
 };
 
 /// Standard plan client for J-Quants API.
@@ -18,7 +18,7 @@ use crate::{
 /// ```no_run
 /// use jquants_api_client::{
 ///     DailyStockPricesApi, IndicesApi, JQuantsBuilder, JQuantsStandardPlanClient, ListedIssueInfoApi,
-///     ShortSaleBySectorApi, TradingByInvestorTypeApi, TradingCalendarApi, Paginatable,
+///     ShortSaleBySectorApi, TopixPricesApi, TradingByInvestorTypeApi, TradingCalendarApi, Paginatable,
 ///     WeeklyMarginTradingOutstandingsApi
 /// };
 ///
@@ -71,6 +71,14 @@ use crate::{
 ///     let response = client.get_indices().fetch_all().await.unwrap();
 ///     let response = client.get_indices().fetch_all_and_merge().await.unwrap();
 ///     let stream = client.get_indices().fetch_pages_stream();
+///
+///     // Get TOPIX prices.
+///     let response = client.get_topix_prices().send().await.unwrap();
+///
+///     // Paginate TOPIX prices.
+///     let response = client.get_topix_prices().fetch_all().await.unwrap();
+///     let response = client.get_topix_prices().fetch_all_and_merge().await.unwrap();
+///     let stream = client.get_topix_prices().fetch_pages_stream();
 /// };
 /// ```
 #[derive(Clone)]
@@ -110,3 +118,5 @@ impl ShortSaleBySectorApi for JQuantsStandardPlanClient {}
 impl TradingCalendarApi for JQuantsStandardPlanClient {}
 
 impl IndicesApi for JQuantsStandardPlanClient {}
+
+impl TopixPricesApi for JQuantsStandardPlanClient {}

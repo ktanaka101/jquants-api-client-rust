@@ -6,7 +6,7 @@ use crate::{
         listed_issue_info::{ListedIssueInfoApi, ListedIssueInfoLightPlanResponse},
         JQuantsApiClient, JQuantsPlanClient,
     },
-    TradingByInvestorTypeApi, TradingCalendarApi,
+    TopixPricesApi, TradingByInvestorTypeApi, TradingCalendarApi,
 };
 
 /// Light plan client for J-Quants API.
@@ -16,7 +16,7 @@ use crate::{
 /// ```no_run
 /// use jquants_api_client::{
 ///     DailyStockPricesApi, JQuantsBuilder, JQuantsLightPlanClient, ListedIssueInfoApi,
-///     TradingByInvestorTypeApi, TradingCalendarApi, Paginatable
+///     TradingByInvestorTypeApi, TopixPricesApi, TradingCalendarApi, Paginatable
 /// };
 ///
 /// async {
@@ -44,6 +44,14 @@ use crate::{
 ///
 ///     // Get trading calendar.
 ///     let response = client.get_trading_calendar().send().await.unwrap();
+///
+///     // Get TOPIX prices.
+///     let response = client.get_topix_prices().send().await.unwrap();
+///
+///     // Paginate TOPIX prices.
+///     let response = client.get_topix_prices().fetch_all().await.unwrap();
+///     let response = client.get_topix_prices().fetch_all_and_merge().await.unwrap();
+///     let stream = client.get_topix_prices().fetch_pages_stream();
 /// };
 /// ```
 #[derive(Clone)]
@@ -77,3 +85,5 @@ impl DailyStockPricesApi for JQuantsLightPlanClient {
 impl TradingByInvestorTypeApi for JQuantsLightPlanClient {}
 
 impl TradingCalendarApi for JQuantsLightPlanClient {}
+
+impl TopixPricesApi for JQuantsLightPlanClient {}

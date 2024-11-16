@@ -16,6 +16,7 @@ pub use api::shared::{
     types::{issue_type::*, market_code::*, section_name::*, sector17_code::*, sector33_code::*},
 };
 pub use api::short_sale_by_sector::*;
+pub use api::topic_prices::*;
 pub use api::trading_by_type_of_investors::*;
 pub use api::trading_calendar::*;
 pub use api::weekly_margin_trading_outstandings::*;
