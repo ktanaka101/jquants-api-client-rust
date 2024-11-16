@@ -23,11 +23,11 @@ pub struct MorningSessionStockPricesApiBuilder<R: DeserializeOwned + fmt::Debug 
 
     /// Issue code (e.g. 27800 or 2780)
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub code: Option<String>,
+    code: Option<String>,
 
     /// Pagination key.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub(crate) pagination_key: Option<String>,
+    pagination_key: Option<String>,
 }
 
 impl<R: DeserializeOwned + fmt::Debug + Clone> JQuantsBuilder<R>

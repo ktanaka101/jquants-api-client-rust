@@ -24,20 +24,20 @@ pub struct ShortSaleBySectorBuilder<R: DeserializeOwned + fmt::Debug + Clone> {
 
     /// 33-sector code (e.g. "0050" or "50")
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub sector33code: Option<Sector33Code>,
+    sector33code: Option<Sector33Code>,
     /// Starting point of data period (e.g. "20210901" or "2021-09-01")
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub from: Option<String>,
+    from: Option<String>,
     /// End point of data period (e.g. "20210907" or "2021-09-07")
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub to: Option<String>,
+    to: Option<String>,
     /// Date of data (e.g. "20210907" or "2021-09-07")
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub date: Option<String>,
+    date: Option<String>,
 
     /// Pagination key.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub pagination_key: Option<String>,
+    pagination_key: Option<String>,
 }
 
 impl<R: DeserializeOwned + fmt::Debug + Clone> JQuantsBuilder<R> for ShortSaleBySectorBuilder<R> {
