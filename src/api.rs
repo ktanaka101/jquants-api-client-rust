@@ -1,6 +1,7 @@
 //! This module contains all the API models.
 //! The models are used to serialize and deserialize the data that is sent to and from the API.
 
+pub mod breakdown_trading_data;
 pub mod daily_stock_prices;
 pub mod listed_issue_info;
 pub mod morning_session_stock_prices;

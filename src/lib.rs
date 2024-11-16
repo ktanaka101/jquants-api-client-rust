@@ -4,6 +4,7 @@ pub mod api;
 pub mod client;
 pub mod error;
 
+pub use api::breakdown_trading_data::*;
 pub use api::daily_stock_prices::*;
 pub use api::listed_issue_info::*;
 pub use api::morning_session_stock_prices::*;

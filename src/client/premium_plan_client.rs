@@ -2,6 +2,9 @@
 
 use crate::{
     api::{
+        breakdown_trading_data::{
+            BreakdownTradingDataApi, BreakdownTradingDataPremiumPlanResponse,
+        },
         daily_stock_prices::{DailyStockPricesApi, DailyStockPricesPremiumPlanResponse},
         listed_issue_info::{ListedIssueInfoApi, ListedIssueInfoPremiumPlanResponse},
         morning_session_stock_prices::{
@@ -21,7 +24,7 @@ use crate::{
 /// # Example
 ///
 /// ```no_run
-/// use jquants_api_client::{DailyStockPricesApi, JQuantsBuilder, JQuantsPremiumPlanClient, ListedIssueInfoApi, MorningSessionStockPricesApi, ShortSaleBySectorApi, TradingByInvestorTypeApi, Paginatable, WeeklyMarginTradingOutstandingsApi};
+/// use jquants_api_client::{BreakdownTradingDataApi, DailyStockPricesApi, JQuantsBuilder, JQuantsPremiumPlanClient, ListedIssueInfoApi, MorningSessionStockPricesApi, ShortSaleBySectorApi, TradingByInvestorTypeApi, Paginatable, WeeklyMarginTradingOutstandingsApi};
 ///
 /// async {
 ///     // Authenticate with a refresh token.
@@ -113,4 +116,8 @@ impl WeeklyMarginTradingOutstandingsApi for JQuantsPremiumPlanClient {
 
 impl ShortSaleBySectorApi for JQuantsPremiumPlanClient {
     type Response = ShortSaleBySectorPremiumPlanResponse;
+}
+
+impl BreakdownTradingDataApi for JQuantsPremiumPlanClient {
+    type Response = BreakdownTradingDataPremiumPlanResponse;
 }
