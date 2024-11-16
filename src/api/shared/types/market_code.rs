@@ -1,3 +1,5 @@
+//! Market code
+
 use serde::{Deserialize, Serialize};
 
 /// Represents the market codes.

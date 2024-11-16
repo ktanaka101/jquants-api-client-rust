@@ -2,16 +2,17 @@
 
 use std::{fmt, marker::PhantomData};
 
-use market_code::MarketCode;
-use sector17_code::Sector17Code;
-use sector33_code::Sector33Code;
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 
-use super::{builder::JQuantsBuilder, JQuantsApiClient, JQuantsPlanClient};
-
-mod market_code;
-mod sector17_code;
-mod sector33_code;
+use super::{
+    shared::{
+        traits::builder::JQuantsBuilder,
+        types::{
+            market_code::MarketCode, sector17_code::Sector17Code, sector33_code::Sector33Code,
+        },
+    },
+    JQuantsApiClient, JQuantsPlanClient,
+};
 
 /// Builder for Listed Issue Info API.
 #[derive(Clone, Serialize)]

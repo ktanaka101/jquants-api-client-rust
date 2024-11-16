@@ -2,7 +2,7 @@
 
 use thiserror::Error;
 
-use crate::api::error_response::ErrorResponse;
+use crate::api::shared::responses::error_response::ErrorResponse;
 
 /// Custom error type for JQuants API client.
 /// This is a simple enum that wraps the reqwest::Error and ErrorResponse types.

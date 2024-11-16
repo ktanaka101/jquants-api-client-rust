@@ -4,8 +4,10 @@ use std::{fmt, marker::PhantomData};
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 
 use super::{
-    builder::JQuantsBuilder,
-    pagination::{HasPaginationKey, MergePage, Paginatable},
+    shared::traits::{
+        builder::JQuantsBuilder,
+        pagination::{HasPaginationKey, MergePage, Paginatable},
+    },
     JQuantsApiClient, JQuantsPlanClient,
 };
 

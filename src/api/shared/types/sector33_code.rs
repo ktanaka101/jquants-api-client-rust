@@ -1,3 +1,5 @@
+//! 33 sector codes.
+
 use serde::Deserialize;
 
 /// Represents the 33 sector codes.

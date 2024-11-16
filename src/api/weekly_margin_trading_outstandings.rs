@@ -1,15 +1,17 @@
 //! Margin Trading Outstandings API.
 
-pub mod issue_type;
-
 use std::{fmt, marker::PhantomData};
 
-use issue_type::IssueType;
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 
 use super::{
-    builder::JQuantsBuilder,
-    pagination::{HasPaginationKey, MergePage, Paginatable},
+    shared::{
+        traits::{
+            builder::JQuantsBuilder,
+            pagination::{HasPaginationKey, MergePage, Paginatable},
+        },
+        types::issue_type::IssueType,
+    },
     JQuantsApiClient, JQuantsPlanClient,
 };
 

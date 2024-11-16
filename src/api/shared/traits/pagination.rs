@@ -10,9 +10,8 @@ use futures::stream;
 use futures::StreamExt;
 use serde::de::DeserializeOwned;
 
+use crate::JQuantsBuilder;
 use crate::JQuantsError;
-
-use super::builder::JQuantsBuilder;
 
 /// Trait for types that have a pagination key.
 pub trait HasPaginationKey {

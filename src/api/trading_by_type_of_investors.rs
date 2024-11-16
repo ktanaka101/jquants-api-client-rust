@@ -1,15 +1,17 @@
 //! Trading by Type of Investors API.
 
-pub mod section_name;
-
 use std::{fmt, marker::PhantomData};
 
-use section_name::SectionName;
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 
 use super::{
-    builder::JQuantsBuilder,
-    pagination::{HasPaginationKey, MergePage, Paginatable},
+    shared::{
+        traits::{
+            builder::JQuantsBuilder,
+            pagination::{HasPaginationKey, MergePage, Paginatable},
+        },
+        types::section_name::SectionName,
+    },
     JQuantsApiClient, JQuantsPlanClient,
 };
 
