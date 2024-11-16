@@ -171,15 +171,15 @@ pub struct ShortSaleBySectorItem {
 
     /// Trading value of long selling
     #[serde(rename = "SellingExcludingShortSellingTurnoverValue")]
-    pub selling_excluding_short_selling_turnover_value: Option<f64>,
+    pub selling_excluding_short_selling_turnover_value: f64,
 
     /// Value of short sales with price restrictions
     #[serde(rename = "ShortSellingWithRestrictionsTurnoverValue")]
-    pub short_selling_with_restrictions_turnover_value: Option<f64>,
+    pub short_selling_with_restrictions_turnover_value: f64,
 
     /// Value of short sales without price restrictions
     #[serde(rename = "ShortSellingWithoutRestrictionsTurnoverValue")]
-    pub short_selling_without_restrictions_turnover_value: Option<f64>,
+    pub short_selling_without_restrictions_turnover_value: f64,
 }
 
 #[cfg(test)]
@@ -208,9 +208,9 @@ mod tests {
             short_selling: vec![ShortSaleBySectorItem {
                 date: "2022-10-25".to_string(),
                 sector33code: Sector33Code::FisheryAgricultureForestry,
-                selling_excluding_short_selling_turnover_value: Some(1333126400.0),
-                short_selling_with_restrictions_turnover_value: Some(787355200.0),
-                short_selling_without_restrictions_turnover_value: Some(149084300.0),
+                selling_excluding_short_selling_turnover_value: 1333126400.0,
+                short_selling_with_restrictions_turnover_value: 787355200.0,
+                short_selling_without_restrictions_turnover_value: 149084300.0,
             }],
             pagination_key: Some("value1.value2.".to_string()),
         };
@@ -239,9 +239,9 @@ mod tests {
             short_selling: vec![ShortSaleBySectorItem {
                 date: "2022-10-25".to_string(),
                 sector33code: Sector33Code::FisheryAgricultureForestry,
-                selling_excluding_short_selling_turnover_value: Some(1333126400.0),
-                short_selling_with_restrictions_turnover_value: Some(787355200.0),
-                short_selling_without_restrictions_turnover_value: Some(149084300.0),
+                selling_excluding_short_selling_turnover_value: 1333126400.0,
+                short_selling_with_restrictions_turnover_value: 787355200.0,
+                short_selling_without_restrictions_turnover_value: 149084300.0,
             }],
             pagination_key: None,
         };
@@ -279,16 +279,16 @@ mod tests {
                 ShortSaleBySectorItem {
                     date: "2022-10-18".to_string(),
                     sector33code: Sector33Code::FisheryAgricultureForestry,
-                    selling_excluding_short_selling_turnover_value: Some(1300000000.0),
-                    short_selling_with_restrictions_turnover_value: Some(780000000.0),
-                    short_selling_without_restrictions_turnover_value: Some(150000000.0),
+                    selling_excluding_short_selling_turnover_value: 1300000000.0,
+                    short_selling_with_restrictions_turnover_value: 780000000.0,
+                    short_selling_without_restrictions_turnover_value: 150000000.0,
                 },
                 ShortSaleBySectorItem {
                     date: "2022-10-25".to_string(),
                     sector33code: Sector33Code::FisheryAgricultureForestry,
-                    selling_excluding_short_selling_turnover_value: Some(1333126400.0),
-                    short_selling_with_restrictions_turnover_value: Some(787355200.0),
-                    short_selling_without_restrictions_turnover_value: Some(149084300.0),
+                    selling_excluding_short_selling_turnover_value: 1333126400.0,
+                    short_selling_with_restrictions_turnover_value: 787355200.0,
+                    short_selling_without_restrictions_turnover_value: 149084300.0,
                 },
             ],
             pagination_key: Some("value1.value2.".to_string()),
