@@ -119,18 +119,6 @@ pub trait WeeklyMarginTradingOutstandingsApi: JQuantsPlanClient {
     }
 }
 
-/// Margin Trading Outstandings response for free plan.
-///
-/// See: [API Reference](https://jpx.gitbook.io/j-quants-en/api-reference/weekly_margin_interest)
-pub type WeeklyMarginTradingOutstandingsFreePlanResponse =
-    WeeklyMarginTradingOutstandingsPremiumPlanResponse;
-
-/// Margin Trading Outstandings response for light plan.
-///
-/// See: [API Reference](https://jpx.gitbook.io/j-quants-en/api-reference/weekly_margin_interest)
-pub type WeeklyMarginTradingOutstandingsLightPlanResponse =
-    WeeklyMarginTradingOutstandingsPremiumPlanResponse;
-
 /// Margin Trading Outstandings response for standard plan.
 ///
 /// See: [API Reference](https://jpx.gitbook.io/j-quants-en/api-reference/weekly_margin_interest)

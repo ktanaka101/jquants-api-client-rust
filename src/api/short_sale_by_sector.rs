@@ -111,16 +111,6 @@ pub trait ShortSaleBySectorApi: JQuantsPlanClient {
     }
 }
 
-/// Short Sale Value and Ratio by Sector response for free plan.
-///
-/// See: [API Reference](https://jpx.gitbook.io/j-quants-en/api-reference/short_selling)
-pub type ShortSaleBySectorFreePlanResponse = ShortSaleBySectorPremiumPlanResponse;
-
-/// Short Sale Value and Ratio by Sector response for light plan.
-///
-/// See: [API Reference](https://jpx.gitbook.io/j-quants-en/api-reference/short_selling)
-pub type ShortSaleBySectorLightPlanResponse = ShortSaleBySectorPremiumPlanResponse;
-
 /// Short Sale Value and Ratio by Sector response for standard plan.
 ///
 /// See: [API Reference](https://jpx.gitbook.io/j-quants-en/api-reference/short_selling)

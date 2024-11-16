@@ -104,11 +104,6 @@ pub trait TradingByInvestorTypeApi: JQuantsPlanClient {
     }
 }
 
-/// Trading by Type of Investors response for free plan.
-///
-/// See: [API Reference](https://jpx.gitbook.io/j-quants-en/api-reference/trades_spec)
-pub type TradingByInvestorTypeFreePlanResponse = TradingByInvestorTypePremiumPlanResponse;
-
 /// Trading by Type of Investors response for light plan.
 ///
 /// See: [API Reference](https://jpx.gitbook.io/j-quants-en/api-reference/trades_spec)

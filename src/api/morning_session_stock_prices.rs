@@ -79,22 +79,6 @@ pub trait MorningSessionStockPricesApi: JQuantsPlanClient {
     }
 }
 
-/// Morning Session Stock Prices response for free plan.
-///
-/// See: [API Reference](https://jpx.gitbook.io/j-quants-en/api-reference/prices_am)
-pub type MorningSessionStockPricesFreePlanResponse = MorningSessionStockPricesPremiumPlanResponse;
-
-/// Morning Session Stock Prices response for light plan.
-///
-/// See: [API Reference](https://jpx.gitbook.io/j-quants-en/api-reference/prices_am)
-pub type MorningSessionStockPricesLightPlanResponse = MorningSessionStockPricesPremiumPlanResponse;
-
-/// Morning Session Stock Prices response for standard plan.
-///
-/// See: [API Reference](https://jpx.gitbook.io/j-quants-en/api-reference/prices_am)
-pub type MorningSessionStockPricesStandardPlanResponse =
-    MorningSessionStockPricesPremiumPlanResponse;
-
 /// Morning Session Stock Prices response for premium plan.
 ///
 /// See: [API Reference](https://jpx.gitbook.io/j-quants-en/api-reference/prices_am)

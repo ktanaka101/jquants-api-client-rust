@@ -1,19 +1,9 @@
 //! Free plan client implementation for JQuants API.
 
-use crate::{
-    api::{
-        daily_stock_prices::{DailyStockPricesApi, DailyStockPricesFreePlanResponse},
-        listed_issue_info::{ListedIssueInfoApi, ListedIssueInfoFreePlanResponse},
-        morning_session_stock_prices::{
-            MorningSessionStockPricesApi, MorningSessionStockPricesFreePlanResponse,
-        },
-        short_sale_by_sector::{ShortSaleBySectorApi, ShortSaleBySectorFreePlanResponse},
-        weekly_margin_trading_outstandings::{
-            WeeklyMarginTradingOutstandingsApi, WeeklyMarginTradingOutstandingsFreePlanResponse,
-        },
-        JQuantsApiClient, JQuantsPlanClient,
-    },
-    TradingByInvestorTypeApi, TradingByInvestorTypeFreePlanResponse,
+use crate::api::{
+    daily_stock_prices::{DailyStockPricesApi, DailyStockPricesFreePlanResponse},
+    listed_issue_info::{ListedIssueInfoApi, ListedIssueInfoFreePlanResponse},
+    JQuantsApiClient, JQuantsPlanClient,
 };
 
 /// Free plan client for J-Quants API.
@@ -21,7 +11,7 @@ use crate::{
 /// # Example
 ///
 /// ```no_run
-/// use jquants_api_client::{DailyStockPricesApi, JQuantsBuilder, JQuantsFreePlanClient, ListedIssueInfoApi, MorningSessionStockPricesApi, ShortSaleBySectorApi, TradingByInvestorTypeApi, Paginatable, WeeklyMarginTradingOutstandingsApi};
+/// use jquants_api_client::{DailyStockPricesApi, JQuantsBuilder, JQuantsFreePlanClient, ListedIssueInfoApi, Paginatable};
 ///
 /// async {
 ///     // Authenticate with a refresh token.
@@ -37,38 +27,6 @@ use crate::{
 ///     let response = client.get_daily_stock_prices().fetch_all().await.unwrap();
 ///     let response = client.get_daily_stock_prices().fetch_all_and_merge().await.unwrap();
 ///     let stream = client.get_daily_stock_prices().fetch_pages_stream();
-///
-///     // Get morning session stock prices.
-///     let response = client.morning_session_stock_prices().send().await.unwrap();
-///
-///     // Paginate morning session stock prices.
-///     let response = client.morning_session_stock_prices().fetch_all().await.unwrap();
-///     let response = client.morning_session_stock_prices().fetch_all_and_merge().await.unwrap();
-///     let stream = client.morning_session_stock_prices().fetch_pages_stream();
-///
-///     // Get trading by investor type.
-///     let response = client.get_trading_by_investor_type().send().await.unwrap();
-///
-///     // Paginate trading by investor type.
-///     let response = client.get_trading_by_investor_type().fetch_all().await.unwrap();
-///     let response = client.get_trading_by_investor_type().fetch_all_and_merge().await.unwrap();
-///     let stream = client.get_trading_by_investor_type().fetch_pages_stream();
-///
-///     // Get margin trading outstandings.
-///     let response = client.get_weekly_margin_trading_outstandings().send().await.unwrap();
-///
-///     // Paginate margin trading outstandings.
-///     let response = client.get_weekly_margin_trading_outstandings().fetch_all().await.unwrap();
-///     let response = client.get_weekly_margin_trading_outstandings().fetch_all_and_merge().await.unwrap();
-///     let stream = client.get_weekly_margin_trading_outstandings().fetch_pages_stream();
-///
-///     // Get short sale value and ratio by sector.
-///     let response = client.get_weekly_margin_trading_outstandings().send().await.unwrap();
-///
-///     // Paginate short sale value and ratio by sector.
-///     let response = client.get_weekly_margin_trading_outstandings().fetch_all().await.unwrap();
-///     let response = client.get_weekly_margin_trading_outstandings().fetch_all_and_merge().await.unwrap();
-///     let stream = client.get_weekly_margin_trading_outstandings().fetch_pages_stream();
 /// };
 /// ```
 #[derive(Clone)]
@@ -97,20 +55,4 @@ impl ListedIssueInfoApi for JQuantsFreePlanClient {
 
 impl DailyStockPricesApi for JQuantsFreePlanClient {
     type Response = DailyStockPricesFreePlanResponse;
-}
-
-impl MorningSessionStockPricesApi for JQuantsFreePlanClient {
-    type Response = MorningSessionStockPricesFreePlanResponse;
-}
-
-impl TradingByInvestorTypeApi for JQuantsFreePlanClient {
-    type Response = TradingByInvestorTypeFreePlanResponse;
-}
-
-impl WeeklyMarginTradingOutstandingsApi for JQuantsFreePlanClient {
-    type Response = WeeklyMarginTradingOutstandingsFreePlanResponse;
-}
-
-impl ShortSaleBySectorApi for JQuantsFreePlanClient {
-    type Response = ShortSaleBySectorFreePlanResponse;
 }
