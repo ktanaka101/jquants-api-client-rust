@@ -10,7 +10,8 @@ use crate::{
         },
         JQuantsApiClient, JQuantsPlanClient,
     },
-    TradingByInvestorTypeApi, TradingByInvestorTypeStandardPlanResponse, TradingCalendarApi,
+    IndicesApi, IndicesStandardPlanResponse, TradingByInvestorTypeApi,
+    TradingByInvestorTypeStandardPlanResponse, TradingCalendarApi,
     TradingCalendarStandardPlanResponse,
 };
 
@@ -20,8 +21,9 @@ use crate::{
 ///
 /// ```no_run
 /// use jquants_api_client::{
-///     DailyStockPricesApi, JQuantsBuilder, JQuantsStandardPlanClient, ListedIssueInfoApi, ShortSaleBySectorApi,
-///     TradingByInvestorTypeApi, TradingCalendarApi, Paginatable, WeeklyMarginTradingOutstandingsApi
+///     DailyStockPricesApi, IndicesApi, JQuantsBuilder, JQuantsStandardPlanClient, ListedIssueInfoApi,
+///     ShortSaleBySectorApi, TradingByInvestorTypeApi, TradingCalendarApi, Paginatable,
+///     WeeklyMarginTradingOutstandingsApi
 /// };
 ///
 /// async {
@@ -65,6 +67,14 @@ use crate::{
 ///
 ///     // Get trading calendar.
 ///     let response = client.get_trading_calendar().send().await.unwrap();
+///
+///     // Get indices.
+///     let response = client.get_indices().send().await.unwrap();
+///
+///     // Paginate  indices.
+///     let response = client.get_indices().fetch_all().await.unwrap();
+///     let response = client.get_indices().fetch_all_and_merge().await.unwrap();
+///     let stream = client.get_indices().fetch_pages_stream();
 /// };
 /// ```
 #[derive(Clone)]
@@ -109,4 +119,8 @@ impl ShortSaleBySectorApi for JQuantsStandardPlanClient {
 
 impl TradingCalendarApi for JQuantsStandardPlanClient {
     type Response = TradingCalendarStandardPlanResponse;
+}
+
+impl IndicesApi for JQuantsStandardPlanClient {
+    type Response = IndicesStandardPlanResponse;
 }

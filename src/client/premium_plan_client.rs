@@ -16,7 +16,8 @@ use crate::{
         },
         JQuantsApiClient, JQuantsPlanClient,
     },
-    TradingByInvestorTypeApi, TradingByInvestorTypePremiumPlanResponse, TradingCalendarApi,
+    IndicesApi, IndicesPremiumPlanResponse, TradingByInvestorTypeApi,
+    TradingByInvestorTypePremiumPlanResponse, TradingCalendarApi,
     TradingCalendarPremiumPlanResponse,
 };
 
@@ -26,9 +27,9 @@ use crate::{
 ///
 /// ```no_run
 /// use jquants_api_client::{
-///     BreakdownTradingDataApi, DailyStockPricesApi, JQuantsBuilder, JQuantsPremiumPlanClient, ListedIssueInfoApi,
-///     MorningSessionStockPricesApi, ShortSaleBySectorApi, TradingByInvestorTypeApi, TradingCalendarApi,
-///     Paginatable, WeeklyMarginTradingOutstandingsApi
+///     BreakdownTradingDataApi, IndicesApi, DailyStockPricesApi, JQuantsBuilder, JQuantsPremiumPlanClient,
+///     ListedIssueInfoApi, MorningSessionStockPricesApi, ShortSaleBySectorApi, TradingByInvestorTypeApi,
+///     TradingCalendarApi, Paginatable, WeeklyMarginTradingOutstandingsApi
 /// };
 ///
 /// async {
@@ -80,6 +81,14 @@ use crate::{
 ///
 ///     // Get trading calendar.
 ///     let response = client.get_trading_calendar().send().await.unwrap();
+///
+///     // Get indices.
+///     let response = client.get_indices().send().await.unwrap();
+///
+///     // Paginate  indices.
+///     let response = client.get_indices().fetch_all().await.unwrap();
+///     let response = client.get_indices().fetch_all_and_merge().await.unwrap();
+///     let stream = client.get_indices().fetch_pages_stream();
 /// };
 /// ```
 #[derive(Clone)]
@@ -132,4 +141,8 @@ impl BreakdownTradingDataApi for JQuantsPremiumPlanClient {
 
 impl TradingCalendarApi for JQuantsPremiumPlanClient {
     type Response = TradingCalendarPremiumPlanResponse;
+}
+
+impl IndicesApi for JQuantsPremiumPlanClient {
+    type Response = IndicesPremiumPlanResponse;
 }
