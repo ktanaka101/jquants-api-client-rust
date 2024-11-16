@@ -9,6 +9,7 @@ pub mod listed_issue_info;
 pub mod morning_session_stock_prices;
 pub mod pagination;
 pub mod trading_by_type_of_investors;
+pub mod weekly_margin_trading_outstandings;
 
 use auth::id_token::IdTokenResponse;
 use std::{fmt, sync::Arc};

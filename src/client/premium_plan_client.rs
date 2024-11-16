@@ -2,10 +2,13 @@
 
 use crate::{
     api::{
-        daily_stock_prices::{DailyStockPricesPremiumPlanResponse, DailyStockPricesApi},
+        daily_stock_prices::{DailyStockPricesApi, DailyStockPricesPremiumPlanResponse},
         listed_issue_info::{ListedIssueInfoApi, ListedIssueInfoPremiumPlanResponse},
         morning_session_stock_prices::{
             MorningSessionStockPricesApi, MorningSessionStockPricesPremiumPlanResponse,
+        },
+        weekly_margin_trading_outstandings::{
+            WeeklyMarginTradingOutstandingsApi, WeeklyMarginTradingOutstandingsPremiumPlanResponse,
         },
         JQuantsApiClient, JQuantsPlanClient,
     },
@@ -17,7 +20,7 @@ use crate::{
 /// # Example
 ///
 /// ```no_run
-/// use jquants_api_client::{DailyStockPricesApi, JQuantsBuilder, JQuantsPremiumPlanClient, ListedIssueInfoApi, MorningSessionStockPricesApi, TradingByInvestorTypeApi, Paginatable};
+/// use jquants_api_client::{DailyStockPricesApi, JQuantsBuilder, JQuantsPremiumPlanClient, ListedIssueInfoApi, MorningSessionStockPricesApi, TradingByInvestorTypeApi, Paginatable, WeeklyMarginTradingOutstandingsApi};
 ///
 /// async {
 ///     // Authenticate with a refresh token.
@@ -49,6 +52,14 @@ use crate::{
 ///     let response = client.get_trading_by_investor_type().fetch_all().await.unwrap();
 ///     let response = client.get_trading_by_investor_type().fetch_all_and_merge().await.unwrap();
 ///     let stream = client.get_trading_by_investor_type().fetch_pages_stream();
+///
+///     // Get margin trading outstandings.
+///     let response = client.get_weekly_margin_trading_outstandings().send().await.unwrap();
+///
+///     // Paginate margin trading outstandings.
+///     let response = client.get_weekly_margin_trading_outstandings().fetch_all().await.unwrap();
+///     let response = client.get_weekly_margin_trading_outstandings().fetch_all_and_merge().await.unwrap();
+///     let stream = client.get_weekly_margin_trading_outstandings().fetch_pages_stream();
 /// };
 /// ```
 #[derive(Clone)]
@@ -85,4 +96,8 @@ impl MorningSessionStockPricesApi for JQuantsPremiumPlanClient {
 
 impl TradingByInvestorTypeApi for JQuantsPremiumPlanClient {
     type Response = TradingByInvestorTypePremiumPlanResponse;
+}
+
+impl WeeklyMarginTradingOutstandingsApi for JQuantsPremiumPlanClient {
+    type Response = WeeklyMarginTradingOutstandingsPremiumPlanResponse;
 }
