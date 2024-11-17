@@ -77,7 +77,7 @@ impl FinancialStatementDetailsBuilder {
 pub trait FinancialStatementDetailsApi: JQuantsPlanClient {
     /// Get API builder for Financial Statement Details Data.
     ///
-    /// Use [Financial Statement Details Data (/fins/fs_details) API](https://api.jquants.com/v1/fins/fs_details)
+    /// Use [Financial Statement Details Data (/fins/fs_details) API](https://jpx.gitbook.io/j-quants-en/api-reference/statements-1)
     fn get_financial_statement_details(&self) -> FinancialStatementDetailsBuilder {
         FinancialStatementDetailsBuilder::new(self.get_api_client().clone())
     }
@@ -85,7 +85,7 @@ pub trait FinancialStatementDetailsApi: JQuantsPlanClient {
 
 /// Financial Statement Details Data response.
 ///
-/// See: [API Reference](https://api.jquants.com/v1/fins/fs_details)
+/// See: [API Reference](https://jpx.gitbook.io/j-quants-en/api-reference/statements-1)
 #[derive(Debug, Clone, PartialEq, Deserialize)]
 pub struct FinancialStatementDetailsResponse {
     /// List of financial statement details

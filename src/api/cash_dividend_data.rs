@@ -96,7 +96,7 @@ impl CashDividendDataBuilder {
 pub trait CashDividendDataApi: JQuantsPlanClient {
     /// Get API builder for Cash Dividend Data.
     ///
-    /// Use [Cash Dividend Data (/fins/dividend) API](https://api.jquants.com/v1/fins/dividend)
+    /// Use [Cash Dividend Data (/fins/dividend) API](https://jpx.gitbook.io/j-quants-en/api-reference/dividend)
     fn get_cash_dividend_data(&self) -> CashDividendDataBuilder {
         CashDividendDataBuilder::new(self.get_api_client().clone())
     }
@@ -104,7 +104,7 @@ pub trait CashDividendDataApi: JQuantsPlanClient {
 
 /// Cash Dividend Data API response.
 ///
-/// See: [API Reference](https://api.jquants.com/v1/fins/dividend)
+/// See: [API Reference](https://jpx.gitbook.io/j-quants-en/api-reference/dividend)
 #[derive(Debug, Clone, PartialEq, Deserialize)]
 pub struct CashDividendDataResponse {
     /// List of cash dividend data
