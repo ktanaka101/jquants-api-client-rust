@@ -11,8 +11,8 @@ use crate::{
         weekly_margin_trading_outstandings::WeeklyMarginTradingOutstandingsApi,
         JQuantsApiClient, JQuantsPlanClient,
     },
-    FinancialStatementDetailsApi, IndicesApi, TopixPricesApi, TradingByInvestorTypeApi,
-    TradingCalendarApi,
+    CashDividendDataApi, FinancialStatementDetailsApi, IndicesApi, TopixPricesApi,
+    TradingByInvestorTypeApi, TradingCalendarApi,
 };
 
 /// Premium plan client for J-Quants API.
@@ -21,10 +21,10 @@ use crate::{
 ///
 /// ```no_run
 /// use jquants_api_client::{
-///     BreakdownTradingDataApi, FinancialStatementsApi, FinancialStatementDetailsApi, IndicesApi, DailyStockPricesApi,
-///     JQuantsBuilder, JQuantsPremiumPlanClient, ListedIssueInfoApi, MorningSessionStockPricesApi,
-///     ShortSaleBySectorApi, TopixPricesApi, TradingByInvestorTypeApi, TradingCalendarApi, Paginatable,
-///     WeeklyMarginTradingOutstandingsApi
+///     BreakdownTradingDataApi, CashDividendDataApi, FinancialStatementsApi, FinancialStatementDetailsApi,
+///     IndicesApi, DailyStockPricesApi, JQuantsBuilder, JQuantsPremiumPlanClient, ListedIssueInfoApi,
+///     MorningSessionStockPricesApi, ShortSaleBySectorApi, TopixPricesApi, TradingByInvestorTypeApi,
+///     TradingCalendarApi, Paginatable, WeeklyMarginTradingOutstandingsApi
 /// };
 ///
 /// async {
@@ -108,6 +108,14 @@ use crate::{
 ///     let response = client.get_financial_statement_details().fetch_all().await.unwrap();
 ///     let response = client.get_financial_statement_details().fetch_all_and_merge().await.unwrap();
 ///     let stream = client.get_financial_statement_details().fetch_pages_stream();
+///
+///     // Get cash dividend data.
+///     let response = client.get_cash_dividend_data().send().await.unwrap();
+///
+///     // Paginate cash dividend data.
+///     let response = client.get_cash_dividend_data().fetch_all().await.unwrap();
+///     let response = client.get_cash_dividend_data().fetch_all_and_merge().await.unwrap();
+///     let stream = client.get_cash_dividend_data().fetch_pages_stream();
 /// };
 /// ```
 #[derive(Clone)]
@@ -157,3 +165,5 @@ impl TopixPricesApi for JQuantsPremiumPlanClient {}
 impl FinancialStatementsApi for JQuantsPremiumPlanClient {}
 
 impl FinancialStatementDetailsApi for JQuantsPremiumPlanClient {}
+
+impl CashDividendDataApi for JQuantsPremiumPlanClient {}

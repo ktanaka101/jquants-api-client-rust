@@ -2,6 +2,7 @@
 //! The models are used to serialize and deserialize the data that is sent to and from the API.
 
 pub mod breakdown_trading_data;
+pub mod cash_dividend_data;
 pub mod daily_stock_prices;
 pub mod financial_statement_details;
 pub mod financial_statements;
