@@ -12,7 +12,8 @@ use crate::{
         JQuantsApiClient, JQuantsPlanClient,
     },
     CashDividendDataApi, EarningsCalendarApi, FinancialStatementDetailsApi, FuturesPricesApi,
-    IndexOptionPricesApi, IndicesApi, TopixPricesApi, TradingByInvestorTypeApi, TradingCalendarApi,
+    IndexOptionPricesApi, IndicesApi, OptionsPricesApi, TopixPricesApi, TradingByInvestorTypeApi,
+    TradingCalendarApi,
 };
 
 /// Premium plan client for J-Quants API.
@@ -23,8 +24,9 @@ use crate::{
 /// use jquants_api_client::{
 ///     BreakdownTradingDataApi, CashDividendDataApi, DailyStockPricesApi, EarningsCalendarApi, FinancialStatementsApi,
 ///     FuturesPricesApi, FinancialStatementDetailsApi, IndexOptionPricesApi, IndicesApi, JQuantsBuilder,
-///     JQuantsPremiumPlanClient, ListedIssueInfoApi, MorningSessionStockPricesApi, ShortSaleBySectorApi,
-///     TopixPricesApi, TradingByInvestorTypeApi, TradingCalendarApi, Paginatable, WeeklyMarginTradingOutstandingsApi
+///     JQuantsPremiumPlanClient, ListedIssueInfoApi, MorningSessionStockPricesApi, OptionsPricesApi,
+///     ShortSaleBySectorApi, TopixPricesApi, TradingByInvestorTypeApi, TradingCalendarApi, Paginatable,
+///     WeeklyMarginTradingOutstandingsApi
 /// };
 ///
 /// async {
@@ -140,6 +142,14 @@ use crate::{
 ///     let response = client.get_futures_prices("2024-08-01").fetch_all().await.unwrap();
 ///     let response = client.get_futures_prices("2024-08-01").fetch_all_and_merge().await.unwrap();
 ///     let stream = client.get_futures_prices("2024-08-01").fetch_pages_stream();
+///
+///     // Get options prices.
+///     let response = client.get_options_prices("2024-08-01").send().await.unwrap();
+///
+///     // Paginate options prices.
+///     let response = client.get_options_prices("2024-08-01").fetch_all().await.unwrap();
+///     let response = client.get_options_prices("2024-08-01").fetch_all_and_merge().await.unwrap();
+///     let stream = client.get_options_prices("2024-08-01").fetch_pages_stream();
 /// };
 /// ```
 #[derive(Clone)]
@@ -197,3 +207,5 @@ impl EarningsCalendarApi for JQuantsPremiumPlanClient {}
 impl IndexOptionPricesApi for JQuantsPremiumPlanClient {}
 
 impl FuturesPricesApi for JQuantsPremiumPlanClient {}
+
+impl OptionsPricesApi for JQuantsPremiumPlanClient {}

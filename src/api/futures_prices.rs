@@ -21,6 +21,7 @@ pub struct FuturesPricesBuilder {
     client: JQuantsApiClient,
 
     /// Category of data
+    #[serde(skip_serializing_if = "Option::is_none")]
     category: Option<FuturesCode>,
 
     /// Date of data (e.g., "20210901" or "2021-09-01")

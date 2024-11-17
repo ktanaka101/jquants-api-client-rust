@@ -12,6 +12,7 @@ pub mod index_option_prices;
 pub mod indicies;
 pub mod listed_issue_info;
 pub mod morning_session_stock_prices;
+pub mod options_prices;
 pub mod shared;
 pub mod short_sale_by_sector;
 pub mod topic_prices;
