@@ -1,5 +1,6 @@
 //! Shared types for the APIs.
 
+pub mod futures_code;
 pub mod holiday_division;
 pub mod index_code;
 pub mod issue_type;
