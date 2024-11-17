@@ -9,7 +9,8 @@ use crate::{
         weekly_margin_trading_outstandings::WeeklyMarginTradingOutstandingsApi,
         JQuantsApiClient, JQuantsPlanClient,
     },
-    EarningsCalendarApi, IndicesApi, TopixPricesApi, TradingByInvestorTypeApi, TradingCalendarApi,
+    EarningsCalendarApi, IndexOptionPricesApi, IndicesApi, TopixPricesApi,
+    TradingByInvestorTypeApi, TradingCalendarApi,
 };
 
 /// Standard plan client for J-Quants API.
@@ -18,9 +19,9 @@ use crate::{
 ///
 /// ```no_run
 /// use jquants_api_client::{
-///     DailyStockPricesApi, EarningsCalendarApi, FinancialStatementsApi, IndicesApi, JQuantsBuilder,
-///     JQuantsStandardPlanClient, ListedIssueInfoApi, ShortSaleBySectorApi, TopixPricesApi, TradingByInvestorTypeApi,
-///     TradingCalendarApi, Paginatable, WeeklyMarginTradingOutstandingsApi
+///     DailyStockPricesApi, EarningsCalendarApi, FinancialStatementsApi, IndexOptionPricesApi, IndicesApi,
+///     JQuantsBuilder, JQuantsStandardPlanClient, ListedIssueInfoApi, ShortSaleBySectorApi, TopixPricesApi,
+///     TradingByInvestorTypeApi, TradingCalendarApi, Paginatable, WeeklyMarginTradingOutstandingsApi
 /// };
 ///
 /// async {
@@ -96,6 +97,14 @@ use crate::{
 ///     let response = client.get_earnings_calendar().fetch_all().await.unwrap();
 ///     let response = client.get_earnings_calendar().fetch_all_and_merge().await.unwrap();
 ///     let stream = client.get_earnings_calendar().fetch_pages_stream();
+///
+///     // Get idnex option prices.
+///     let response = client.get_index_option_prices("2024-08-01").send().await.unwrap();
+///
+///     // Paginate idnex option prices.
+///     let response = client.get_index_option_prices("2024-08-01").fetch_all().await.unwrap();
+///     let response = client.get_index_option_prices("2024-08-01").fetch_all_and_merge().await.unwrap();
+///     let stream = client.get_index_option_prices("2024-08-01").fetch_pages_stream();
 /// };
 /// ```
 #[derive(Clone)]
@@ -141,3 +150,5 @@ impl TopixPricesApi for JQuantsStandardPlanClient {}
 impl FinancialStatementsApi for JQuantsStandardPlanClient {}
 
 impl EarningsCalendarApi for JQuantsStandardPlanClient {}
+
+impl IndexOptionPricesApi for JQuantsStandardPlanClient {}

@@ -11,8 +11,8 @@ use crate::{
         weekly_margin_trading_outstandings::WeeklyMarginTradingOutstandingsApi,
         JQuantsApiClient, JQuantsPlanClient,
     },
-    CashDividendDataApi, EarningsCalendarApi, FinancialStatementDetailsApi, IndicesApi,
-    TopixPricesApi, TradingByInvestorTypeApi, TradingCalendarApi,
+    CashDividendDataApi, EarningsCalendarApi, FinancialStatementDetailsApi, IndexOptionPricesApi,
+    IndicesApi, TopixPricesApi, TradingByInvestorTypeApi, TradingCalendarApi,
 };
 
 /// Premium plan client for J-Quants API.
@@ -21,8 +21,8 @@ use crate::{
 ///
 /// ```no_run
 /// use jquants_api_client::{
-///     BreakdownTradingDataApi, CashDividendDataApi, EarningsCalendarApi, FinancialStatementsApi,
-///     FinancialStatementDetailsApi, IndicesApi, DailyStockPricesApi, JQuantsBuilder, JQuantsPremiumPlanClient,
+///     BreakdownTradingDataApi, CashDividendDataApi, DailyStockPricesApi, EarningsCalendarApi, FinancialStatementsApi,
+///     FinancialStatementDetailsApi, IndexOptionPricesApi, IndicesApi, JQuantsBuilder, JQuantsPremiumPlanClient,
 ///     ListedIssueInfoApi, MorningSessionStockPricesApi, ShortSaleBySectorApi, TopixPricesApi,
 ///     TradingByInvestorTypeApi, TradingCalendarApi, Paginatable, WeeklyMarginTradingOutstandingsApi
 /// };
@@ -124,6 +124,14 @@ use crate::{
 ///     let response = client.get_earnings_calendar().fetch_all().await.unwrap();
 ///     let response = client.get_earnings_calendar().fetch_all_and_merge().await.unwrap();
 ///     let stream = client.get_earnings_calendar().fetch_pages_stream();
+///
+///     // Get idnex option prices.
+///     let response = client.get_index_option_prices("2024-08-01").send().await.unwrap();
+///
+///     // Paginate idnex option prices.
+///     let response = client.get_index_option_prices("2024-08-01").fetch_all().await.unwrap();
+///     let response = client.get_index_option_prices("2024-08-01").fetch_all_and_merge().await.unwrap();
+///     let stream = client.get_index_option_prices("2024-08-01").fetch_pages_stream();
 /// };
 /// ```
 #[derive(Clone)]
@@ -177,3 +185,5 @@ impl FinancialStatementDetailsApi for JQuantsPremiumPlanClient {}
 impl CashDividendDataApi for JQuantsPremiumPlanClient {}
 
 impl EarningsCalendarApi for JQuantsPremiumPlanClient {}
+
+impl IndexOptionPricesApi for JQuantsPremiumPlanClient {}

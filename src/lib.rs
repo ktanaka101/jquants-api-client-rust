@@ -10,6 +10,7 @@ pub use api::daily_stock_prices::*;
 pub use api::earnings_calendar::*;
 pub use api::financial_statement_details::*;
 pub use api::financial_statements::*;
+pub use api::index_option_prices::*;
 pub use api::indicies::*;
 pub use api::listed_issue_info::*;
 pub use api::morning_session_stock_prices::*;

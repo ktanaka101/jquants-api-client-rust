@@ -7,6 +7,7 @@ pub mod daily_stock_prices;
 pub mod earnings_calendar;
 pub mod financial_statement_details;
 pub mod financial_statements;
+pub mod index_option_prices;
 pub mod indicies;
 pub mod listed_issue_info;
 pub mod morning_session_stock_prices;
