@@ -7,6 +7,7 @@ pub mod error;
 pub use api::breakdown_trading_data::*;
 pub use api::cash_dividend_data::*;
 pub use api::daily_stock_prices::*;
+pub use api::earnings_calendar::*;
 pub use api::financial_statement_details::*;
 pub use api::financial_statements::*;
 pub use api::indicies::*;

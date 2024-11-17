@@ -4,6 +4,7 @@
 pub mod breakdown_trading_data;
 pub mod cash_dividend_data;
 pub mod daily_stock_prices;
+pub mod earnings_calendar;
 pub mod financial_statement_details;
 pub mod financial_statements;
 pub mod indicies;
