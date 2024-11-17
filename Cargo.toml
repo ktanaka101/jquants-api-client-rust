@@ -19,3 +19,4 @@ async-stream = "0.3"
 
 [dev-dependencies]
 pretty_assertions = "1.4"
+maplit = "1.0"

@@ -11,7 +11,8 @@ use crate::{
         weekly_margin_trading_outstandings::WeeklyMarginTradingOutstandingsApi,
         JQuantsApiClient, JQuantsPlanClient,
     },
-    IndicesApi, TopixPricesApi, TradingByInvestorTypeApi, TradingCalendarApi,
+    FinancialStatementDetailsApi, IndicesApi, TopixPricesApi, TradingByInvestorTypeApi,
+    TradingCalendarApi,
 };
 
 /// Premium plan client for J-Quants API.
@@ -20,9 +21,10 @@ use crate::{
 ///
 /// ```no_run
 /// use jquants_api_client::{
-///     BreakdownTradingDataApi, FinancialStatementsApi, IndicesApi, DailyStockPricesApi, JQuantsBuilder,
-///     JQuantsPremiumPlanClient, ListedIssueInfoApi, MorningSessionStockPricesApi, ShortSaleBySectorApi,
-///     TopixPricesApi, TradingByInvestorTypeApi, TradingCalendarApi, Paginatable, WeeklyMarginTradingOutstandingsApi
+///     BreakdownTradingDataApi, FinancialStatementsApi, FinancialStatementDetailsApi, IndicesApi, DailyStockPricesApi,
+///     JQuantsBuilder, JQuantsPremiumPlanClient, ListedIssueInfoApi, MorningSessionStockPricesApi,
+///     ShortSaleBySectorApi, TopixPricesApi, TradingByInvestorTypeApi, TradingCalendarApi, Paginatable,
+///     WeeklyMarginTradingOutstandingsApi
 /// };
 ///
 /// async {
@@ -98,6 +100,14 @@ use crate::{
 ///     let response = client.get_financial_statements().fetch_all().await.unwrap();
 ///     let response = client.get_financial_statements().fetch_all_and_merge().await.unwrap();
 ///     let stream = client.get_financial_statements().fetch_pages_stream();
+///
+///     // Get financial statement detail.
+///     let response = client.get_financial_statement_details().send().await.unwrap();
+///
+///     // Paginate financial statement detail.
+///     let response = client.get_financial_statement_details().fetch_all().await.unwrap();
+///     let response = client.get_financial_statement_details().fetch_all_and_merge().await.unwrap();
+///     let stream = client.get_financial_statement_details().fetch_pages_stream();
 /// };
 /// ```
 #[derive(Clone)]
@@ -145,3 +155,5 @@ impl IndicesApi for JQuantsPremiumPlanClient {}
 impl TopixPricesApi for JQuantsPremiumPlanClient {}
 
 impl FinancialStatementsApi for JQuantsPremiumPlanClient {}
+
+impl FinancialStatementDetailsApi for JQuantsPremiumPlanClient {}
