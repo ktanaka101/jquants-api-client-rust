@@ -3,6 +3,7 @@
 use crate::{
     api::{
         daily_stock_prices::{DailyStockPricesApi, DailyStockPricesFreePlanResponse},
+        financial_statements::FinancialStatementsApi,
         listed_issue_info::{ListedIssueInfoApi, ListedIssueInfoFreePlanResponse},
         JQuantsApiClient, JQuantsPlanClient,
     },
@@ -15,8 +16,8 @@ use crate::{
 ///
 /// ```no_run
 /// use jquants_api_client::{
-///     DailyStockPricesApi, JQuantsBuilder, JQuantsFreePlanClient, ListedIssueInfoApi,
-///     TradingCalendarApi, Paginatable
+///     DailyStockPricesApi, FinancialStatementsApi, JQuantsBuilder, JQuantsFreePlanClient,
+///     ListedIssueInfoApi, TradingCalendarApi, Paginatable
 /// };
 ///
 /// async {
@@ -36,6 +37,14 @@ use crate::{
 ///
 ///     // Get trading calendar.
 ///     let response = client.get_trading_calendar().send().await.unwrap();
+///
+///     // Get financial statements.
+///     let response = client.get_financial_statements().send().await.unwrap();
+///
+///     // Paginate stock prices.
+///     let response = client.get_financial_statements().fetch_all().await.unwrap();
+///     let response = client.get_financial_statements().fetch_all_and_merge().await.unwrap();
+///     let stream = client.get_financial_statements().fetch_pages_stream();
 /// };
 /// ```
 #[derive(Clone)]
@@ -67,3 +76,5 @@ impl DailyStockPricesApi for JQuantsFreePlanClient {
 }
 
 impl TradingCalendarApi for JQuantsFreePlanClient {}
+
+impl FinancialStatementsApi for JQuantsFreePlanClient {}

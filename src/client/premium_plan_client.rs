@@ -4,6 +4,7 @@ use crate::{
     api::{
         breakdown_trading_data::BreakdownTradingDataApi,
         daily_stock_prices::{DailyStockPricesApi, DailyStockPricesPremiumPlanResponse},
+        financial_statements::FinancialStatementsApi,
         listed_issue_info::{ListedIssueInfoApi, ListedIssueInfoPremiumPlanResponse},
         morning_session_stock_prices::MorningSessionStockPricesApi,
         short_sale_by_sector::ShortSaleBySectorApi,
@@ -19,9 +20,9 @@ use crate::{
 ///
 /// ```no_run
 /// use jquants_api_client::{
-///     BreakdownTradingDataApi, IndicesApi, DailyStockPricesApi, JQuantsBuilder, JQuantsPremiumPlanClient,
-///     ListedIssueInfoApi, MorningSessionStockPricesApi, ShortSaleBySectorApi, TopixPricesApi,
-///     TradingByInvestorTypeApi, TradingCalendarApi, Paginatable, WeeklyMarginTradingOutstandingsApi
+///     BreakdownTradingDataApi, FinancialStatementsApi, IndicesApi, DailyStockPricesApi, JQuantsBuilder,
+///     JQuantsPremiumPlanClient, ListedIssueInfoApi, MorningSessionStockPricesApi, ShortSaleBySectorApi,
+///     TopixPricesApi, TradingByInvestorTypeApi, TradingCalendarApi, Paginatable, WeeklyMarginTradingOutstandingsApi
 /// };
 ///
 /// async {
@@ -89,6 +90,14 @@ use crate::{
 ///     let response = client.get_topix_prices().fetch_all().await.unwrap();
 ///     let response = client.get_topix_prices().fetch_all_and_merge().await.unwrap();
 ///     let stream = client.get_topix_prices().fetch_pages_stream();
+///
+///     // Get financial statements.
+///     let response = client.get_financial_statements().send().await.unwrap();
+///
+///     // Paginate stock prices.
+///     let response = client.get_financial_statements().fetch_all().await.unwrap();
+///     let response = client.get_financial_statements().fetch_all_and_merge().await.unwrap();
+///     let stream = client.get_financial_statements().fetch_pages_stream();
 /// };
 /// ```
 #[derive(Clone)]
@@ -134,3 +143,5 @@ impl TradingCalendarApi for JQuantsPremiumPlanClient {}
 impl IndicesApi for JQuantsPremiumPlanClient {}
 
 impl TopixPricesApi for JQuantsPremiumPlanClient {}
+
+impl FinancialStatementsApi for JQuantsPremiumPlanClient {}

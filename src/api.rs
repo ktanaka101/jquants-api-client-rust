@@ -3,6 +3,7 @@
 
 pub mod breakdown_trading_data;
 pub mod daily_stock_prices;
+pub mod financial_statements;
 pub mod indicies;
 pub mod listed_issue_info;
 pub mod morning_session_stock_prices;

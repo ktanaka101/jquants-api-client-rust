@@ -3,6 +3,7 @@
 use crate::{
     api::{
         daily_stock_prices::{DailyStockPricesApi, DailyStockPricesLightPlanResponse},
+        financial_statements::FinancialStatementsApi,
         listed_issue_info::{ListedIssueInfoApi, ListedIssueInfoLightPlanResponse},
         JQuantsApiClient, JQuantsPlanClient,
     },
@@ -15,8 +16,8 @@ use crate::{
 ///
 /// ```no_run
 /// use jquants_api_client::{
-///     DailyStockPricesApi, JQuantsBuilder, JQuantsLightPlanClient, ListedIssueInfoApi,
-///     TradingByInvestorTypeApi, TopixPricesApi, TradingCalendarApi, Paginatable
+///     DailyStockPricesApi, FinancialStatementsApi, JQuantsBuilder, JQuantsLightPlanClient,
+///     ListedIssueInfoApi, TradingByInvestorTypeApi, TopixPricesApi, TradingCalendarApi, Paginatable
 /// };
 ///
 /// async {
@@ -52,6 +53,14 @@ use crate::{
 ///     let response = client.get_topix_prices().fetch_all().await.unwrap();
 ///     let response = client.get_topix_prices().fetch_all_and_merge().await.unwrap();
 ///     let stream = client.get_topix_prices().fetch_pages_stream();
+///
+///     // Get financial statements.
+///     let response = client.get_financial_statements().send().await.unwrap();
+///
+///     // Paginate stock prices.
+///     let response = client.get_financial_statements().fetch_all().await.unwrap();
+///     let response = client.get_financial_statements().fetch_all_and_merge().await.unwrap();
+///     let stream = client.get_financial_statements().fetch_pages_stream();
 /// };
 /// ```
 #[derive(Clone)]
@@ -87,3 +96,5 @@ impl TradingByInvestorTypeApi for JQuantsLightPlanClient {}
 impl TradingCalendarApi for JQuantsLightPlanClient {}
 
 impl TopixPricesApi for JQuantsLightPlanClient {}
+
+impl FinancialStatementsApi for JQuantsLightPlanClient {}
