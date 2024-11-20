@@ -211,24 +211,32 @@ impl JQuantsApiClientRef {
         mail_address: &str,
         password: &str,
     ) -> Result<(), JQuantsError> {
+        tracing::debug!("Starting reset a refresh token process.");
+
         match get_refresh_token_from_api(&self.client, mail_address, password).await {
             Ok(new_refresh_token) => {
                 let mut token_set_write = self.token_set.write().await;
                 token_set_write.refresh_token = new_refresh_token;
+                tracing::debug!("Refresh token refreshed successfully.");
                 Ok(())
             }
-            Err(e) => Err(e),
+            Err(e) => {
+                tracing::error!("Failed to refresh a refresh token: {:?}", e);
+                Err(e)
+            }
         }
     }
 
     /// Get a new ID token from a refresh token.
     async fn reset_id_token(&self) -> Result<(), JQuantsError> {
+        tracing::debug!("Starting reset a refresh id process.");
+
         let refresh_token = { self.token_set.read().await.refresh_token.clone() };
         match get_id_token_from_api(&self.client, &refresh_token).await {
             Ok(new_id_token) => {
                 let mut token_set_write = self.token_set.write().await;
                 token_set_write.id_token = Some(IdTokenWrapper::new(new_id_token));
-                tracing::info!("ID token refreshed successfully.");
+                tracing::debug!("ID token refreshed successfully.");
                 Ok(())
             }
             Err(e) => {
@@ -249,17 +257,8 @@ impl JQuantsApiClientRef {
         };
 
         if needs_refresh {
-            tracing::info!("ID token is invalid or expired. Attempting to refresh.");
-            match self.reset_id_token().await {
-                Ok(_) => {
-                    tracing::info!("Successfully refreshed ID token.");
-                    Ok(())
-                }
-                Err(e) => {
-                    tracing::error!("Failed to refresh ID token: {:?}", e);
-                    Err(e)
-                }
-            }
+            tracing::debug!("ID token is invalid or expired. Attempting to refresh.");
+            self.reset_id_token().await
         } else {
             tracing::debug!("ID token is still valid.");
             Ok(())
@@ -268,10 +267,24 @@ impl JQuantsApiClientRef {
 
     /// Reauthenticate with a new refresh token and a new id token.
     async fn reset_tokens(&self, mail_address: &str, password: &str) -> Result<(), JQuantsError> {
+        tracing::debug!("Starting re-authentication process.");
+
         // 再認証して新しいrefresh_tokenとid_tokenを取得
-        let new_refresh_token =
-            get_refresh_token_from_api(&self.client, mail_address, password).await?;
-        let new_id_token = get_id_token_from_api(&self.client, &new_refresh_token).await?;
+        let new_refresh_token = get_refresh_token_from_api(&self.client, mail_address, password)
+            .await
+            .map_err(|e| {
+                tracing::error!("Failed to obtain new refresh token: {:?}", e);
+                e
+            })?;
+        tracing::debug!("Successfully obtained new refresh token.");
+
+        let new_id_token = get_id_token_from_api(&self.client, &new_refresh_token)
+            .await
+            .map_err(|e| {
+                tracing::error!("Failed to obtain new ID token: {:?}", e);
+                e
+            })?;
+        tracing::debug!("Successfully obtained new ID token.");
 
         let expires_at = Local::now() + chrono::Duration::hours(24);
         let new_id_token_wrapper = Some(IdTokenWrapper {
@@ -284,6 +297,7 @@ impl JQuantsApiClientRef {
             token_set_write.id_token = new_id_token_wrapper;
         }
 
+        tracing::debug!("Re-authentication process process completed successfully.");
         Ok(())
     }
 
@@ -332,7 +346,15 @@ impl JQuantsApiClientRef {
         &self,
         request: RequestBuilder,
     ) -> Result<T, JQuantsError> {
-        tracing::debug!("Sending API request: {:?}", request);
+        if let Some(url) = request
+            .try_clone()
+            .and_then(|req| req.build().ok().map(|r| r.url().clone()))
+        {
+            tracing::debug!("Sending API request to URL: {url}");
+        } else {
+            tracing::debug!("Sending API request.");
+        }
+
         let response = request.send().await?;
         let status = response.status();
         let text = response.text().await.unwrap_or_default();
@@ -345,7 +367,7 @@ impl JQuantsApiClientRef {
                     Ok(data)
                 }
                 Err(_) => {
-                    tracing::error!("Failed to parse response: {}", text);
+                    tracing::error!("Failed to parse response");
                     Err(JQuantsError::InvalidResponseFormat {
                         status_code: status.as_u16(),
                         body: text,
@@ -356,18 +378,17 @@ impl JQuantsApiClientRef {
             match serde_json::from_str::<JQuantsErrorResponse>(&text) {
                 Ok(error_response) => match status {
                     reqwest::StatusCode::UNAUTHORIZED => {
-                        tracing::warn!("Received UNAUTHORIZED error: {:?}", error_response);
+                        tracing::warn!(
+                            "Received UNAUTHORIZED error. Status code: {}",
+                            status.as_u16()
+                        );
                         Err(JQuantsError::IdTokenInvalidOrExpired {
                             body: error_response,
                             status_code: status.as_u16(),
                         })
                     }
                     _ => {
-                        tracing::error!(
-                            "API error occurred: Status code {}, Body: {}",
-                            status.as_u16(),
-                            text
-                        );
+                        tracing::error!("API error occurred. Status code: {}", status.as_u16());
                         Err(JQuantsError::ApiError {
                             body: error_response,
                             status_code: status.as_u16(),
@@ -375,11 +396,7 @@ impl JQuantsApiClientRef {
                     }
                 },
                 Err(_) => {
-                    tracing::error!(
-                        "Invalid response format: Status code {}, Body: {}",
-                        status.as_u16(),
-                        text
-                    );
+                    tracing::error!("Invalid response format. Status code: {}", status.as_u16());
                     Err(JQuantsError::InvalidResponseFormat {
                         status_code: status.as_u16(),
                         body: text,
