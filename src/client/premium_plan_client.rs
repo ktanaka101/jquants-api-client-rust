@@ -23,8 +23,8 @@ use crate::{
 /// ```no_run
 /// use jquants_api_client::{
 ///     BreakdownTradingDataApi, CashDividendDataApi, DailyStockPricesApi, EarningsCalendarApi, FinancialStatementsApi,
-///     FuturesPricesApi, FinancialStatementDetailsApi, IndexOptionPricesApi, IndicesApi, JQuantsBuilder,
-///     JQuantsPremiumPlanClient, ListedIssueInfoApi, MorningSessionStockPricesApi, OptionsPricesApi,
+///     FuturesPricesApi, FinancialStatementDetailsApi, JQuantsBuilder, JQuantsPlanClient, JQuantsPremiumPlanClient,
+///     IndexOptionPricesApi, IndicesApi, ListedIssueInfoApi, MorningSessionStockPricesApi, OptionsPricesApi,
 ///     ShortSaleBySectorApi, TopixPricesApi, TradingByInvestorTypeApi, TradingCalendarApi, Paginatable,
 ///     WeeklyMarginTradingOutstandingsApi
 /// };
@@ -157,16 +157,11 @@ pub struct JQuantsPremiumPlanClient {
     api_client: JQuantsApiClient,
 }
 
-impl JQuantsPremiumPlanClient {
-    /// Create a new client from a refresh token.
-    pub fn new_from_refresh_token(refresh_token: String) -> Self {
-        Self {
-            api_client: JQuantsApiClient::new_from_refresh_token(refresh_token),
-        }
-    }
-}
-
 impl JQuantsPlanClient for JQuantsPremiumPlanClient {
+    fn new(api_client: JQuantsApiClient) -> Self {
+        Self { api_client }
+    }
+
     fn get_api_client(&self) -> &JQuantsApiClient {
         &self.api_client
     }

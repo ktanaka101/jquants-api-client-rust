@@ -26,7 +26,7 @@
 use futures::stream::StreamExt;
 use jquants_api_client::{
     DailyStockPricesApi, DailyStockPricesStandardPlanResponse, JQuantsError, JQuantsFreePlanClient,
-    Paginatable,
+    JQuantsPlanClient, Paginatable,
 };
 use std::env;
 use tracing::Level;

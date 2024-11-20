@@ -17,7 +17,8 @@ use crate::{
 /// ```no_run
 /// use jquants_api_client::{
 ///     DailyStockPricesApi, EarningsCalendarApi, FinancialStatementsApi, JQuantsBuilder, JQuantsLightPlanClient,
-///     ListedIssueInfoApi, TradingByInvestorTypeApi, TopixPricesApi, TradingCalendarApi, Paginatable
+///     JQuantsPlanClient, ListedIssueInfoApi, TradingByInvestorTypeApi, TopixPricesApi, TradingCalendarApi,
+///     Paginatable
 /// };
 ///
 /// async {
@@ -76,16 +77,11 @@ pub struct JQuantsLightPlanClient {
     api_client: JQuantsApiClient,
 }
 
-impl JQuantsLightPlanClient {
-    /// Create a new client from a refresh token.
-    pub fn new_from_refresh_token(refresh_token: String) -> Self {
-        Self {
-            api_client: JQuantsApiClient::new_from_refresh_token(refresh_token),
-        }
-    }
-}
-
 impl JQuantsPlanClient for JQuantsLightPlanClient {
+    fn new(api_client: JQuantsApiClient) -> Self {
+        Self { api_client }
+    }
+
     fn get_api_client(&self) -> &JQuantsApiClient {
         &self.api_client
     }

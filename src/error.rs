@@ -15,4 +15,24 @@ pub enum JQuantsError {
     /// Error when parsing an HTTP response
     #[error("HTTP response error: {0}")]
     ErrorResponse(#[from] Box<ErrorResponse>),
+
+    /// Invalid credentials provided
+    #[error("Invalid credentials provided.")]
+    InvalidCredentials,
+
+    /// Invalid refresh token
+    #[error("Invalid refresh token.")]
+    InvalidRefreshToken,
+
+    /// Refresh token has expired and re-authentication is required
+    #[error("Refresh token has expired and re-authentication is required.")]
+    RefreshTokenExpired,
+
+    /// Bug error. This should never happen.
+    #[error("BUG: {0}. Please report this issue.")]
+    BugError(String),
+
+    /// Unexpected error
+    #[error("Unexpected error: {0}")]
+    Unexpected(String),
 }

@@ -17,7 +17,7 @@ use crate::{
 /// ```no_run
 /// use jquants_api_client::{
 ///     DailyStockPricesApi, EarningsCalendarApi, FinancialStatementsApi, JQuantsBuilder, JQuantsFreePlanClient,
-///     ListedIssueInfoApi, TradingCalendarApi, Paginatable
+///     JQuantsPlanClient, ListedIssueInfoApi, TradingCalendarApi, Paginatable
 /// };
 ///
 /// async {
@@ -57,19 +57,14 @@ use crate::{
 /// ```
 #[derive(Clone)]
 pub struct JQuantsFreePlanClient {
-    api_client: JQuantsApiClient,
-}
-
-impl JQuantsFreePlanClient {
-    /// Create a new client from a refresh token.
-    pub fn new_from_refresh_token(refresh_token: String) -> Self {
-        Self {
-            api_client: JQuantsApiClient::new_from_refresh_token(refresh_token),
-        }
-    }
+    pub(crate) api_client: JQuantsApiClient,
 }
 
 impl JQuantsPlanClient for JQuantsFreePlanClient {
+    fn new(api_client: JQuantsApiClient) -> Self {
+        Self { api_client }
+    }
+
     fn get_api_client(&self) -> &JQuantsApiClient {
         &self.api_client
     }
