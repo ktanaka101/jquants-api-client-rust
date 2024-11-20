@@ -324,6 +324,14 @@ impl JQuantsApiClientRef {
     ) -> Result<T, JQuantsError> {
         self.reset_id_token_if_needed().await?;
 
+        self.common_send(request).await
+    }
+
+    /// Send a request and parse the response.
+    async fn common_send<T: DeserializeOwned + fmt::Debug>(
+        &self,
+        request: RequestBuilder,
+    ) -> Result<T, JQuantsError> {
         let id_token = {
             self.token_set
                 .read()
@@ -337,15 +345,8 @@ impl JQuantsApiClientRef {
                 .id_token
                 .clone()
         };
-        self.common_send(request.header("Authorization", &format!("Bearer {id_token}")))
-            .await
-    }
+        let request = request.header("Authorization", &format!("Bearer {id_token}"));
 
-    /// Send a request and parse the response.
-    async fn common_send<T: DeserializeOwned + fmt::Debug>(
-        &self,
-        request: RequestBuilder,
-    ) -> Result<T, JQuantsError> {
         if let Some(url) = request
             .try_clone()
             .and_then(|req| req.build().ok().map(|r| r.url().clone()))
