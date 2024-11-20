@@ -22,7 +22,7 @@ pub mod weekly_margin_trading_outstandings;
 
 use shared::{
     auth::{get_id_token_from_api, get_refresh_token_from_api},
-    responses::error_response::ErrorResponse,
+    responses::error_response::JQuantsErrorResponse,
 };
 use std::{fmt, sync::Arc};
 use tokio::sync::RwLock;
@@ -234,10 +234,13 @@ impl JQuantsApiClientRef {
                     id_token: new_id_token,
                     updated_at: Local::now(),
                 });
+                tracing::info!("ID token refreshed successfully.");
                 Ok(())
             }
-            Err(JQuantsError::InvalidCredentials) => Err(JQuantsError::RefreshTokenExpired),
-            Err(e) => Err(e),
+            Err(e) => {
+                tracing::error!("Failed to refresh ID token: {:?}", e);
+                Err(e)
+            }
         }
     }
 
@@ -252,8 +255,19 @@ impl JQuantsApiClientRef {
         };
 
         if needs_refresh {
-            self.reset_id_token().await
+            tracing::info!("ID token is invalid or expired. Attempting to refresh.");
+            match self.reset_id_token().await {
+                Ok(_) => {
+                    tracing::info!("Successfully refreshed ID token.");
+                    Ok(())
+                }
+                Err(e) => {
+                    tracing::error!("Failed to refresh ID token: {:?}", e);
+                    Err(e)
+                }
+            }
         } else {
+            tracing::debug!("ID token is still valid.");
             Ok(())
         }
     }
@@ -306,7 +320,10 @@ impl JQuantsApiClientRef {
                 .await
                 .id_token
                 .as_ref()
-                .ok_or_else(|| JQuantsError::BugError("Id Token not found".to_string()))?
+                .ok_or_else(|| {
+                    tracing::error!("ID token not found.");
+                    JQuantsError::BugError("ID token not found.".to_string())
+                })?
                 .id_token
                 .clone()
         };
@@ -319,28 +336,60 @@ impl JQuantsApiClientRef {
         &self,
         request: RequestBuilder,
     ) -> Result<T, JQuantsError> {
+        tracing::debug!("Sending API request: {:?}", request);
         let response = request.send().await?;
-        match response.status().as_u16() {
-            200 => match response.json::<T>().await {
-                Ok(json_data) => {
-                    tracing::info!("Response success");
-                    Ok(json_data)
+        let status = response.status();
+        let text = response.text().await.unwrap_or_default();
+        tracing::debug!("Received response with status: {}", status);
+
+        if status.is_success() {
+            match serde_json::from_str::<T>(&text) {
+                Ok(data) => {
+                    tracing::debug!("Successfully parsed response.");
+                    Ok(data)
                 }
-                Err(e) => {
-                    tracing::error!("Can't parse response to json: {:?}", e);
-                    Err(JQuantsError::ReqwestError(e))
+                Err(_) => {
+                    tracing::error!("Failed to parse response: {}", text);
+                    Err(JQuantsError::InvalidResponseFormat {
+                        status_code: status.as_u16(),
+                        body: text,
+                    })
                 }
-            },
-            _ => match response.json::<ErrorResponse>().await {
-                Ok(error_response) => {
-                    tracing::info!("Response error: {error_response:?}");
-                    Err(JQuantsError::ErrorResponse(error_response.into()))
+            }
+        } else {
+            match serde_json::from_str::<JQuantsErrorResponse>(&text) {
+                Ok(error_response) => match status {
+                    reqwest::StatusCode::UNAUTHORIZED => {
+                        tracing::warn!("Received UNAUTHORIZED error: {:?}", error_response);
+                        Err(JQuantsError::IdTokenInvalidOrExpired {
+                            body: error_response,
+                            status_code: status.as_u16(),
+                        })
+                    }
+                    _ => {
+                        tracing::error!(
+                            "API error occurred: Status code {}, Body: {}",
+                            status.as_u16(),
+                            text
+                        );
+                        Err(JQuantsError::ApiError {
+                            body: error_response,
+                            status_code: status.as_u16(),
+                        })
+                    }
+                },
+                Err(_) => {
+                    tracing::error!(
+                        "Invalid response format: Status code {}, Body: {}",
+                        status.as_u16(),
+                        text
+                    );
+                    Err(JQuantsError::InvalidResponseFormat {
+                        status_code: status.as_u16(),
+                        body: text,
+                    })
                 }
-                Err(e) => {
-                    tracing::info!("Unknown response error: {e:?}");
-                    Err(JQuantsError::ReqwestError(e))
-                }
-            },
+            }
         }
     }
 }

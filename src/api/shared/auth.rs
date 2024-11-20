@@ -3,7 +3,7 @@
 use reqwest::Client;
 
 use crate::{
-    api::build_url, ErrorResponse, IdTokenRequest, IdTokenResponse, JQuantsError,
+    api::build_url, IdTokenRequest, IdTokenResponse, JQuantsError, JQuantsErrorResponse,
     RefreshTokenRequest, RefreshTokenResponse,
 };
 
@@ -23,24 +23,35 @@ pub(crate) async fn get_refresh_token_from_api(
     };
 
     let response = client.post(&url).json(&request_body).send().await?;
-    match response.status() {
-        reqwest::StatusCode::OK => {
-            let auth_response: RefreshTokenResponse = response.json().await?;
-            Ok(auth_response.refresh_token)
+    let status = response.status();
+    let status_code = status.as_u16();
+    let text = response.text().await.unwrap_or_default();
+    if status == reqwest::StatusCode::OK {
+        match serde_json::from_str::<RefreshTokenResponse>(&text) {
+            Ok(data) => Ok(data.refresh_token),
+            Err(_) => Err(JQuantsError::InvalidResponseFormat {
+                status_code,
+                body: text,
+            }),
         }
-        reqwest::StatusCode::BAD_REQUEST | reqwest::StatusCode::FORBIDDEN => {
-            Err(JQuantsError::InvalidCredentials)
-        }
-        status => {
-            let error_response: Result<ErrorResponse, _> = response.json().await;
-            if let Ok(err) = error_response {
-                Err(JQuantsError::ErrorResponse(Box::new(err)))
-            } else {
-                Err(JQuantsError::Unexpected(format!(
-                    "Unexpected status code: {}",
-                    status
-                )))
-            }
+    } else {
+        match serde_json::from_str::<JQuantsErrorResponse>(&text) {
+            Ok(error_response) => match status {
+                reqwest::StatusCode::BAD_REQUEST | reqwest::StatusCode::FORBIDDEN => {
+                    Err(JQuantsError::InvalidCredentials {
+                        body: error_response,
+                        status_code,
+                    })
+                }
+                _ => Err(JQuantsError::ApiError {
+                    body: error_response,
+                    status_code,
+                }),
+            },
+            Err(_) => Err(JQuantsError::InvalidResponseFormat {
+                status_code,
+                body: text,
+            }),
         }
     }
 }
@@ -55,24 +66,33 @@ pub(crate) async fn get_id_token_from_api(
         refresh_token: refresh_token.to_string(),
     };
     let response = client.post(&url).query(&request_body).send().await?;
-
-    match response.status() {
-        reqwest::StatusCode::OK => {
-            let id_response: IdTokenResponse = response.json().await?;
-            Ok(id_response.id_token)
+    let status = response.status();
+    let status_code = status.as_u16();
+    let text = response.text().await.unwrap_or_default();
+    if status == reqwest::StatusCode::OK {
+        match serde_json::from_str::<IdTokenResponse>(&text) {
+            Ok(data) => Ok(data.id_token),
+            Err(_) => Err(JQuantsError::InvalidResponseFormat {
+                status_code,
+                body: text,
+            }),
         }
-        reqwest::StatusCode::BAD_REQUEST => Err(JQuantsError::InvalidRefreshToken),
-        reqwest::StatusCode::FORBIDDEN => Err(JQuantsError::RefreshTokenExpired),
-        status => {
-            let error_response: Result<ErrorResponse, _> = response.json().await;
-            if let Ok(err) = error_response {
-                Err(JQuantsError::ErrorResponse(Box::new(err)))
-            } else {
-                Err(JQuantsError::Unexpected(format!(
-                    "Unexpected status code: {}",
-                    status
-                )))
-            }
+    } else {
+        match serde_json::from_str::<JQuantsErrorResponse>(&text) {
+            Ok(error_response) => match status {
+                reqwest::StatusCode::FORBIDDEN => Err(JQuantsError::IdTokenInvalidOrExpired {
+                    body: error_response,
+                    status_code,
+                }),
+                _ => Err(JQuantsError::ApiError {
+                    body: error_response,
+                    status_code,
+                }),
+            },
+            Err(_) => Err(JQuantsError::InvalidResponseFormat {
+                status_code,
+                body: text,
+            }),
         }
     }
 }
