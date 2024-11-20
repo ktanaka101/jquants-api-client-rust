@@ -192,12 +192,9 @@ impl JQuantsApiClientRef {
     async fn new_from_account(mailaddress: &str, password: &str) -> Result<Self, JQuantsError> {
         let client = Client::new();
         let refresh_token = get_refresh_token_from_api(&client, mailaddress, password).await?;
-        let id_token = get_id_token_from_api(&client, &refresh_token).await?;
+        let new_id_token = get_id_token_from_api(&client, &refresh_token).await?;
 
-        let id_token_wrapper = IdTokenWrapper {
-            id_token,
-            updated_at: Local::now(),
-        };
+        let id_token_wrapper = IdTokenWrapper::new(new_id_token);
 
         Ok(Self {
             client,
@@ -230,10 +227,7 @@ impl JQuantsApiClientRef {
         match get_id_token_from_api(&self.client, &refresh_token).await {
             Ok(new_id_token) => {
                 let mut token_set_write = self.token_set.write().await;
-                token_set_write.id_token = Some(IdTokenWrapper {
-                    id_token: new_id_token,
-                    updated_at: Local::now(),
-                });
+                token_set_write.id_token = Some(IdTokenWrapper::new(new_id_token));
                 tracing::info!("ID token refreshed successfully.");
                 Ok(())
             }
@@ -279,13 +273,15 @@ impl JQuantsApiClientRef {
             get_refresh_token_from_api(&self.client, mail_address, password).await?;
         let new_id_token = get_id_token_from_api(&self.client, &new_refresh_token).await?;
 
+        let expires_at = Local::now() + chrono::Duration::hours(24);
+        let new_id_token_wrapper = Some(IdTokenWrapper {
+            id_token: new_id_token,
+            expires_at,
+        });
         {
             let mut token_set_write = self.token_set.write().await;
             token_set_write.refresh_token = new_refresh_token;
-            token_set_write.id_token = Some(IdTokenWrapper {
-                id_token: new_id_token,
-                updated_at: Local::now(),
-            });
+            token_set_write.id_token = new_id_token_wrapper;
         }
 
         Ok(())
@@ -411,18 +407,25 @@ pub(crate) struct TokenSet {
 pub(crate) struct IdTokenWrapper {
     /// ID Token
     id_token: String,
-    /// ID Token updated at
-    updated_at: DateTime<Local>,
+    /// ID Token expiration time
+    expires_at: DateTime<Local>,
 }
 impl IdTokenWrapper {
+    /// Create a new ID token wrapper.
+    fn new(id_token: String) -> Self {
+        let expires_at = Local::now() + chrono::Duration::hours(24);
+        IdTokenWrapper {
+            id_token,
+            expires_at,
+        }
+    }
+
     /// Check if the ID token is valid.
     /// The ID token is valid for 24 hours.
     ///
     /// [Docs](https://jpx.gitbook.io/j-quants-en/api-reference/idtoken#attention)
     fn is_valid(&self) -> bool {
-        let now = Local::now();
-        let duration = now.signed_duration_since(self.updated_at);
-        duration.num_hours() < 24
+        Local::now() < self.expires_at
     }
 }
 
@@ -435,7 +438,7 @@ impl fmt::Debug for IdTokenWrapper {
 
         f.debug_struct("IdTokenWrapper")
             .field("id_token", &masking_id_token)
-            .field("updated_at", &self.updated_at)
+            .field("expires_at", &self.expires_at)
             .finish()
     }
 }
