@@ -8,50 +8,50 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum SectionName {
     /// TSE1st
-    /// ja: 市場一部
-    /// en: First Section
+    /// * en: First Section
+    /// * ja: 市場一部
     #[serde(rename = "TSE1st")]
     FirstSection,
 
     /// TSE2nd
-    /// ja: 市場二部
-    /// en: Second Section
+    /// * en: Second Section
+    /// * ja: 市場二部
     #[serde(rename = "TSE2nd")]
     SecondSection,
 
     /// TSEMothers
-    /// ja: マザーズ
-    /// en: Mothers
+    /// * en: Mothers
+    /// * ja: マザーズ
     #[serde(rename = "TSEMothers")]
     Mothers,
 
     /// TSEJASDAQ
-    /// ja: JASDAQ
-    /// en: JASDAQ
+    /// * en: JASDAQ
+    /// * ja: JASDAQ
     #[serde(rename = "TSEJASDAQ")]
     JASDAQ,
 
     /// TSEPrime
-    /// ja: プライム
-    /// en: Prime
+    /// * en: Prime
+    /// * ja: プライム
     #[serde(rename = "TSEPrime")]
     Prime,
 
     /// TSEStandard
-    /// ja: スタンダード
-    /// en: Standard
+    /// * en: Standard
+    /// * ja: スタンダード
     #[serde(rename = "TSEStandard")]
     Standard,
 
     /// TSEGrowth
-    /// ja: グロース
-    /// en: Growth
+    /// * en: Growth
+    /// * ja: グロース
     #[serde(rename = "TSEGrowth")]
     Growth,
 
     /// TokyoNagoya
-    /// ja: 東証および名証
-    /// en: Tokyo and Nagoya Stock Exchange
+    /// * en: Tokyo and Nagoya Stock Exchange
+    /// * ja: 東証および名証
     #[serde(rename = "TokyoNagoya")]
     TokyoNagoyaStockExchange,
 
