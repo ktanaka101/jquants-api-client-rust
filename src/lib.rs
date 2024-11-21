@@ -21,7 +21,7 @@ pub use api::shared::{
     responses::error_response::*,
     traits::{builder::*, pagination::*},
     types::{
-        futures_code::*, holiday_division::*, index_code::*, issue_type::*,
+        accounting_period::*, futures_code::*, holiday_division::*, index_code::*, issue_type::*,
         margin_code::MarginCode, market_code::*, options_code::*, price_limit::*, section_name::*,
         sector17_code::*, sector33_code::*, type_of_document::*,
     },

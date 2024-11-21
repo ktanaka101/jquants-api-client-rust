@@ -2,7 +2,7 @@
 
 use serde::{Deserialize, Deserializer, Serialize};
 
-use crate::TypeOfDocument;
+use crate::{AccountingPeriod, TypeOfDocument};
 
 use super::{
     shared::traits::{
@@ -138,7 +138,7 @@ pub struct FinancialStatementItem {
 
     /// Type of Current Period (e.g., "3Q")
     #[serde(rename = "TypeOfCurrentPeriod")]
-    pub type_of_current_period: String,
+    pub type_of_current_period: AccountingPeriod,
 
     /// Start date of current accounting period
     #[serde(rename = "CurrentPeriodStartDate")]
@@ -704,7 +704,7 @@ mod tests {
                 local_code: "86970".to_string(),
                 disclosure_number: "20230127594871".to_string(),
                 type_of_document: TypeOfDocument::Q3FinancialStatementsConsolidatedIFRS,
-                type_of_current_period: "3Q".to_string(),
+                type_of_current_period: AccountingPeriod::Q3,
                 current_period_start_date: "2022-04-01".to_string(),
                 current_period_end_date: "2022-12-31".to_string(),
                 current_fiscal_year_start_date: "2022-04-01".to_string(),
@@ -939,7 +939,7 @@ mod tests {
                 local_code: "86970".to_string(),
                 disclosure_number: "20230127594871".to_string(),
                 type_of_document: TypeOfDocument::Q3FinancialStatementsConsolidatedIFRS,
-                type_of_current_period: "3Q".to_string(),
+                type_of_current_period: AccountingPeriod::Q3,
                 current_period_start_date: "2022-04-01".to_string(),
                 current_period_end_date: "2022-12-31".to_string(),
                 current_fiscal_year_start_date: "2022-04-01".to_string(),
