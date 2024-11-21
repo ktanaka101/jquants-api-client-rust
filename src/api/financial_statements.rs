@@ -1,6 +1,8 @@
 //! Financial Statements Data API.
 
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Deserializer, Serialize};
+
+use crate::TypeOfDocument;
 
 use super::{
     shared::traits::{
@@ -132,7 +134,7 @@ pub struct FinancialStatementItem {
 
     /// Type of Document
     #[serde(rename = "TypeOfDocument")]
-    pub type_of_document: String,
+    pub type_of_document: TypeOfDocument,
 
     /// Type of Current Period (e.g., "3Q")
     #[serde(rename = "TypeOfCurrentPeriod")]
@@ -155,12 +157,22 @@ pub struct FinancialStatementItem {
     pub current_fiscal_year_end_date: String,
 
     /// Start date of next fiscal year
-    #[serde(rename = "NextFiscalYearStartDate")]
-    pub next_fiscal_year_start_date: String,
+    ///
+    /// Blank is set if disclosure information for the following fiscal year is not set.
+    #[serde(
+        rename = "NextFiscalYearStartDate",
+        deserialize_with = "empty_string_or_null_as_none"
+    )]
+    pub next_fiscal_year_start_date: Option<String>,
 
     /// End date of next fiscal year
-    #[serde(rename = "NextFiscalYearEndDate")]
-    pub next_fiscal_year_end_date: String,
+    ///
+    /// Blank is set if disclosure information for the following fiscal year is not set.
+    #[serde(
+        rename = "NextFiscalYearEndDate",
+        deserialize_with = "empty_string_or_null_as_none"
+    )]
+    pub next_fiscal_year_end_date: Option<String>,
 
     /// Net Sales
     #[serde(rename = "NetSales")]
@@ -395,8 +407,11 @@ pub struct FinancialStatementItem {
     pub material_changes_in_subsidiaries: String,
 
     /// Significant Changes In The Scope Of Consolidation
-    #[serde(rename = "SignificantChangesInTheScopeOfConsolidation")]
-    pub significant_changes_in_the_scope_of_consolidation: String,
+    #[serde(
+        rename = "SignificantChangesInTheScopeOfConsolidation",
+        deserialize_with = "empty_string_or_null_as_none"
+    )]
+    pub significant_changes_in_the_scope_of_consolidation: Option<String>,
 
     /// Changes Based on Revisions of Accounting Standard
     #[serde(rename = "ChangesBasedOnRevisionsOfAccountingStandard")]
@@ -546,6 +561,18 @@ pub struct FinancialStatementItem {
     pub next_year_forecast_non_consolidated_earnings_per_share: String,
 }
 
+/// Helper function to deserialize empty strings or null as `None`.
+fn empty_string_or_null_as_none<'de, D>(deserializer: D) -> Result<Option<String>, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    let opt: Option<String> = Option::deserialize(deserializer)?;
+    match opt {
+        Some(s) if s.is_empty() => Ok(None),
+        other => Ok(other),
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -676,14 +703,14 @@ mod tests {
                 disclosed_time: "12:00:00".to_string(),
                 local_code: "86970".to_string(),
                 disclosure_number: "20230127594871".to_string(),
-                type_of_document: "3QFinancialStatements_Consolidated_IFRS".to_string(),
+                type_of_document: TypeOfDocument::Q3FinancialStatementsConsolidatedIFRS,
                 type_of_current_period: "3Q".to_string(),
                 current_period_start_date: "2022-04-01".to_string(),
                 current_period_end_date: "2022-12-31".to_string(),
                 current_fiscal_year_start_date: "2022-04-01".to_string(),
                 current_fiscal_year_end_date: "2023-03-31".to_string(),
-                next_fiscal_year_start_date: "".to_string(),
-                next_fiscal_year_end_date: "".to_string(),
+                next_fiscal_year_start_date: None,
+                next_fiscal_year_end_date: None,
                 net_sales: "100529000000".to_string(),
                 operating_profit: "51765000000".to_string(),
                 ordinary_profit: "".to_string(),
@@ -742,7 +769,7 @@ mod tests {
                 next_year_forecast_profit: "".to_string(),
                 next_year_forecast_earnings_per_share: "".to_string(),
                 material_changes_in_subsidiaries: "false".to_string(),
-                significant_changes_in_the_scope_of_consolidation: "".to_string(),
+                significant_changes_in_the_scope_of_consolidation: None,
                 changes_based_on_revisions_of_accounting_standard: "false".to_string(),
                 changes_other_than_based_on_revisions_of_accounting_standard: "false".to_string(),
                 changes_in_accounting_estimates: "true".to_string(),
@@ -802,8 +829,8 @@ mod tests {
                     "CurrentPeriodEndDate": "2022-12-31",
                     "CurrentFiscalYearStartDate": "2022-04-01",
                     "CurrentFiscalYearEndDate": "2023-03-31",
-                    "NextFiscalYearStartDate": "",
-                    "NextFiscalYearEndDate": "",
+                    "NextFiscalYearStartDate": "2024-11-01",
+                    "NextFiscalYearEndDate": "2024-11-01",
                     "NetSales": "100529000000",
                     "OperatingProfit": "51765000000",
                     "OrdinaryProfit": "",
@@ -862,7 +889,7 @@ mod tests {
                     "NextYearForecastProfit": "",
                     "NextYearForecastEarningsPerShare": "",
                     "MaterialChangesInSubsidiaries": "false",
-                    "SignificantChangesInTheScopeOfConsolidation": "",
+                    "SignificantChangesInTheScopeOfConsolidation": "2024-11-01",
                     "ChangesBasedOnRevisionsOfAccountingStandard": "false",
                     "ChangesOtherThanOnesBasedOnRevisionsOfAccountingStandard": "false",
                     "ChangesInAccountingEstimates": "true",
@@ -911,14 +938,14 @@ mod tests {
                 disclosed_time: "12:00:00".to_string(),
                 local_code: "86970".to_string(),
                 disclosure_number: "20230127594871".to_string(),
-                type_of_document: "3QFinancialStatements_Consolidated_IFRS".to_string(),
+                type_of_document: TypeOfDocument::Q3FinancialStatementsConsolidatedIFRS,
                 type_of_current_period: "3Q".to_string(),
                 current_period_start_date: "2022-04-01".to_string(),
                 current_period_end_date: "2022-12-31".to_string(),
                 current_fiscal_year_start_date: "2022-04-01".to_string(),
                 current_fiscal_year_end_date: "2023-03-31".to_string(),
-                next_fiscal_year_start_date: "".to_string(),
-                next_fiscal_year_end_date: "".to_string(),
+                next_fiscal_year_start_date: Some("2024-11-01".to_string()),
+                next_fiscal_year_end_date: Some("2024-11-01".to_string()),
                 net_sales: "100529000000".to_string(),
                 operating_profit: "51765000000".to_string(),
                 ordinary_profit: "".to_string(),
@@ -977,7 +1004,7 @@ mod tests {
                 next_year_forecast_profit: "".to_string(),
                 next_year_forecast_earnings_per_share: "".to_string(),
                 material_changes_in_subsidiaries: "false".to_string(),
-                significant_changes_in_the_scope_of_consolidation: "".to_string(),
+                significant_changes_in_the_scope_of_consolidation: Some("2024-11-01".to_string()),
                 changes_based_on_revisions_of_accounting_standard: "false".to_string(),
                 changes_other_than_based_on_revisions_of_accounting_standard: "false".to_string(),
                 changes_in_accounting_estimates: "true".to_string(),
