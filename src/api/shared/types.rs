@@ -1,6 +1,7 @@
 //! Shared types for the APIs.
 
 pub mod accounting_period;
+pub mod dividend;
 pub mod futures_code;
 pub mod holiday_division;
 pub mod index_code;

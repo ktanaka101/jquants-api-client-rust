@@ -3,9 +3,15 @@
 use serde::{Deserialize, Serialize};
 
 use super::{
-    shared::traits::{
-        builder::JQuantsBuilder,
-        pagination::{HasPaginationKey, MergePage, Paginatable},
+    shared::{
+        traits::{
+            builder::JQuantsBuilder,
+            pagination::{HasPaginationKey, MergePage, Paginatable},
+        },
+        types::dividend::{
+            DevidendStatucCode, DividendCommemorativeSpecialCode, DividendForecastResultCode,
+            DividendInterimFinalCode,
+        },
     },
     JQuantsApiClient, JQuantsPlanClient,
 };
@@ -153,21 +159,21 @@ pub struct CashDividendItem {
     #[serde(rename = "ReferenceNumber")]
     pub reference_number: String,
 
-    /// Status Code (1: new, 2: revised, 3: delete)
+    /// Status Code
     #[serde(rename = "StatusCode")]
-    pub status_code: String,
+    pub status_code: DevidendStatucCode,
 
     /// Board Meeting Date (YYYY-MM-DD)
     #[serde(rename = "BoardMeetingDate")]
     pub board_meeting_date: String,
 
-    /// Interim/Final Code (1: interim, 2: final)
+    /// Interim/Final Code
     #[serde(rename = "InterimFinalCode")]
-    pub interim_final_code: String,
+    pub interim_final_code: DividendInterimFinalCode,
 
-    /// Forecast/Result Code (1: result, 2: forecast)
+    /// Forecast/Result Code
     #[serde(rename = "ForecastResultCode")]
-    pub forecast_result_code: String,
+    pub forecast_result_code: DividendForecastResultCode,
 
     /// Interim Final Term
     #[serde(rename = "InterimFinalTerm")]
@@ -217,9 +223,9 @@ pub struct CashDividendItem {
     #[serde(rename = "NetAssetDecreaseRatio")]
     pub net_asset_decrease_ratio: String,
 
-    /// Commemorative/Special Code (1: Commemorative, 2: Special, 3: Both, 0: Normal)
+    /// Commemorative/Special Code
     #[serde(rename = "CommemorativeSpecialCode")]
-    pub commemorative_special_code: String,
+    pub commemorative_special_code: DividendCommemorativeSpecialCode,
 
     /// Commemorative Dividend Rate per Share
     #[serde(rename = "CommemorativeDividendRate")]
@@ -276,10 +282,10 @@ mod tests {
             announcement_time: "09:21".to_string(),
             code: "15550".to_string(),
             reference_number: "201402241B00002".to_string(),
-            status_code: "1".to_string(),
+            status_code: DevidendStatucCode::New,
             board_meeting_date: "2014-02-24".to_string(),
-            interim_final_code: "2".to_string(),
-            forecast_result_code: "2".to_string(),
+            interim_final_code: DividendInterimFinalCode::Final,
+            forecast_result_code: DividendForecastResultCode::Forecast,
             interim_final_term: "2014-03".to_string(),
             gross_dividend_rate: "-".to_string(),
             record_date: "2014-03-10".to_string(),
@@ -292,7 +298,7 @@ mod tests {
             deemed_dividend: "".to_string(),
             deemed_capital_gains: "".to_string(),
             net_asset_decrease_ratio: "".to_string(),
-            commemorative_special_code: "0".to_string(),
+            commemorative_special_code: DividendCommemorativeSpecialCode::Normal,
             commemorative_dividend_rate: "".to_string(),
             special_dividend_rate: "".to_string(),
         }];
@@ -346,10 +352,10 @@ mod tests {
             announcement_time: "09:21".to_string(),
             code: "15550".to_string(),
             reference_number: "201402241B00002".to_string(),
-            status_code: "1".to_string(),
+            status_code: DevidendStatucCode::New,
             board_meeting_date: "2014-02-24".to_string(),
-            interim_final_code: "2".to_string(),
-            forecast_result_code: "2".to_string(),
+            interim_final_code: DividendInterimFinalCode::Final,
+            forecast_result_code: DividendForecastResultCode::Forecast,
             interim_final_term: "2014-03".to_string(),
             gross_dividend_rate: "-".to_string(),
             record_date: "2014-03-10".to_string(),
@@ -362,7 +368,7 @@ mod tests {
             deemed_dividend: "".to_string(),
             deemed_capital_gains: "".to_string(),
             net_asset_decrease_ratio: "".to_string(),
-            commemorative_special_code: "0".to_string(),
+            commemorative_special_code: DividendCommemorativeSpecialCode::Normal,
             commemorative_dividend_rate: "".to_string(),
             special_dividend_rate: "".to_string(),
         }];
@@ -443,10 +449,10 @@ mod tests {
                 announcement_time: "10:00".to_string(),
                 code: "86970".to_string(),
                 reference_number: "1".to_string(),
-                status_code: "1".to_string(),
+                status_code: DevidendStatucCode::New,
                 board_meeting_date: "2023-03-06".to_string(),
-                interim_final_code: "1".to_string(),
-                forecast_result_code: "1".to_string(),
+                interim_final_code: DividendInterimFinalCode::Interim,
+                forecast_result_code: DividendForecastResultCode::Determined,
                 interim_final_term: "2023-04".to_string(),
                 gross_dividend_rate: "100".to_string(),
                 record_date: "2023-03-10".to_string(),
@@ -459,7 +465,7 @@ mod tests {
                 deemed_dividend: "0".to_string(),
                 deemed_capital_gains: "0".to_string(),
                 net_asset_decrease_ratio: "0.05".to_string(),
-                commemorative_special_code: "0".to_string(),
+                commemorative_special_code: DividendCommemorativeSpecialCode::Normal,
                 commemorative_dividend_rate: "-".to_string(),
                 special_dividend_rate: "-".to_string(),
             },
@@ -468,10 +474,10 @@ mod tests {
                 announcement_time: "11:00".to_string(),
                 code: "86970".to_string(),
                 reference_number: "2".to_string(),
-                status_code: "2".to_string(),
+                status_code: DevidendStatucCode::Revised,
                 board_meeting_date: "2023-03-07".to_string(),
-                interim_final_code: "2".to_string(),
-                forecast_result_code: "1".to_string(),
+                interim_final_code: DividendInterimFinalCode::Final,
+                forecast_result_code: DividendForecastResultCode::Determined,
                 interim_final_term: "2023-04".to_string(),
                 gross_dividend_rate: "110".to_string(),
                 record_date: "2023-03-12".to_string(),
@@ -484,7 +490,7 @@ mod tests {
                 deemed_dividend: "0".to_string(),
                 deemed_capital_gains: "0".to_string(),
                 net_asset_decrease_ratio: "0.055".to_string(),
-                commemorative_special_code: "1".to_string(),
+                commemorative_special_code: DividendCommemorativeSpecialCode::Commemorative,
                 commemorative_dividend_rate: "10".to_string(),
                 special_dividend_rate: "-".to_string(),
             },

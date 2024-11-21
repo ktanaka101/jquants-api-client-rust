@@ -21,9 +21,9 @@ pub use api::shared::{
     responses::error_response::*,
     traits::{builder::*, pagination::*},
     types::{
-        accounting_period::*, futures_code::*, holiday_division::*, index_code::*, issue_type::*,
-        margin_code::MarginCode, market_code::*, options_code::*, price_limit::*, section_name::*,
-        sector17_code::*, sector33_code::*, type_of_document::*,
+        accounting_period::*, dividend::*, futures_code::*, holiday_division::*, index_code::*,
+        issue_type::*, margin_code::MarginCode, market_code::*, options_code::*, price_limit::*,
+        section_name::*, sector17_code::*, sector33_code::*, type_of_document::*,
     },
 };
 pub use api::short_sale_by_sector::*;
