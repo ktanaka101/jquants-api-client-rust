@@ -24,7 +24,7 @@
 //! - [JQuants API documentation](https://jpx.gitbook.io/j-quants-en)
 
 use jquants_api_client::{
-    JQuantsBuilder, JQuantsPlanClient, JQuantsPremiumPlanClient, ListedIssueInfoApi,
+    JQuantsBuilder, JQuantsFreePlanClient, JQuantsPlanClient, ListedIssueInfoApi,
 };
 use std::env;
 use tracing::Level;
@@ -46,7 +46,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         panic!("Please set the JQUANTS_REFRESH_TOKEN environment variable to your JQuants refresh token");
     }
 
-    let client = JQuantsPremiumPlanClient::new_from_refresh_token(refresh_token);
+    let client = JQuantsFreePlanClient::new_from_refresh_token(refresh_token);
 
     let listed_issue_info_response = client
         .get_listed_issue_info()
