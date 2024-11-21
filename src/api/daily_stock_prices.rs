@@ -20,6 +20,9 @@ pub struct DailyStockPricesBuilder<R: DeserializeOwned + fmt::Debug + Clone> {
     phantom: PhantomData<R>,
 
     /// Issue code (e.g. 27800 or 2780)
+    ///
+    /// If a 4-character issue code is specified,  
+    /// only the data of common stock will be obtained for the issue on which both common and preferred stocks are listed.
     #[serde(skip_serializing_if = "Option::is_none")]
     code: Option<String>,
     /// Starting point of data period (e.g. 20210901 or 2021-09-01)
@@ -29,6 +32,7 @@ pub struct DailyStockPricesBuilder<R: DeserializeOwned + fmt::Debug + Clone> {
     #[serde(skip_serializing_if = "Option::is_none")]
     to: Option<String>,
     /// Date of data (e.g. 20210907 or 2021-09-07)
+    ///
     /// Used when `from` and `to` are not specified.
     #[serde(skip_serializing_if = "Option::is_none")]
     date: Option<String>,
@@ -304,7 +308,7 @@ pub struct DailyQuotePremiumPlanItem {
 /// Represents a single daily quote
 #[derive(Debug, Clone, PartialEq, Deserialize)]
 pub struct DailyQuoteCommonItem {
-    /// The date in YYYY-MM-DD format
+    /// Date (YYYY-MM-DD).
     #[serde(rename = "Date")]
     pub date: String,
 

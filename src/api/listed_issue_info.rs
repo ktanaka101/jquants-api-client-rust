@@ -25,9 +25,13 @@ pub struct ListedIssueInfoApiBuilder<R: DeserializeOwned + fmt::Debug + Clone> {
     phantom: PhantomData<R>,
 
     /// Issue code (e.g. 27800 or 2780)
+    ///
+    /// If a 4-character issue code is specified,
+    /// only the data of common stock will be obtained for the issue on which both common and preferred stocks are listed.
     #[serde(skip_serializing_if = "Option::is_none")]
     code: Option<String>,
-    /// Date (e.g. 27800 or 2780)
+    /// Date of application of information
+    /// (e.g. 20210907 or 2021-09-07)
     #[serde(skip_serializing_if = "Option::is_none")]
     date: Option<String>,
 }
@@ -126,11 +130,11 @@ pub struct IssueInfoPremiumPlanItem {
     #[serde(flatten)]
     pub common: IssueInfoCommonItem,
 
-    /// The margin code.
+    /// Flags of margin and loan issues.
     #[serde(rename = "MarginCode")]
     pub margin_code: MarginCode,
 
-    /// The margin code name.
+    /// Name of flags of margin and loan issues.
     #[serde(rename = "MarginCodeName")]
     pub margin_code_name: String,
 }
@@ -138,47 +142,47 @@ pub struct IssueInfoPremiumPlanItem {
 /// Common structure for issue info.
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
 pub struct IssueInfoCommonItem {
-    /// The date.
+    /// Date of application of information (YYYY-MM-DD)
     #[serde(rename = "Date")]
     pub date: String,
 
-    /// The code.
+    /// Issue code.
     #[serde(rename = "Code")]
     pub code: String,
 
-    /// The company name.
+    /// Company Name (Japanese)
     #[serde(rename = "CompanyName")]
     pub company_name: String,
 
-    /// The company name in English.
+    /// Company Name (English).
     #[serde(rename = "CompanyNameEnglish")]
     pub company_name_english: String,
 
-    /// The sector 17 code.
+    /// 17-Sector code.
     #[serde(rename = "Sector17Code")]
     pub sector17_code: Sector17Code,
 
-    /// The sector 17 code name.
+    /// 17-Sector code name (Japanese).
     #[serde(rename = "Sector17CodeName")]
     pub sector17_code_name: String,
 
-    /// The sector 33 code.
+    /// 33-Sector code.
     #[serde(rename = "Sector33Code")]
     pub sector33_code: Sector33Code,
 
-    /// The sector 33 code name.
+    /// 33-Sector code name (Japanese).
     #[serde(rename = "Sector33CodeName")]
     pub sector33_code_name: String,
 
-    /// The scale category.
+    /// TOPIX Scale category.
     #[serde(rename = "ScaleCategory")]
     pub scale_category: String,
 
-    /// The market code.
+    /// Market segment code.
     #[serde(rename = "MarketCode")]
     pub market_code: MarketCode,
 
-    /// The market code name.
+    /// Market segment code name (Japanese).
     #[serde(rename = "MarketCodeName")]
     pub market_code_name: String,
 }
