@@ -131,6 +131,8 @@ pub struct FinancialStatementDetailItem {
     pub local_code: String,
 
     /// Disclosure Number
+    ///
+    /// Ascending order by disclosure number.
     #[serde(rename = "DisclosureNumber")]
     pub disclosure_number: String,
 
@@ -139,6 +141,8 @@ pub struct FinancialStatementDetailItem {
     pub type_of_document: TypeOfDocument,
 
     /// Financial Statement Entries
+    ///
+    /// Redundant labels (English) associated with XBRL tags and their values
     #[serde(rename = "FinancialStatement")]
     pub financial_statement: HashMap<String, String>,
 }
