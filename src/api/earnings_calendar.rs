@@ -1,6 +1,6 @@
 //! Earnings Calendar (/fins/announcement) API
 
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Deserializer, Serialize};
 
 use super::{
     shared::traits::{
@@ -100,8 +100,10 @@ impl MergePage for EarningsCalendarResponse {
 #[derive(Debug, Clone, PartialEq, Deserialize)]
 pub struct EarningsAnnouncementItem {
     /// Announcement Date (YYYY-MM-DD)
-    #[serde(rename = "Date")]
-    pub date: String,
+    ///
+    /// If the earnings announcement date is undecided, the data will be an empty string ("").
+    #[serde(rename = "Date", deserialize_with = "empty_string_or_null_as_none")]
+    pub date: Option<String>,
 
     /// Issue Code (e.g., "43760")
     #[serde(rename = "Code")]
@@ -126,6 +128,18 @@ pub struct EarningsAnnouncementItem {
     /// Market Segment Name (Japanese, e.g., "マザーズ")
     #[serde(rename = "Section")]
     pub section: String,
+}
+
+/// Helper function to deserialize empty strings or null as `None`.
+fn empty_string_or_null_as_none<'de, D>(deserializer: D) -> Result<Option<String>, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    let opt: Option<String> = Option::deserialize(deserializer)?;
+    match opt {
+        Some(s) if s.is_empty() => Ok(None),
+        other => Ok(other),
+    }
 }
 
 #[cfg(test)]
@@ -154,7 +168,7 @@ mod tests {
         let response: EarningsCalendarResponse = serde_json::from_str(json_data).unwrap();
 
         let expected_announcement = vec![EarningsAnnouncementItem {
-            date: "2022-02-14".to_string(),
+            date: Some("2022-02-14".to_string()),
             code: "43760".to_string(),
             company_name: "くふうカンパニー".to_string(),
             fiscal_year: "9月30日".to_string(),
@@ -192,7 +206,7 @@ mod tests {
         let response: EarningsCalendarResponse = serde_json::from_str(json_data).unwrap();
 
         let expected_announcement = vec![EarningsAnnouncementItem {
-            date: "2022-02-14".to_string(),
+            date: Some("2022-02-14".to_string()),
             code: "43760".to_string(),
             company_name: "くふうカンパニー".to_string(),
             fiscal_year: "9月30日".to_string(),
@@ -241,7 +255,7 @@ mod tests {
 
         let expected_announcement = vec![
             EarningsAnnouncementItem {
-                date: "2023-03-06".to_string(),
+                date: Some("2023-03-06".to_string()),
                 code: "86970".to_string(),
                 company_name: "株式会社XYZ".to_string(),
                 fiscal_year: "3月31日".to_string(),
@@ -250,7 +264,7 @@ mod tests {
                 section: "東証プライム".to_string(),
             },
             EarningsAnnouncementItem {
-                date: "2023-03-07".to_string(),
+                date: Some("2023-03-07".to_string()),
                 code: "86971".to_string(),
                 company_name: "株式会社ABC".to_string(),
                 fiscal_year: "9月30日".to_string(),
