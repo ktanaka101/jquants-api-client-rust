@@ -33,7 +33,7 @@ impl JQuantsBuilder<MorningSessionStockPricesResponse> for MorningSessionStockPr
     }
 
     async fn send_ref(&self) -> Result<MorningSessionStockPricesResponse, crate::JQuantsError> {
-        self.client.inner.get("/prices/prices_am", &self).await
+        self.client.inner.get("prices/prices_am", &self).await
     }
 }
 

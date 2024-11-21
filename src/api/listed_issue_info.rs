@@ -58,7 +58,7 @@ impl<R: DeserializeOwned + fmt::Debug + Clone> JQuantsBuilder<R> for ListedIssue
     }
 
     async fn send_ref(&self) -> Result<R, crate::JQuantsError> {
-        self.client.inner.get("/listed/info", self).await
+        self.client.inner.get("listed/info", self).await
     }
 }
 
