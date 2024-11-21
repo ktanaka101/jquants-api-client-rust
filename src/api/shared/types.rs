@@ -4,6 +4,7 @@ pub mod futures_code;
 pub mod holiday_division;
 pub mod index_code;
 pub mod issue_type;
+pub mod margin_code;
 pub mod market_code;
 pub mod options_code;
 pub mod section_name;

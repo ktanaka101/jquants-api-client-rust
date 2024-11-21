@@ -4,6 +4,8 @@ use std::{fmt, marker::PhantomData};
 
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 
+use crate::MarginCode;
+
 use super::{
     shared::{
         traits::builder::JQuantsBuilder,
@@ -126,7 +128,7 @@ pub struct IssueInfoPremiumPlanItem {
 
     /// The margin code.
     #[serde(rename = "MarginCode")]
-    pub margin_code: String,
+    pub margin_code: MarginCode,
 
     /// The margin code name.
     #[serde(rename = "MarginCodeName")]
@@ -271,7 +273,7 @@ mod tests {
                         market_code: MarketCode::Prime,
                         market_code_name: "プライム".to_string(),
                     },
-                    margin_code: "1".to_string(),
+                    margin_code: MarginCode::MarginIssues,
                     margin_code_name: "信用".to_string(),
                 }],
             };

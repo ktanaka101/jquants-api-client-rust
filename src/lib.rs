@@ -20,7 +20,11 @@ pub use api::shared::{
     auth::{id_token::*, refresh_token::*},
     responses::error_response::*,
     traits::{builder::*, pagination::*},
-    types::{issue_type::*, market_code::*, section_name::*, sector17_code::*, sector33_code::*},
+    types::{
+        futures_code::*, holiday_division::*, index_code::*, issue_type::*,
+        margin_code::MarginCode, market_code::*, options_code::*, section_name::*,
+        sector17_code::*, sector33_code::*, type_of_document::*,
+    },
 };
 pub use api::short_sale_by_sector::*;
 pub use api::topic_prices::*;
