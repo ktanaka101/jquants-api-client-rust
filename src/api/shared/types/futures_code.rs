@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 
 /// Futures codes.
 ///
-/// [See Reference](Add_your_reference_URL_here)
+/// [See Reference](https://jpx.gitbook.io/j-quants-en/api-reference/futures/derivativeproductcategory)
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum FuturesCode {
     /// TOPIXF: TOPIX Futures (Large)
