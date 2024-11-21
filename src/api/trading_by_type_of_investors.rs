@@ -141,7 +141,7 @@ pub struct TradingByInvestorTypeItem {
 
     /// Section Name
     #[serde(rename = "Section")]
-    pub section: String,
+    pub section: SectionName,
 
     /// Proprietary Sales Value
     #[serde(rename = "ProprietarySales")]
@@ -430,7 +430,7 @@ mod tests {
                 published_date: "2017-01-13".to_string(),
                 start_date: "2017-01-04".to_string(),
                 end_date: "2017-01-06".to_string(),
-                section: "TSE1st".to_string(),
+                section: SectionName::FirstSection,
                 proprietary_sales: 1311271004.0,
                 proprietary_purchases: 1453326508.0,
                 proprietary_total: 2764597512.0,
@@ -563,7 +563,7 @@ mod tests {
                 published_date: "2017-01-13".to_string(),
                 start_date: "2017-01-04".to_string(),
                 end_date: "2017-01-06".to_string(),
-                section: "TSE1st".to_string(),
+                section: SectionName::FirstSection,
                 proprietary_sales: 1311271004.0,
                 proprietary_purchases: 1453326508.0,
                 proprietary_total: 2764597512.0,
