@@ -8,9 +8,13 @@ use super::{
             builder::JQuantsBuilder,
             pagination::{HasPaginationKey, MergePage, Paginatable},
         },
-        types::dividend::{
-            DevidendStatucCode, DividendCommemorativeSpecialCode, DividendForecastResultCode,
-            DividendInterimFinalCode,
+        types::{
+            amount_per_share::AmountPerShare,
+            dividend::{
+                DevidendStatucCode, DividendCommemorativeSpecialCode, DividendForecastResultCode,
+                DividendInterimFinalCode,
+            },
+            payable_date::PayableDate,
         },
     },
     JQuantsApiClient, JQuantsPlanClient,
@@ -181,7 +185,7 @@ pub struct CashDividendItem {
 
     /// Gross Dividend Rate
     #[serde(rename = "GrossDividendRate")]
-    pub gross_dividend_rate: String,
+    pub gross_dividend_rate: AmountPerShare,
 
     /// Record Date (YYYY-MM-DD)
     #[serde(rename = "RecordDate")]
@@ -197,7 +201,7 @@ pub struct CashDividendItem {
 
     /// Payable Date (YYYY-MM-DD)
     #[serde(rename = "PayableDate")]
-    pub payable_date: String,
+    pub payable_date: PayableDate,
 
     /// CA Reference Number
     #[serde(rename = "CAReferenceNumber")]
@@ -205,23 +209,23 @@ pub struct CashDividendItem {
 
     /// Distribution Amount per Share
     #[serde(rename = "DistributionAmount")]
-    pub distribution_amount: String,
+    pub distribution_amount: AmountPerShare,
 
     /// Retained Earnings per Share
     #[serde(rename = "RetainedEarnings")]
-    pub retained_earnings: String,
+    pub retained_earnings: AmountPerShare,
 
     /// Deemed Dividend per Share
     #[serde(rename = "DeemedDividend")]
-    pub deemed_dividend: String,
+    pub deemed_dividend: AmountPerShare,
 
     /// Deemed Capital Gains per Share
     #[serde(rename = "DeemedCapitalGains")]
-    pub deemed_capital_gains: String,
+    pub deemed_capital_gains: AmountPerShare,
 
     /// Net Asset Decrease Ratio
     #[serde(rename = "NetAssetDecreaseRatio")]
-    pub net_asset_decrease_ratio: String,
+    pub net_asset_decrease_ratio: AmountPerShare,
 
     /// Commemorative/Special Code
     #[serde(rename = "CommemorativeSpecialCode")]
@@ -229,11 +233,11 @@ pub struct CashDividendItem {
 
     /// Commemorative Dividend Rate per Share
     #[serde(rename = "CommemorativeDividendRate")]
-    pub commemorative_dividend_rate: String,
+    pub commemorative_dividend_rate: AmountPerShare,
 
     /// Special Dividend Rate per Share
     #[serde(rename = "SpecialDividendRate")]
-    pub special_dividend_rate: String,
+    pub special_dividend_rate: AmountPerShare,
 }
 
 #[cfg(test)]
@@ -287,20 +291,20 @@ mod tests {
             interim_final_code: DividendInterimFinalCode::Final,
             forecast_result_code: DividendForecastResultCode::Forecast,
             interim_final_term: "2014-03".to_string(),
-            gross_dividend_rate: "-".to_string(),
+            gross_dividend_rate: AmountPerShare::Undetermined,
             record_date: "2014-03-10".to_string(),
             ex_date: "2014-03-06".to_string(),
             actual_record_date: "2014-03-10".to_string(),
-            payable_date: "-".to_string(),
+            payable_date: PayableDate::Undetermined,
             ca_reference_number: "201402241B00002".to_string(),
-            distribution_amount: "".to_string(),
-            retained_earnings: "".to_string(),
-            deemed_dividend: "".to_string(),
-            deemed_capital_gains: "".to_string(),
-            net_asset_decrease_ratio: "".to_string(),
+            distribution_amount: AmountPerShare::NotApplicable,
+            retained_earnings: AmountPerShare::NotApplicable,
+            deemed_dividend: AmountPerShare::NotApplicable,
+            deemed_capital_gains: AmountPerShare::NotApplicable,
+            net_asset_decrease_ratio: AmountPerShare::NotApplicable,
             commemorative_special_code: DividendCommemorativeSpecialCode::Normal,
-            commemorative_dividend_rate: "".to_string(),
-            special_dividend_rate: "".to_string(),
+            commemorative_dividend_rate: AmountPerShare::NotApplicable,
+            special_dividend_rate: AmountPerShare::NotApplicable,
         }];
 
         let expected_response = CashDividendDataResponse {
@@ -357,20 +361,20 @@ mod tests {
             interim_final_code: DividendInterimFinalCode::Final,
             forecast_result_code: DividendForecastResultCode::Forecast,
             interim_final_term: "2014-03".to_string(),
-            gross_dividend_rate: "-".to_string(),
+            gross_dividend_rate: AmountPerShare::Undetermined,
             record_date: "2014-03-10".to_string(),
             ex_date: "2014-03-06".to_string(),
             actual_record_date: "2014-03-10".to_string(),
-            payable_date: "-".to_string(),
+            payable_date: PayableDate::Undetermined,
             ca_reference_number: "201402241B00002".to_string(),
-            distribution_amount: "".to_string(),
-            retained_earnings: "".to_string(),
-            deemed_dividend: "".to_string(),
-            deemed_capital_gains: "".to_string(),
-            net_asset_decrease_ratio: "".to_string(),
+            distribution_amount: AmountPerShare::NotApplicable,
+            retained_earnings: AmountPerShare::NotApplicable,
+            deemed_dividend: AmountPerShare::NotApplicable,
+            deemed_capital_gains: AmountPerShare::NotApplicable,
+            net_asset_decrease_ratio: AmountPerShare::NotApplicable,
             commemorative_special_code: DividendCommemorativeSpecialCode::Normal,
-            commemorative_dividend_rate: "".to_string(),
-            special_dividend_rate: "".to_string(),
+            commemorative_dividend_rate: AmountPerShare::NotApplicable,
+            special_dividend_rate: AmountPerShare::NotApplicable,
         }];
 
         let expected_response = CashDividendDataResponse {
@@ -454,20 +458,20 @@ mod tests {
                 interim_final_code: DividendInterimFinalCode::Interim,
                 forecast_result_code: DividendForecastResultCode::Determined,
                 interim_final_term: "2023-04".to_string(),
-                gross_dividend_rate: "100".to_string(),
+                gross_dividend_rate: AmountPerShare::Number(100.0),
                 record_date: "2023-03-10".to_string(),
                 ex_date: "2023-03-05".to_string(),
                 actual_record_date: "2023-03-10".to_string(),
-                payable_date: "2023-03-15".to_string(),
+                payable_date: PayableDate::Date("2023-03-15".to_string()),
                 ca_reference_number: "1".to_string(),
-                distribution_amount: "100".to_string(),
-                retained_earnings: "50".to_string(),
-                deemed_dividend: "0".to_string(),
-                deemed_capital_gains: "0".to_string(),
-                net_asset_decrease_ratio: "0.05".to_string(),
+                distribution_amount: AmountPerShare::Number(100.0),
+                retained_earnings: AmountPerShare::Number(50.0),
+                deemed_dividend: AmountPerShare::Number(0.0),
+                deemed_capital_gains: AmountPerShare::Number(0.0),
+                net_asset_decrease_ratio: AmountPerShare::Number(0.05),
                 commemorative_special_code: DividendCommemorativeSpecialCode::Normal,
-                commemorative_dividend_rate: "-".to_string(),
-                special_dividend_rate: "-".to_string(),
+                commemorative_dividend_rate: AmountPerShare::Undetermined,
+                special_dividend_rate: AmountPerShare::Undetermined,
             },
             CashDividendItem {
                 announcement_date: "2023-03-07".to_string(),
@@ -479,20 +483,20 @@ mod tests {
                 interim_final_code: DividendInterimFinalCode::Final,
                 forecast_result_code: DividendForecastResultCode::Determined,
                 interim_final_term: "2023-04".to_string(),
-                gross_dividend_rate: "110".to_string(),
+                gross_dividend_rate: AmountPerShare::Number(110.0),
                 record_date: "2023-03-12".to_string(),
                 ex_date: "2023-03-07".to_string(),
                 actual_record_date: "2023-03-12".to_string(),
-                payable_date: "2023-03-17".to_string(),
+                payable_date: PayableDate::Date("2023-03-17".to_string()),
                 ca_reference_number: "1".to_string(),
-                distribution_amount: "110".to_string(),
-                retained_earnings: "55".to_string(),
-                deemed_dividend: "0".to_string(),
-                deemed_capital_gains: "0".to_string(),
-                net_asset_decrease_ratio: "0.055".to_string(),
+                distribution_amount: AmountPerShare::Number(110.0),
+                retained_earnings: AmountPerShare::Number(55.0),
+                deemed_dividend: AmountPerShare::Number(0.0),
+                deemed_capital_gains: AmountPerShare::Number(0.0),
+                net_asset_decrease_ratio: AmountPerShare::Number(0.055),
                 commemorative_special_code: DividendCommemorativeSpecialCode::Commemorative,
-                commemorative_dividend_rate: "10".to_string(),
-                special_dividend_rate: "-".to_string(),
+                commemorative_dividend_rate: AmountPerShare::Number(10.0),
+                special_dividend_rate: AmountPerShare::Undetermined,
             },
         ];
 
