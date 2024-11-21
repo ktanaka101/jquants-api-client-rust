@@ -7,6 +7,7 @@ pub mod issue_type;
 pub mod margin_code;
 pub mod market_code;
 pub mod options_code;
+pub mod price_limit;
 pub mod section_name;
 pub mod sector17_code;
 pub mod sector33_code;

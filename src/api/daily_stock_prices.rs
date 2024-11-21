@@ -3,6 +3,8 @@ use std::{fmt, marker::PhantomData};
 
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 
+use crate::PriceLimit;
+
 use super::{
     shared::traits::{
         builder::JQuantsBuilder,
@@ -218,11 +220,11 @@ pub struct DailyQuotePremiumPlanItem {
 
     /// Flag of hitting the upper price limit of the day in morning session
     #[serde(rename = "MorningUpperLimit")]
-    pub morning_upper_limit: String,
+    pub morning_upper_limit: PriceLimit,
 
     /// Flag of hitting the lower price limit of the day in morning session
     #[serde(rename = "MorningLowerLimit")]
-    pub morning_lower_limit: String,
+    pub morning_lower_limit: PriceLimit,
 
     /// Trading volume of the morning session (before Adjustment)
     #[serde(rename = "MorningVolume")]
@@ -270,11 +272,11 @@ pub struct DailyQuotePremiumPlanItem {
 
     /// Flag of hitting the upper price limit of the day in afternoon session
     #[serde(rename = "AfternoonUpperLimit")]
-    pub afternoon_upper_limit: String,
+    pub afternoon_upper_limit: PriceLimit,
 
     /// Flag of hitting the lower price limit of the day in afternoon session
     #[serde(rename = "AfternoonLowerLimit")]
-    pub afternoon_lower_limit: String,
+    pub afternoon_lower_limit: PriceLimit,
 
     /// Trading volume of the afternoon session (before Adjustment)
     #[serde(rename = "AfternoonVolume")]
@@ -334,11 +336,11 @@ pub struct DailyQuoteCommonItem {
 
     /// Flag of hitting the upper price limit of the day
     #[serde(rename = "UpperLimit")]
-    pub upper_limit: String,
+    pub upper_limit: PriceLimit,
 
     /// Flag of hitting the lower price limit of the day
     #[serde(rename = "LowerLimit")]
-    pub lower_limit: String,
+    pub lower_limit: PriceLimit,
 
     /// Trading volume (before Adjustment)
     #[serde(rename = "Volume")]
@@ -375,9 +377,12 @@ pub struct DailyQuoteCommonItem {
 
 #[cfg(test)]
 mod tests {
-    use crate::api::daily_stock_prices::{
-        DailyQuoteCommonItem, DailyQuotePremiumPlanItem, DailyQuoteStandardPlanItem,
-        DailyStockPricesPremiumPlanResponse, DailyStockPricesStandardPlanResponse,
+    use crate::{
+        api::daily_stock_prices::{
+            DailyQuoteCommonItem, DailyQuotePremiumPlanItem, DailyQuoteStandardPlanItem,
+            DailyStockPricesPremiumPlanResponse, DailyStockPricesStandardPlanResponse,
+        },
+        PriceLimit,
     };
 
     #[test]
@@ -418,8 +423,8 @@ mod tests {
                     high: Some(2069.0),
                     low: Some(2035.0),
                     close: Some(2045.0),
-                    upper_limit: "0".to_string(),
-                    lower_limit: "0".to_string(),
+                    upper_limit: PriceLimit::NotHit,
+                    lower_limit: PriceLimit::NotHit,
                     volume: Some(2202500.0),
                     turnover_value: Some(4507051850.0),
                     adjustment_factor: 1.0,
@@ -473,8 +478,8 @@ mod tests {
                     high: Some(2069.0),
                     low: Some(2035.0),
                     close: Some(2045.0),
-                    upper_limit: "0".to_string(),
-                    lower_limit: "0".to_string(),
+                    upper_limit: PriceLimit::NotHit,
+                    lower_limit: PriceLimit::NotHit,
                     volume: Some(2202500.0),
                     turnover_value: Some(4507051850.0),
                     adjustment_factor: 1.0,
@@ -503,8 +508,8 @@ mod tests {
                         "High": 2069.0,
                         "Low": 2035.0,
                         "Close": 2045.0,
-                        "UpperLimit": "0",
-                        "LowerLimit": "0",
+                        "UpperLimit": "1",
+                        "LowerLimit": "1",
                         "Volume": 2202500.0,
                         "TurnoverValue": 4507051850.0,
                         "AdjustmentFactor": 1.0,
@@ -517,8 +522,8 @@ mod tests {
                         "MorningHigh": 2069.0,
                         "MorningLow": 2040.0,
                         "MorningClose": 2045.5,
-                        "MorningUpperLimit": "0",
-                        "MorningLowerLimit": "0",
+                        "MorningUpperLimit": "1",
+                        "MorningLowerLimit": "1",
                         "MorningVolume": 1121200.0,
                         "MorningTurnoverValue": 2297525850.0,
                         "MorningAdjustmentOpen": 2047.0,
@@ -530,8 +535,8 @@ mod tests {
                         "AfternoonHigh": 2047.0,
                         "AfternoonLow": 2035.0,
                         "AfternoonClose": 2045.0,
-                        "AfternoonUpperLimit": "0",
-                        "AfternoonLowerLimit": "0",
+                        "AfternoonUpperLimit": "1",
+                        "AfternoonLowerLimit": "1",
                         "AfternoonVolume": 1081300.0,
                         "AfternoonTurnoverValue": 2209526000.0,
                         "AfternoonAdjustmentOpen": 2047.0,
@@ -555,8 +560,8 @@ mod tests {
                     high: Some(2069.0),
                     low: Some(2035.0),
                     close: Some(2045.0),
-                    upper_limit: "0".to_string(),
-                    lower_limit: "0".to_string(),
+                    upper_limit: PriceLimit::Hit,
+                    lower_limit: PriceLimit::Hit,
                     volume: Some(2202500.0),
                     turnover_value: Some(4507051850.0),
                     adjustment_factor: 1.0,
@@ -570,8 +575,8 @@ mod tests {
                 morning_high: Some(2069.0),
                 morning_low: Some(2040.0),
                 morning_close: Some(2045.5),
-                morning_upper_limit: "0".to_string(),
-                morning_lower_limit: "0".to_string(),
+                morning_upper_limit: PriceLimit::Hit,
+                morning_lower_limit: PriceLimit::Hit,
                 morning_volume: Some(1121200.0),
                 morning_turnover_value: Some(2297525850.0),
                 morning_adjustment_open: Some(2047.0),
@@ -583,8 +588,8 @@ mod tests {
                 afternoon_high: Some(2047.0),
                 afternoon_low: Some(2035.0),
                 afternoon_close: Some(2045.0),
-                afternoon_upper_limit: "0".to_string(),
-                afternoon_lower_limit: "0".to_string(),
+                afternoon_upper_limit: PriceLimit::Hit,
+                afternoon_lower_limit: PriceLimit::Hit,
                 afternoon_volume: Some(1081300.0),
                 afternoon_turnover_value: Some(2209526000.0),
                 afternoon_adjustment_open: Some(2047.0),
@@ -663,8 +668,8 @@ mod tests {
                     high: None,
                     low: None,
                     close: None,
-                    upper_limit: "0".to_string(),
-                    lower_limit: "0".to_string(),
+                    upper_limit: PriceLimit::NotHit,
+                    lower_limit: PriceLimit::NotHit,
                     volume: None,
                     turnover_value: None,
                     adjustment_factor: 1.0,
@@ -678,8 +683,8 @@ mod tests {
                 morning_high: None,
                 morning_low: None,
                 morning_close: None,
-                morning_upper_limit: "0".to_string(),
-                morning_lower_limit: "0".to_string(),
+                morning_upper_limit: PriceLimit::NotHit,
+                morning_lower_limit: PriceLimit::NotHit,
                 morning_volume: None,
                 morning_turnover_value: None,
                 morning_adjustment_open: None,
@@ -691,8 +696,8 @@ mod tests {
                 afternoon_high: None,
                 afternoon_low: None,
                 afternoon_close: None,
-                afternoon_upper_limit: "0".to_string(),
-                afternoon_lower_limit: "0".to_string(),
+                afternoon_upper_limit: PriceLimit::NotHit,
+                afternoon_lower_limit: PriceLimit::NotHit,
                 afternoon_volume: None,
                 afternoon_turnover_value: None,
                 afternoon_adjustment_open: None,
@@ -770,8 +775,8 @@ mod tests {
                     high: Some(2069.0),
                     low: Some(2035.0),
                     close: Some(2045.0),
-                    upper_limit: "0".to_string(),
-                    lower_limit: "0".to_string(),
+                    upper_limit: PriceLimit::NotHit,
+                    lower_limit: PriceLimit::NotHit,
                     volume: Some(2202500.0),
                     turnover_value: Some(4507051850.0),
                     adjustment_factor: 1.0,
@@ -785,8 +790,8 @@ mod tests {
                 morning_high: Some(2069.0),
                 morning_low: Some(2040.0),
                 morning_close: Some(2045.5),
-                morning_upper_limit: "0".to_string(),
-                morning_lower_limit: "0".to_string(),
+                morning_upper_limit: PriceLimit::NotHit,
+                morning_lower_limit: PriceLimit::NotHit,
                 morning_volume: Some(1121200.0),
                 morning_turnover_value: Some(2297525850.0),
                 morning_adjustment_open: Some(2047.0),
@@ -798,8 +803,8 @@ mod tests {
                 afternoon_high: Some(2047.0),
                 afternoon_low: Some(2035.0),
                 afternoon_close: Some(2045.0),
-                afternoon_upper_limit: "0".to_string(),
-                afternoon_lower_limit: "0".to_string(),
+                afternoon_upper_limit: PriceLimit::NotHit,
+                afternoon_lower_limit: PriceLimit::NotHit,
                 afternoon_volume: Some(1081300.0),
                 afternoon_turnover_value: Some(2209526000.0),
                 afternoon_adjustment_open: Some(2047.0),
