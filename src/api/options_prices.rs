@@ -5,11 +5,17 @@ use std::fmt;
 
 use super::{
     shared::{
+        deserialize_utils::empty_string_or_null_as_none,
         traits::{
             builder::JQuantsBuilder,
             pagination::{HasPaginationKey, MergePage, Paginatable},
         },
-        types::options_code::OptionsCode,
+        types::{
+            central_contract_month_flag::CentralContractMonthFlag,
+            emergency_margin_trigger_division::EmergencyMarginTriggerDivision,
+            options_code::OptionsCode, put_call_division::PutCallDivision,
+            underlying_sso::UnderlyingSSO,
+        },
     },
     JQuantsApiClient, JQuantsPlanClient,
 };
@@ -156,7 +162,7 @@ pub struct OptionsPricesItem {
 
     /// Underlying SSO
     #[serde(rename = "UnderlyingSSO")]
-    pub underlying_sso: String,
+    pub underlying_sso: UnderlyingSSO,
 
     /// Trading day (YYYY-MM-DD)
     #[serde(rename = "Date")]
@@ -282,19 +288,25 @@ pub struct OptionsPricesItem {
 
     /// Emergency margin trigger division
     #[serde(rename = "EmergencyMarginTriggerDivision")]
-    pub emergency_margin_trigger_division: String,
+    pub emergency_margin_trigger_division: EmergencyMarginTriggerDivision,
 
     /// Put Call division (1: put, 2: call)
     #[serde(rename = "PutCallDivision")]
-    pub put_call_division: String,
+    pub put_call_division: PutCallDivision,
 
     /// Last trading day (YYYY-MM-DD)
-    #[serde(rename = "LastTradingDay")]
-    pub last_trading_day: String,
+    #[serde(
+        rename = "LastTradingDay",
+        deserialize_with = "empty_string_or_null_as_none"
+    )]
+    pub last_trading_day: Option<String>,
 
     /// Special quotation day (YYYY-MM-DD)
-    #[serde(rename = "SpecialQuotationDay")]
-    pub special_quotation_day: String,
+    #[serde(
+        rename = "SpecialQuotationDay",
+        deserialize_with = "empty_string_or_null_as_none"
+    )]
+    pub special_quotation_day: Option<String>,
 
     /// Settlement price
     #[serde(
@@ -340,7 +352,7 @@ pub struct OptionsPricesItem {
         rename = "CentralContractMonthFlag",
         deserialize_with = "empty_string_or_null_as_none"
     )]
-    pub central_contract_month_flag: Option<String>,
+    pub central_contract_month_flag: Option<CentralContractMonthFlag>,
 }
 
 /// Helper function to deserialize fields that can be either a number or a string.
@@ -402,18 +414,6 @@ where
     deserializer.deserialize_any(F64OrNoneVisitor)
 }
 
-/// Helper function to deserialize empty strings or nulls as `None`.
-fn empty_string_or_null_as_none<'de, D>(deserializer: D) -> Result<Option<String>, D::Error>
-where
-    D: Deserializer<'de>,
-{
-    let opt: Option<String> = Option::deserialize(deserializer)?;
-    match opt {
-        Some(s) if s.trim().is_empty() => Ok(None),
-        other => Ok(other),
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -472,7 +472,7 @@ mod tests {
         let expected_option = vec![OptionsPricesItem {
             code: "140014505".to_string(),
             derivatives_product_category: "TOPIXE".to_string(),
-            underlying_sso: "-".to_string(),
+            underlying_sso: UnderlyingSSO::Other,
             date: "2024-07-23".to_string(),
             whole_day_open: 0.0,
             whole_day_high: 0.0,
@@ -496,17 +496,17 @@ mod tests {
             contract_month: "2025-01".to_string(),
             strike_price: 2450.0,
             volume_only_auction: Some(0.0),
-            emergency_margin_trigger_division: "002".to_string(),
-            put_call_division: "2".to_string(),
-            last_trading_day: "2025-01-09".to_string(),
-            special_quotation_day: "2025-01-10".to_string(),
+            emergency_margin_trigger_division: EmergencyMarginTriggerDivision::Calculated,
+            put_call_division: PutCallDivision::Call,
+            last_trading_day: Some("2025-01-09".to_string()),
+            special_quotation_day: Some("2025-01-10".to_string()),
             settlement_price: Some(377.0),
             theoretical_price: Some(380.3801),
             base_volatility: Some(18.115),
             underlying_price: Some(2833.39),
             implied_volatility: Some(17.2955),
             interest_rate: Some(0.3527),
-            central_contract_month_flag: Some("0".to_string()),
+            central_contract_month_flag: Some(CentralContractMonthFlag::Others),
         }];
 
         let expected_response = OptionsPricesResponse {
@@ -571,7 +571,7 @@ mod tests {
         let expected_option = vec![OptionsPricesItem {
             code: "140014505".to_string(),
             derivatives_product_category: "TOPIXE".to_string(),
-            underlying_sso: "-".to_string(),
+            underlying_sso: UnderlyingSSO::Other,
             date: "2024-07-23".to_string(),
             whole_day_open: 0.0,
             whole_day_high: 0.0,
@@ -595,10 +595,10 @@ mod tests {
             contract_month: "2025-01".to_string(),
             strike_price: 2450.0,
             volume_only_auction: None,
-            emergency_margin_trigger_division: "001".to_string(),
-            put_call_division: "2".to_string(),
-            last_trading_day: "2025-01-09".to_string(),
-            special_quotation_day: "2025-01-10".to_string(),
+            emergency_margin_trigger_division: EmergencyMarginTriggerDivision::Triggered,
+            put_call_division: PutCallDivision::Call,
+            last_trading_day: Some("2025-01-09".to_string()),
+            special_quotation_day: Some("2025-01-10".to_string()),
             settlement_price: None,
             theoretical_price: None,
             base_volatility: None,
@@ -710,7 +710,7 @@ mod tests {
             OptionsPricesItem {
                 code: "140014505".to_string(),
                 derivatives_product_category: "TOPIXE".to_string(),
-                underlying_sso: "-".to_string(),
+                underlying_sso: UnderlyingSSO::Other,
                 date: "2024-07-23".to_string(),
                 whole_day_open: 1000.0,
                 whole_day_high: 1050.0,
@@ -734,22 +734,22 @@ mod tests {
                 contract_month: "2025-02".to_string(),
                 strike_price: 2500.0,
                 volume_only_auction: Some(500.0),
-                emergency_margin_trigger_division: "001".to_string(),
-                put_call_division: "1".to_string(),
-                last_trading_day: "2025-02-09".to_string(),
-                special_quotation_day: "2025-02-10".to_string(),
+                emergency_margin_trigger_division: EmergencyMarginTriggerDivision::Triggered,
+                put_call_division: PutCallDivision::Put,
+                last_trading_day: Some("2025-02-09".to_string()),
+                special_quotation_day: Some("2025-02-10".to_string()),
                 settlement_price: Some(1025.0),
                 theoretical_price: Some(1030.5001),
                 base_volatility: Some(19.200),
                 underlying_price: Some(2850.00),
                 implied_volatility: Some(18.5000),
                 interest_rate: Some(0.3600),
-                central_contract_month_flag: Some("1".to_string()),
+                central_contract_month_flag: Some(CentralContractMonthFlag::CentralContractMonth),
             },
             OptionsPricesItem {
                 code: "140014506".to_string(),
                 derivatives_product_category: "TOPIXE".to_string(),
-                underlying_sso: "-".to_string(),
+                underlying_sso: UnderlyingSSO::Other,
                 date: "2024-07-23".to_string(),
                 whole_day_open: 2000.0,
                 whole_day_high: 2050.0,
@@ -773,17 +773,17 @@ mod tests {
                 contract_month: "2025-03".to_string(),
                 strike_price: 2550.0,
                 volume_only_auction: Some(600.0),
-                emergency_margin_trigger_division: "002".to_string(),
-                put_call_division: "2".to_string(),
-                last_trading_day: "2025-03-09".to_string(),
-                special_quotation_day: "2025-03-10".to_string(),
+                emergency_margin_trigger_division: EmergencyMarginTriggerDivision::Calculated,
+                put_call_division: PutCallDivision::Call,
+                last_trading_day: Some("2025-03-09".to_string()),
+                special_quotation_day: Some("2025-03-10".to_string()),
                 settlement_price: Some(2025.0),
                 theoretical_price: Some(2030.5001),
                 base_volatility: Some(19.500),
                 underlying_price: Some(2855.00),
                 implied_volatility: Some(18.7000),
                 interest_rate: Some(0.3650),
-                central_contract_month_flag: Some("1".to_string()),
+                central_contract_month_flag: Some(CentralContractMonthFlag::CentralContractMonth),
             },
         ];
 
@@ -848,7 +848,7 @@ mod tests {
         let expected_option = vec![OptionsPricesItem {
             code: "140014505".to_string(),
             derivatives_product_category: "TOPIXE".to_string(),
-            underlying_sso: "-".to_string(),
+            underlying_sso: UnderlyingSSO::Other,
             date: "2024-07-23".to_string(),
             whole_day_open: 0.0,
             whole_day_high: 0.0,
@@ -872,17 +872,17 @@ mod tests {
             contract_month: "2025-01".to_string(),
             strike_price: 2450.0,
             volume_only_auction: Some(0.0),
-            emergency_margin_trigger_division: "002".to_string(),
-            put_call_division: "2".to_string(),
-            last_trading_day: "2025-01-09".to_string(),
-            special_quotation_day: "2025-01-10".to_string(),
+            emergency_margin_trigger_division: EmergencyMarginTriggerDivision::Calculated,
+            put_call_division: PutCallDivision::Call,
+            last_trading_day: Some("2025-01-09".to_string()),
+            special_quotation_day: Some("2025-01-10".to_string()),
             settlement_price: Some(377.0),
             theoretical_price: Some(380.3801),
             base_volatility: Some(18.115),
             underlying_price: Some(2833.39),
             implied_volatility: Some(17.2955),
             interest_rate: Some(0.3527),
-            central_contract_month_flag: Some("0".to_string()),
+            central_contract_month_flag: Some(CentralContractMonthFlag::Others),
         }];
 
         let expected_response = OptionsPricesResponse {
