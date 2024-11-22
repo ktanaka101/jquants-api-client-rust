@@ -2,6 +2,7 @@
 
 pub mod accounting_period;
 pub mod amount_per_share;
+pub mod central_contract_month_flag;
 pub mod dividend;
 pub mod emergency_margin_trigger_division;
 pub mod futures_code;

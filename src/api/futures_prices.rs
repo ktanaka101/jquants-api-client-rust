@@ -5,11 +5,16 @@ use std::fmt;
 
 use super::{
     shared::{
+        deserialize_utils::empty_string_or_null_as_none,
         traits::{
             builder::JQuantsBuilder,
             pagination::{HasPaginationKey, MergePage, Paginatable},
         },
-        types::futures_code::FuturesCode,
+        types::{
+            central_contract_month_flag::CentralContractMonthFlag,
+            emergency_margin_trigger_division::EmergencyMarginTriggerDivision,
+            futures_code::FuturesCode,
+        },
     },
     JQuantsApiClient, JQuantsPlanClient,
 };
@@ -260,7 +265,7 @@ pub struct FuturesPricesItem {
 
     /// Emergency margin trigger division
     #[serde(rename = "EmergencyMarginTriggerDivision")]
-    pub emergency_margin_trigger_division: String,
+    pub emergency_margin_trigger_division: EmergencyMarginTriggerDivision,
 
     /// Last trading day (YYYY-MM-DD)
     #[serde(
@@ -288,7 +293,7 @@ pub struct FuturesPricesItem {
         rename = "CentralContractMonthFlag",
         deserialize_with = "empty_string_or_null_as_none"
     )]
-    pub central_contract_month_flag: Option<String>,
+    pub central_contract_month_flag: Option<CentralContractMonthFlag>,
 }
 
 /// Helper function to deserialize fields that can be either a number or a string.
@@ -341,18 +346,6 @@ where
     }
 
     deserializer.deserialize_any(F64OrNoneVisitor)
-}
-
-/// Helper function to deserialize empty strings or null as `None`.
-fn empty_string_or_null_as_none<'de, D>(deserializer: D) -> Result<Option<String>, D::Error>
-where
-    D: Deserializer<'de>,
-{
-    let opt: Option<String> = Option::deserialize(deserializer)?;
-    match opt {
-        Some(s) if s.is_empty() => Ok(None),
-        other => Ok(other),
-    }
 }
 
 #[cfg(test)]
@@ -427,11 +420,11 @@ mod tests {
             turnover_value: 1217918971856.0,
             contract_month: "2024-09".to_string(),
             volume_only_auction: Some(40405.0),
-            emergency_margin_trigger_division: "002".to_string(),
+            emergency_margin_trigger_division: EmergencyMarginTriggerDivision::Calculated,
             last_trading_day: Some("2024-09-12".to_string()),
             special_quotation_day: Some("2024-09-13".to_string()),
             settlement_price: Some(2829.0),
-            central_contract_month_flag: Some("1".to_string()),
+            central_contract_month_flag: Some(CentralContractMonthFlag::CentralContractMonth),
         }];
 
         let expected_response = FuturesPricesResponse {
@@ -510,7 +503,7 @@ mod tests {
             turnover_value: 1217918971856.0,
             contract_month: "2024-09".to_string(),
             volume_only_auction: None,
-            emergency_margin_trigger_division: "002".to_string(),
+            emergency_margin_trigger_division: EmergencyMarginTriggerDivision::Calculated,
             last_trading_day: None,
             special_quotation_day: None,
             settlement_price: None,
@@ -625,11 +618,11 @@ mod tests {
                 turnover_value: 1217918971856.0,
                 contract_month: "2024-09".to_string(),
                 volume_only_auction: Some(40405.0),
-                emergency_margin_trigger_division: "002".to_string(),
+                emergency_margin_trigger_division: EmergencyMarginTriggerDivision::Calculated,
                 last_trading_day: Some("2024-09-12".to_string()),
                 special_quotation_day: Some("2024-09-13".to_string()),
                 settlement_price: Some(2829.0),
-                central_contract_month_flag: Some("1".to_string()),
+                central_contract_month_flag: Some(CentralContractMonthFlag::CentralContractMonth),
             },
             FuturesPricesItem {
                 code: "169090006".to_string(),
@@ -656,11 +649,11 @@ mod tests {
                 turnover_value: 1317918971856.0,
                 contract_month: "2024-10".to_string(),
                 volume_only_auction: Some(50405.0),
-                emergency_margin_trigger_division: "001".to_string(),
+                emergency_margin_trigger_division: EmergencyMarginTriggerDivision::Triggered,
                 last_trading_day: Some("2024-10-12".to_string()),
                 special_quotation_day: Some("2024-10-13".to_string()),
                 settlement_price: Some(3029.0),
-                central_contract_month_flag: Some("0".to_string()),
+                central_contract_month_flag: Some(CentralContractMonthFlag::Others),
             },
         ];
 
@@ -739,11 +732,11 @@ mod tests {
             turnover_value: 1217918971856.0,
             contract_month: "2024-09".to_string(),
             volume_only_auction: Some(40405.0),
-            emergency_margin_trigger_division: "002".to_string(),
+            emergency_margin_trigger_division: EmergencyMarginTriggerDivision::Calculated,
             last_trading_day: Some("2024-09-12".to_string()),
             special_quotation_day: Some("2024-09-13".to_string()),
             settlement_price: Some(2829.0),
-            central_contract_month_flag: Some("1".to_string()),
+            central_contract_month_flag: Some(CentralContractMonthFlag::CentralContractMonth),
         }];
 
         let expected_response = FuturesPricesResponse {
