@@ -13,12 +13,6 @@
 //!
 //! You can obtain an Refresh Token by signing up at [J-Quants](https://jpx-jquants.com/).
 //!
-//! # Example output
-//!
-//! ```sh
-//! Date: 2024-08-01, Code: 27890, CompanyName: カルラ, CompanyNameEnglish: Karula Co.,LTD., Sector17Code: RetailTrade, Sector17CodeName: 小売, Sector33Code: RetailTrade, Sector33CodeName: 小売業, ScaleCategory: -, MarketCode: Standard, MarketCodeName: スタンダード
-//! ```
-//!
 //! # JQuants API Reference
 //!
 //! - [JQuants API documentation](https://jpx.gitbook.io/j-quants-en)
