@@ -2,6 +2,11 @@
 name = "jquants-api-client"
 version = "0.1.0"
 edition = "2021"
+authors = ["ktanaka101 <kentanaka101@gmail.com>"]
+description = "A Rust client for the J-Quants API, providing seamless access to financial data."
+license = "MIT"
+repository = "https://github.com/ktanaka101/jquants-api-client-rust"
+documentation = "https://docs.rs/jquants-api-client"
 
 [lints.rust]
 missing_docs = "deny"
