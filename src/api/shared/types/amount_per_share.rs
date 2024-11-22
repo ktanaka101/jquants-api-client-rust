@@ -8,7 +8,7 @@ use serde::{
 };
 
 /// Represents an amount per share.
-#[derive(Debug, Clone, PartialEq, PartialOrd)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum AmountPerShare {
     /// A number.
     Number(f64),

@@ -5,7 +5,7 @@ use std::str::FromStr;
 use serde::Deserialize;
 
 /// Central contract month flag.
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Deserialize)]
 #[serde(from = "String")]
 pub enum CentralContractMonthFlag {
     /// 0: Others

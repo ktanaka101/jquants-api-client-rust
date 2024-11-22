@@ -5,7 +5,7 @@ use std::str::FromStr;
 use serde::Deserialize;
 
 /// Emergency margin trigger division.
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Deserialize)]
 #[serde(from = "String")]
 pub enum EmergencyMarginTriggerDivision {
     /// 001: When emergency margin is triggered

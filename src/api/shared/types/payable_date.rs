@@ -8,7 +8,7 @@ use serde::{
 };
 
 /// Represents a payable date.
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum PayableDate {
     /// A date string.
     Date(String),
