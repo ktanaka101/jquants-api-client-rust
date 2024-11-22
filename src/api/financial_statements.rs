@@ -1,13 +1,16 @@
 //! Financial Statements Data API.
 
-use serde::{Deserialize, Deserializer, Serialize};
+use serde::{Deserialize, Serialize};
 
 use crate::{AccountingPeriod, TypeOfDocument};
 
 use super::{
-    shared::traits::{
-        builder::JQuantsBuilder,
-        pagination::{HasPaginationKey, MergePage, Paginatable},
+    shared::{
+        deserialize_utils::empty_string_or_null_as_none,
+        traits::{
+            builder::JQuantsBuilder,
+            pagination::{HasPaginationKey, MergePage, Paginatable},
+        },
     },
     JQuantsApiClient, JQuantsPlanClient,
 };
@@ -559,18 +562,6 @@ pub struct FinancialStatementItem {
     /// Next Year Forecast Non-Consolidated Earnings Per Share at Fiscal Year End
     #[serde(rename = "NextYearForecastNonConsolidatedEarningsPerShare")]
     pub next_year_forecast_non_consolidated_earnings_per_share: String,
-}
-
-/// Helper function to deserialize empty strings or null as `None`.
-fn empty_string_or_null_as_none<'de, D>(deserializer: D) -> Result<Option<String>, D::Error>
-where
-    D: Deserializer<'de>,
-{
-    let opt: Option<String> = Option::deserialize(deserializer)?;
-    match opt {
-        Some(s) if s.is_empty() => Ok(None),
-        other => Ok(other),
-    }
 }
 
 #[cfg(test)]
