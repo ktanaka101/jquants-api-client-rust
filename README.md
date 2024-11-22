@@ -1,7 +1,7 @@
 # J-Quants API Client
 
 [![Build Status](https://github.com/ktanaka101/jquants-api-client-rust/actions/workflows/rust.yml/badge.svg)](https://github.com/ktanaka101/jquants-api-client-rust/actions)
-[![Crates.io](https://img.shields.io/crates/v/jquants_api_client.svg)](https://crates.io/crates/jquants_api_client)
+[![Crates.io](https://img.shields.io/crates/v/jquants-api-client.svg)](https://crates.io/crates/jquants-api-client)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ## Table of Contents
@@ -66,11 +66,11 @@ For an in-depth understanding of the data provided, service usage, and API speci
 
 ## Installation
 
-Ensure Rust is installed on your system. Then, add the `jquants_api_client` to your `Cargo.toml`:
+Ensure Rust is installed on your system. Then, add the `jquants-api-client` to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-jquants_api_client = "0.1.0"
+jquants-api-client = "0.1.0"
 ```
 
 ## Supported APIs
@@ -235,7 +235,7 @@ If you encounter any bugs or have feature suggestions, please open an issue on t
 
 ## Documents
 
-Comprehensive documentation is available [here](https://docs.rs/jquants_api_client).
+Comprehensive documentation is available [here](https://docs.rs/jquants-api-client).
 
 For API reference, visit the [API Specifications (English)](https://jpx.gitbook.io/j-quants-en), [API Specifications (Japanese)](https://jpx.gitbook.io/j-quants-ja).
 
