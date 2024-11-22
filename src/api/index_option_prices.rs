@@ -4,9 +4,16 @@ use serde::{Deserialize, Deserializer, Serialize};
 use std::fmt;
 
 use super::{
-    shared::traits::{
-        builder::JQuantsBuilder,
-        pagination::{HasPaginationKey, MergePage, Paginatable},
+    shared::{
+        deserialize_utils::empty_string_or_null_as_none,
+        traits::{
+            builder::JQuantsBuilder,
+            pagination::{HasPaginationKey, MergePage, Paginatable},
+        },
+        types::{
+            emergency_margin_trigger_division::EmergencyMarginTriggerDivision,
+            put_call_division::PutCallDivision,
+        },
     },
     JQuantsApiClient, JQuantsPlanClient,
 };
@@ -210,19 +217,25 @@ pub struct IndexOptionPriceItem {
         rename = "EmergencyMarginTriggerDivision",
         deserialize_with = "empty_string_or_null_as_none"
     )]
-    pub emergency_margin_trigger_division: Option<String>,
+    pub emergency_margin_trigger_division: Option<EmergencyMarginTriggerDivision>,
 
     /// Put Call division (1: Put, 2: Call)
     #[serde(rename = "PutCallDivision")]
-    pub put_call_division: String,
+    pub put_call_division: PutCallDivision,
 
     /// Last trading day (YYYY-MM-DD)
-    #[serde(rename = "LastTradingDay")]
-    pub last_trading_day: String,
+    #[serde(
+        rename = "LastTradingDay",
+        deserialize_with = "empty_string_or_null_as_none"
+    )]
+    pub last_trading_day: Option<String>,
 
     /// Special quotation day (YYYY-MM-DD)
-    #[serde(rename = "SpecialQuotationDay")]
-    pub special_quotation_day: String,
+    #[serde(
+        rename = "SpecialQuotationDay",
+        deserialize_with = "empty_string_or_null_as_none"
+    )]
+    pub special_quotation_day: Option<String>,
 
     /// Settlement price
     #[serde(
@@ -309,17 +322,6 @@ where
     deserializer.deserialize_any(F64OrNoneVisitor)
 }
 
-fn empty_string_or_null_as_none<'de, D>(deserializer: D) -> Result<Option<String>, D::Error>
-where
-    D: Deserializer<'de>,
-{
-    let opt: Option<String> = Option::deserialize(deserializer)?;
-    match opt {
-        Some(s) if s.is_empty() => Ok(None),
-        other => Ok(other),
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -389,10 +391,10 @@ mod tests {
             contract_month: "2025-06".to_string(),
             strike_price: 20000.0,
             volume_only_auction: Some(0.0),
-            emergency_margin_trigger_division: Some("002".to_string()),
-            put_call_division: "1".to_string(),
-            last_trading_day: "2025-06-12".to_string(),
-            special_quotation_day: "2025-06-13".to_string(),
+            emergency_margin_trigger_division: Some(EmergencyMarginTriggerDivision::Calculated),
+            put_call_division: PutCallDivision::Put,
+            last_trading_day: Some("2025-06-12".to_string()),
+            special_quotation_day: Some("2025-06-13".to_string()),
             settlement_price: Some(980.0),
             theoretical_price: Some(974.641),
             base_volatility: Some(17.93025),
@@ -437,8 +439,8 @@ mod tests {
                     "Volume(OnlyAuction)": "",
                     "EmergencyMarginTriggerDivision": "",
                     "PutCallDivision": "1",
-                    "LastTradingDay": "2025-06-12",
-                    "SpecialQuotationDay": "2025-06-13",
+                    "LastTradingDay": "",
+                    "SpecialQuotationDay": "",
                     "SettlementPrice": "",
                     "TheoreticalPrice": "",
                     "BaseVolatility": "",
@@ -475,9 +477,9 @@ mod tests {
             strike_price: 0.0,
             volume_only_auction: None,
             emergency_margin_trigger_division: None,
-            put_call_division: "1".to_string(),
-            last_trading_day: "2025-06-12".to_string(),
-            special_quotation_day: "2025-06-13".to_string(),
+            put_call_division: PutCallDivision::Put,
+            last_trading_day: None,
+            special_quotation_day: None,
             settlement_price: None,
             theoretical_price: None,
             base_volatility: None,
@@ -592,10 +594,10 @@ mod tests {
                 contract_month: "2025-06".to_string(),
                 strike_price: 20000.0,
                 volume_only_auction: Some(500.0),
-                emergency_margin_trigger_division: Some("002".to_string()),
-                put_call_division: "1".to_string(),
-                last_trading_day: "2025-06-12".to_string(),
-                special_quotation_day: "2025-06-13".to_string(),
+                emergency_margin_trigger_division: Some(EmergencyMarginTriggerDivision::Calculated),
+                put_call_division: PutCallDivision::Put,
+                last_trading_day: Some("2025-06-12".to_string()),
+                special_quotation_day: Some("2025-06-13".to_string()),
                 settlement_price: Some(980.0),
                 theoretical_price: Some(974.641),
                 base_volatility: Some(17.93025),
@@ -624,10 +626,10 @@ mod tests {
                 contract_month: "2025-07".to_string(),
                 strike_price: 21000.0,
                 volume_only_auction: Some(600.0),
-                emergency_margin_trigger_division: Some("001".to_string()),
-                put_call_division: "2".to_string(),
-                last_trading_day: "2025-07-12".to_string(),
-                special_quotation_day: "2025-07-13".to_string(),
+                emergency_margin_trigger_division: Some(EmergencyMarginTriggerDivision::Triggered),
+                put_call_division: PutCallDivision::Call,
+                last_trading_day: Some("2025-07-12".to_string()),
+                special_quotation_day: Some("2025-07-13".to_string()),
                 settlement_price: Some(1980.0),
                 theoretical_price: Some(1974.641),
                 base_volatility: Some(18.93025),
@@ -671,7 +673,7 @@ mod tests {
                     "ContractMonth": "2025-06",
                     "StrikePrice": 20000.0,
                     "Volume(OnlyAuction)": 0.0,
-                    "EmergencyMarginTriggerDivision": "002",
+                    "EmergencyMarginTriggerDivision": "003",
                     "PutCallDivision": "1",
                     "LastTradingDay": "2025-06-12",
                     "SpecialQuotationDay": "2025-06-13",
@@ -709,10 +711,12 @@ mod tests {
             contract_month: "2025-06".to_string(),
             strike_price: 20000.0,
             volume_only_auction: Some(0.0),
-            emergency_margin_trigger_division: Some("002".to_string()),
-            put_call_division: "1".to_string(),
-            last_trading_day: "2025-06-12".to_string(),
-            special_quotation_day: "2025-06-13".to_string(),
+            emergency_margin_trigger_division: Some(EmergencyMarginTriggerDivision::Unknown(
+                "003".to_string(),
+            )),
+            put_call_division: PutCallDivision::Put,
+            last_trading_day: Some("2025-06-12".to_string()),
+            special_quotation_day: Some("2025-06-13".to_string()),
             settlement_price: Some(980.0),
             theoretical_price: Some(974.641),
             base_volatility: Some(17.93025),
