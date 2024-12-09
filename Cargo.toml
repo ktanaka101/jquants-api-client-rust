@@ -15,6 +15,7 @@ missing_docs = "deny"
 reqwest = { version = "^0.12", features = ["json"] }
 serde = { version = "^1.0", features = ["derive"] }
 serde_json = "^1.0"
+serde_plain = "^1.0"
 thiserror = "^2.0"
 tracing = "^0.1"
 chrono = "^0.4"
@@ -22,6 +23,17 @@ tokio = { version = "^1.41", features = ["full"] }
 futures = "0.3"
 async-stream = "0.3"
 
+polars = { version = "^0.44", optional = true, features = [
+  "dtype-date",
+  "dtype-time",
+  "dtype-categorical",
+] }
+
 [dev-dependencies]
 pretty_assertions = "1.4"
 maplit = "1.0"
+expect-test = "1.5"
+
+[features]
+default = []
+polars = ["dep:polars"]
