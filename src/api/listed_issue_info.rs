@@ -241,13 +241,13 @@ fn build_common_columns(
         Column::new("Codes".into(), codes),
         Column::new("CompanyNames".into(), company_names),
         Column::new("CompanyNamesEnglish".into(), company_names_english),
-        build_column("Sector17Codes".into(), sector17_codes)?,
-        build_column("Sector17CodeNames".into(), sector17_code_names)?,
-        build_column("Sector33Codes".into(), sector33_codes)?,
-        build_column("Sector33CodeNames".into(), sector33_code_names)?,
-        build_column("ScaleCategories".into(), scale_categories)?,
-        build_column("MarketCodes".into(), market_codes)?,
-        build_column("MarketCodeNames".into(), market_code_names)?,
+        build_column("Sector17Codes", sector17_codes)?,
+        build_column("Sector17CodeNames", sector17_code_names)?,
+        build_column("Sector33Codes", sector33_codes)?,
+        build_column("Sector33CodeNames", sector33_code_names)?,
+        build_column("ScaleCategories", scale_categories)?,
+        build_column("MarketCodes", market_codes)?,
+        build_column("MarketCodeNames", market_code_names)?,
     ];
 
     Ok(columns)
@@ -288,8 +288,8 @@ impl ListedIssueInfoPremiumPlanResponse {
         }
 
         let mut columns = build_common_columns(common)?;
-        columns.push(build_column("MarginCodes".into(), margin_codes)?);
-        columns.push(build_column("MarginCodeNames".into(), margin_code_names)?);
+        columns.push(build_column("MarginCodes", margin_codes)?);
+        columns.push(build_column("MarginCodeNames", margin_code_names)?);
 
         let df = polars::frame::DataFrame::new(columns)?;
 

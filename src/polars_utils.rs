@@ -1,5 +1,5 @@
 use polars::{
-    prelude::{CategoricalOrdering, Column, PlSmallStr, PolarsError},
+    prelude::{CategoricalOrdering, Column, PolarsError},
     series::{IntoSeries, Series},
 };
 use serde::Serialize;
@@ -13,19 +13,13 @@ pub enum IntoPolarsError {
     PolarsError(#[from] PolarsError),
 }
 
-pub fn build_column<T: Serialize>(
-    name: PlSmallStr,
-    values: Vec<T>,
-) -> Result<Column, IntoPolarsError> {
+pub fn build_column<T: Serialize>(name: &str, values: Vec<T>) -> Result<Column, IntoPolarsError> {
     Ok(Column::from(build_series(name, values)?))
 }
 
-pub fn build_series<T: Serialize>(
-    name: PlSmallStr,
-    values: Vec<T>,
-) -> Result<Series, IntoPolarsError> {
+pub fn build_series<T: Serialize>(name: &str, values: Vec<T>) -> Result<Series, IntoPolarsError> {
     let mut builder = polars::prelude::CategoricalChunkedBuilder::new(
-        name,
+        name.into(),
         values.len(),
         CategoricalOrdering::Lexical,
     );
