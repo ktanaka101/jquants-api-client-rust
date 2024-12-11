@@ -27,6 +27,8 @@ polars = { version = "^0.44", optional = true, features = [
   "dtype-date",
   "dtype-time",
   "dtype-categorical",
+  "strings",
+  "lazy",
 ] }
 
 [dev-dependencies]

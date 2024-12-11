@@ -16,7 +16,7 @@ pub enum DevidendStatucCode {
     Delete,
     /// Unknown reference status code
     #[serde(untagged)]
-    Unknown,
+    Unknown(String),
 }
 
 /// Code stands for interim/final dividend
@@ -30,7 +30,7 @@ pub enum DividendInterimFinalCode {
     Final,
     /// Unknown dividend interim/final code
     #[serde(untagged)]
-    Unknown,
+    Unknown(String),
 }
 
 /// Code stands for determined/forecast
@@ -44,7 +44,7 @@ pub enum DividendForecastResultCode {
     Forecast,
     /// Unknown dividend forecast result code
     #[serde(untagged)]
-    Unknown,
+    Unknown(String),
 }
 
 /// Code stands for commemorative/special dividend
@@ -64,5 +64,5 @@ pub enum DividendCommemorativeSpecialCode {
     Both,
     /// Unknown dividend commemorative/special code
     #[serde(untagged)]
-    Unknown,
+    Unknown(String),
 }
