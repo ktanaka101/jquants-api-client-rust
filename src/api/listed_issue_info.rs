@@ -237,17 +237,17 @@ fn build_common_columns(
     }
 
     let columns = vec![
-        Column::new("Dates".into(), dates).cast(&DataType::Date)?,
-        Column::new("Codes".into(), codes),
-        Column::new("CompanyNames".into(), company_names),
-        Column::new("CompanyNamesEnglish".into(), company_names_english),
-        build_categorical_column("Sector17Codes", sector17_codes)?,
-        build_categorical_column("Sector17CodeNames", sector17_code_names)?,
-        build_categorical_column("Sector33Codes", sector33_codes)?,
-        build_categorical_column("Sector33CodeNames", sector33_code_names)?,
-        build_categorical_column("ScaleCategories", scale_categories)?,
-        build_categorical_column("MarketCodes", market_codes)?,
-        build_categorical_column("MarketCodeNames", market_code_names)?,
+        Column::new("Date".into(), dates).cast(&DataType::Date)?,
+        Column::new("Code".into(), codes),
+        Column::new("CompanyName".into(), company_names),
+        Column::new("CompanyNameEnglish".into(), company_names_english),
+        build_categorical_column("Sector17Code", sector17_codes)?,
+        build_categorical_column("Sector17CodeName", sector17_code_names)?,
+        build_categorical_column("Sector33Code", sector33_codes)?,
+        build_categorical_column("Sector33CodeName", sector33_code_names)?,
+        build_categorical_column("ScaleCategory", scale_categories)?,
+        build_categorical_column("MarketCode", market_codes)?,
+        build_categorical_column("MarketCodeName", market_code_names)?,
     ];
 
     Ok(columns)
@@ -288,9 +288,9 @@ impl ListedIssueInfoPremiumPlanResponse {
         }
 
         let mut columns = build_common_columns(common)?;
-        columns.push(build_categorical_column("MarginCodes", margin_codes)?);
+        columns.push(build_categorical_column("MarginCode", margin_codes)?);
         columns.push(build_categorical_column(
-            "MarginCodeNames",
+            "MarginCodeName",
             margin_code_names,
         )?);
 
@@ -442,14 +442,14 @@ mod tests {
 
         expect_test::expect![[r#"
             shape: (2, 11)
-            ┌────────────┬───────┬──────────────┬─────────────────────┬───────────────┬───────────────────┬───────────────┬───────────────────┬─────────────────┬─────────────┬─────────────────┐
-            │ Dates      ┆ Codes ┆ CompanyNames ┆ CompanyNamesEnglish ┆ Sector17Codes ┆ Sector17CodeNames ┆ Sector33Codes ┆ Sector33CodeNames ┆ ScaleCategories ┆ MarketCodes ┆ MarketCodeNames │
-            │ ---        ┆ ---   ┆ ---          ┆ ---                 ┆ ---           ┆ ---               ┆ ---           ┆ ---               ┆ ---             ┆ ---         ┆ ---             │
-            │ date       ┆ str   ┆ str          ┆ str                 ┆ cat           ┆ cat               ┆ cat           ┆ cat               ┆ cat             ┆ cat         ┆ cat             │
-            ╞════════════╪═══════╪══════════════╪═════════════════════╪═══════════════╪═══════════════════╪═══════════════╪═══════════════════╪═════════════════╪═════════════╪═════════════════╡
-            │ 2022-11-11 ┆ 86970 ┆ Group        ┆ JEG                 ┆ 16            ┆ Bank              ┆ 7200          ┆ Bank              ┆ TOPIX Large70   ┆ 0111        ┆ Prime           │
-            │ 2022-11-12 ┆ 86971 ┆ Group        ┆ JEG2                ┆ 1             ┆ Bank-A            ┆ 0050          ┆ Bank-B            ┆ TOPIX Large70-A ┆ 0101        ┆ Prime-B         │
-            └────────────┴───────┴──────────────┴─────────────────────┴───────────────┴───────────────────┴───────────────┴───────────────────┴─────────────────┴─────────────┴─────────────────┘"#]]
+            ┌────────────┬───────┬─────────────┬────────────────────┬──────────────┬──────────────────┬──────────────┬──────────────────┬─────────────────┬────────────┬────────────────┐
+            │ Date       ┆ Code  ┆ CompanyName ┆ CompanyNameEnglish ┆ Sector17Code ┆ Sector17CodeName ┆ Sector33Code ┆ Sector33CodeName ┆ ScaleCategory   ┆ MarketCode ┆ MarketCodeName │
+            │ ---        ┆ ---   ┆ ---         ┆ ---                ┆ ---          ┆ ---              ┆ ---          ┆ ---              ┆ ---             ┆ ---        ┆ ---            │
+            │ date       ┆ str   ┆ str         ┆ str                ┆ cat          ┆ cat              ┆ cat          ┆ cat              ┆ cat             ┆ cat        ┆ cat            │
+            ╞════════════╪═══════╪═════════════╪════════════════════╪══════════════╪══════════════════╪══════════════╪══════════════════╪═════════════════╪════════════╪════════════════╡
+            │ 2022-11-11 ┆ 86970 ┆ Group       ┆ JEG                ┆ 16           ┆ Bank             ┆ 7200         ┆ Bank             ┆ TOPIX Large70   ┆ 0111       ┆ Prime          │
+            │ 2022-11-12 ┆ 86971 ┆ Group       ┆ JEG2               ┆ 1            ┆ Bank-A           ┆ 0050         ┆ Bank-B           ┆ TOPIX Large70-A ┆ 0101       ┆ Prime-B        │
+            └────────────┴───────┴─────────────┴────────────────────┴──────────────┴──────────────────┴──────────────┴──────────────────┴─────────────────┴────────────┴────────────────┘"#]]
         .assert_eq(&df.to_string());
     }
 
@@ -482,13 +482,13 @@ mod tests {
 
         expect_test::expect![[r#"
             shape: (1, 13)
-            ┌────────────┬───────┬──────────────┬─────────────────────┬───────────────┬───────────────────┬───────────────┬───────────────────┬─────────────────┬─────────────┬─────────────────┬─────────────┬─────────────────┐
-            │ Dates      ┆ Codes ┆ CompanyNames ┆ CompanyNamesEnglish ┆ Sector17Codes ┆ Sector17CodeNames ┆ Sector33Codes ┆ Sector33CodeNames ┆ ScaleCategories ┆ MarketCodes ┆ MarketCodeNames ┆ MarginCodes ┆ MarginCodeNames │
-            │ ---        ┆ ---   ┆ ---          ┆ ---                 ┆ ---           ┆ ---               ┆ ---           ┆ ---               ┆ ---             ┆ ---         ┆ ---             ┆ ---         ┆ ---             │
-            │ date       ┆ str   ┆ str          ┆ str                 ┆ cat           ┆ cat               ┆ cat           ┆ cat               ┆ cat             ┆ cat         ┆ cat             ┆ cat         ┆ cat             │
-            ╞════════════╪═══════╪══════════════╪═════════════════════╪═══════════════╪═══════════════════╪═══════════════╪═══════════════════╪═════════════════╪═════════════╪═════════════════╪═════════════╪═════════════════╡
-            │ 2022-11-11 ┆ 86970 ┆ Group        ┆ JEG                 ┆ 16            ┆ Bank              ┆ 7200          ┆ Bank              ┆ TOPIX Large70   ┆ 0111        ┆ Prime           ┆ 1           ┆ MarginTrading   │
-            └────────────┴───────┴──────────────┴─────────────────────┴───────────────┴───────────────────┴───────────────┴───────────────────┴─────────────────┴─────────────┴─────────────────┴─────────────┴─────────────────┘"#]]
+            ┌────────────┬───────┬─────────────┬────────────────────┬──────────────┬──────────────────┬──────────────┬──────────────────┬───────────────┬────────────┬────────────────┬────────────┬────────────────┐
+            │ Date       ┆ Code  ┆ CompanyName ┆ CompanyNameEnglish ┆ Sector17Code ┆ Sector17CodeName ┆ Sector33Code ┆ Sector33CodeName ┆ ScaleCategory ┆ MarketCode ┆ MarketCodeName ┆ MarginCode ┆ MarginCodeName │
+            │ ---        ┆ ---   ┆ ---         ┆ ---                ┆ ---          ┆ ---              ┆ ---          ┆ ---              ┆ ---           ┆ ---        ┆ ---            ┆ ---        ┆ ---            │
+            │ date       ┆ str   ┆ str         ┆ str                ┆ cat          ┆ cat              ┆ cat          ┆ cat              ┆ cat           ┆ cat        ┆ cat            ┆ cat        ┆ cat            │
+            ╞════════════╪═══════╪═════════════╪════════════════════╪══════════════╪══════════════════╪══════════════╪══════════════════╪═══════════════╪════════════╪════════════════╪════════════╪════════════════╡
+            │ 2022-11-11 ┆ 86970 ┆ Group       ┆ JEG                ┆ 16           ┆ Bank             ┆ 7200         ┆ Bank             ┆ TOPIX Large70 ┆ 0111       ┆ Prime          ┆ 1          ┆ MarginTrading  │
+            └────────────┴───────┴─────────────┴────────────────────┴──────────────┴──────────────────┴──────────────┴──────────────────┴───────────────┴────────────┴────────────────┴────────────┴────────────────┘"#]]
         .assert_eq(&df.to_string());
     }
 }
