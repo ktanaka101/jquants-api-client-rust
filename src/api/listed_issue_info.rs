@@ -194,7 +194,7 @@ use polars::prelude::*;
 fn build_common_columns(
     data: Vec<IssueInfoCommonItem>,
 ) -> Result<Vec<Column>, crate::polars_utils::IntoPolarsError> {
-    use crate::polars_utils::build_column;
+    use crate::polars_utils::build_categorical_column;
 
     let mut dates = Vec::with_capacity(data.len());
     let mut codes = Vec::with_capacity(data.len());
@@ -241,13 +241,13 @@ fn build_common_columns(
         Column::new("Codes".into(), codes),
         Column::new("CompanyNames".into(), company_names),
         Column::new("CompanyNamesEnglish".into(), company_names_english),
-        build_column("Sector17Codes", sector17_codes)?,
-        build_column("Sector17CodeNames", sector17_code_names)?,
-        build_column("Sector33Codes", sector33_codes)?,
-        build_column("Sector33CodeNames", sector33_code_names)?,
-        build_column("ScaleCategories", scale_categories)?,
-        build_column("MarketCodes", market_codes)?,
-        build_column("MarketCodeNames", market_code_names)?,
+        build_categorical_column("Sector17Codes", sector17_codes)?,
+        build_categorical_column("Sector17CodeNames", sector17_code_names)?,
+        build_categorical_column("Sector33Codes", sector33_codes)?,
+        build_categorical_column("Sector33CodeNames", sector33_code_names)?,
+        build_categorical_column("ScaleCategories", scale_categories)?,
+        build_categorical_column("MarketCodes", market_codes)?,
+        build_categorical_column("MarketCodeNames", market_code_names)?,
     ];
 
     Ok(columns)
@@ -273,7 +273,7 @@ impl ListedIssueInfoPremiumPlanResponse {
     pub fn into_polars(
         self,
     ) -> Result<polars::prelude::DataFrame, crate::polars_utils::IntoPolarsError> {
-        use crate::polars_utils::build_column;
+        use crate::polars_utils::build_categorical_column;
 
         let data = self.info;
 
@@ -288,8 +288,11 @@ impl ListedIssueInfoPremiumPlanResponse {
         }
 
         let mut columns = build_common_columns(common)?;
-        columns.push(build_column("MarginCodes", margin_codes)?);
-        columns.push(build_column("MarginCodeNames", margin_code_names)?);
+        columns.push(build_categorical_column("MarginCodes", margin_codes)?);
+        columns.push(build_categorical_column(
+            "MarginCodeNames",
+            margin_code_names,
+        )?);
 
         let df = polars::frame::DataFrame::new(columns)?;
 

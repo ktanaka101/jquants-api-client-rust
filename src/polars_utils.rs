@@ -13,11 +13,17 @@ pub enum IntoPolarsError {
     PolarsError(#[from] PolarsError),
 }
 
-pub fn build_column<T: Serialize>(name: &str, values: Vec<T>) -> Result<Column, IntoPolarsError> {
-    Ok(Column::from(build_series(name, values)?))
+pub fn build_categorical_column<T: Serialize>(
+    name: &str,
+    values: Vec<T>,
+) -> Result<Column, IntoPolarsError> {
+    Ok(Column::from(build_categorical_series(name, values)?))
 }
 
-pub fn build_series<T: Serialize>(name: &str, values: Vec<T>) -> Result<Series, IntoPolarsError> {
+pub fn build_categorical_series<T: Serialize>(
+    name: &str,
+    values: Vec<T>,
+) -> Result<Series, IntoPolarsError> {
     let mut builder = polars::prelude::CategoricalChunkedBuilder::new(
         name.into(),
         values.len(),

@@ -246,7 +246,7 @@ impl CashDividendDataResponse {
     pub fn into_polars(
         self,
     ) -> Result<polars::prelude::DataFrame, crate::polars_utils::IntoPolarsError> {
-        use crate::polars_utils::build_column;
+        use crate::polars_utils::build_categorical_column;
         use polars::prelude::*;
 
         let data = self.dividend;
@@ -322,36 +322,36 @@ impl CashDividendDataResponse {
         let df = polars::frame::DataFrame::new(vec![
             Column::new("AnnouncementDate".into(), announcement_date).cast(&DataType::Date)?,
             Column::new("AnnouncementTime".into(), announcement_time),
-            build_column("Code", code)?,
+            build_categorical_column("Code", code)?,
             Column::new("ReferenceNumber".into(), reference_number),
-            build_column("StatusCode", status_code)?,
+            build_categorical_column("StatusCode", status_code)?,
             Column::new("BoardMeetingDate".into(), board_meeting_date).cast(&DataType::Date)?,
-            build_column("InterimFinalCode", interim_final_code)?,
-            build_column("ForecastResultCode", forecast_result_code)?,
+            build_categorical_column("InterimFinalCode", interim_final_code)?,
+            build_categorical_column("ForecastResultCode", forecast_result_code)?,
             Column::new("InterimFinalTerm".into(), interim_final_term),
-            build_column("GrossDividendRateVariant", gross_dividend_rate_variant)?,
+            build_categorical_column("GrossDividendRateVariant", gross_dividend_rate_variant)?,
             Column::new("GrossDividendRate".into(), gross_dividend_rate),
             Column::new("RecordDate".into(), record_date).cast(&DataType::Date)?,
             Column::new("ExDate".into(), ex_date).cast(&DataType::Date)?,
             Column::new("ActualRecordDate".into(), actual_record_date).cast(&DataType::Date)?,
-            build_column("PayableDateVariant", payable_date_variant)?,
+            build_categorical_column("PayableDateVariant", payable_date_variant)?,
             Column::new("PayableDate".into(), payable_date).cast(&DataType::Date)?,
             Column::new("CAReferenceNumber".into(), ca_reference_number),
-            build_column("DistributionAmountVariant", distribution_amount_variant)?,
+            build_categorical_column("DistributionAmountVariant", distribution_amount_variant)?,
             Column::new("DistributionAmount".into(), distribution_amount),
-            build_column("RetainedEarningsVariant", retained_earnings_variant)?,
+            build_categorical_column("RetainedEarningsVariant", retained_earnings_variant)?,
             Column::new("RetainedEarnings".into(), retained_earnings),
-            build_column("DeemedDividendVariant", deemed_dividend_variant)?,
+            build_categorical_column("DeemedDividendVariant", deemed_dividend_variant)?,
             Column::new("DeemedDividend".into(), deemed_dividend),
-            build_column("DeemedCapitalGainsVariant", deemed_capital_gains_variant)?,
+            build_categorical_column("DeemedCapitalGainsVariant", deemed_capital_gains_variant)?,
             Column::new("DeemedCapitalGains".into(), deemed_capital_gains),
-            build_column(
+            build_categorical_column(
                 "NetAssetDecreaseRatioVariant",
                 net_asset_decrease_ratio_variant,
             )?,
             Column::new("NetAssetDecreaseRatio".into(), net_asset_decrease_ratio),
-            build_column("CommemorativeSpecialCode", commemorative_special_code)?,
-            build_column(
+            build_categorical_column("CommemorativeSpecialCode", commemorative_special_code)?,
+            build_categorical_column(
                 "CommemorativeDividendRateVariant",
                 commemorative_dividend_rate_variant,
             )?,
@@ -359,7 +359,7 @@ impl CashDividendDataResponse {
                 "CommemorativeDividendRate".into(),
                 commemorative_dividend_rate,
             ),
-            build_column("SpecialDividendRateVariant", special_dividend_rate_variant)?,
+            build_categorical_column("SpecialDividendRateVariant", special_dividend_rate_variant)?,
             Column::new("SpecialDividendRate".into(), special_dividend_rate),
         ])?;
 

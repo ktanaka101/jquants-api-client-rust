@@ -205,7 +205,7 @@ impl BreakdownTradingDataResponse {
     pub fn into_polars(
         self,
     ) -> Result<polars::prelude::DataFrame, crate::polars_utils::IntoPolarsError> {
-        use crate::polars_utils::build_column;
+        use crate::polars_utils::build_categorical_column;
         use polars::prelude::*;
 
         let data = self.breakdown;
@@ -248,7 +248,7 @@ impl BreakdownTradingDataResponse {
 
         let df = polars::frame::DataFrame::new(vec![
             Column::new("Date".into(), dates).cast(&DataType::Date)?,
-            build_column("Code", codes)?,
+            build_categorical_column("Code", codes)?,
             Column::new("LongSellValue".into(), long_sell_values),
             Column::new(
                 "ShortSellWithoutMarginValue".into(),
