@@ -133,6 +133,61 @@ pub struct EarningsAnnouncementItem {
     pub section: String,
 }
 
+#[cfg(feature = "polars")]
+impl EarningsCalendarResponse {
+    /// Convert the response into a Polars DataFrame.
+    pub fn into_polars(
+        self,
+    ) -> Result<polars::prelude::DataFrame, crate::polars_utils::IntoPolarsError> {
+        use crate::polars_utils::build_categorical_column;
+        use polars::prelude::*;
+
+        let data = self.announcement;
+
+        let mut dates = Vec::with_capacity(data.len());
+        let mut codes = Vec::with_capacity(data.len());
+        let mut company_names = Vec::with_capacity(data.len());
+        let mut fiscal_years = Vec::with_capacity(data.len());
+        let mut sector_names = Vec::with_capacity(data.len());
+        let mut fiscal_quarters = Vec::with_capacity(data.len());
+        let mut sections = Vec::with_capacity(data.len());
+
+        for item in data {
+            let EarningsAnnouncementItem {
+                date,
+                code,
+                company_name,
+                fiscal_year,
+                sector_name,
+                fiscal_quarter,
+                section,
+            } = item;
+
+            dates.push(date);
+            codes.push(code);
+            company_names.push(company_name);
+            fiscal_years.push(fiscal_year);
+            sector_names.push(sector_name);
+            fiscal_quarters.push(fiscal_quarter);
+            sections.push(section);
+        }
+
+        let columns = vec![
+            Column::new("Date".into(), dates).cast(&DataType::Date)?,
+            Column::new("Code".into(), codes),
+            Column::new("CompanyName".into(), company_names),
+            build_categorical_column("FiscalYear", fiscal_years)?,
+            build_categorical_column("SectorName", sector_names)?,
+            build_categorical_column("FiscalQuarter", fiscal_quarters)?,
+            build_categorical_column("Section", sections)?,
+        ];
+
+        let df = polars::frame::DataFrame::new(columns)?;
+
+        Ok(df)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -288,5 +343,48 @@ mod tests {
         };
 
         pretty_assertions::assert_eq!(response, expected_response);
+    }
+
+    #[cfg(feature = "polars")]
+    #[test]
+    fn test_into_polars() {
+        std::env::set_var("POLARS_FMT_MAX_COLS", "-1");
+
+        let response = EarningsCalendarResponse {
+            announcement: vec![
+                EarningsAnnouncementItem {
+                    date: Some("2022-02-14".to_string()),
+                    code: "43760".to_string(),
+                    company_name: "ABC".to_string(),
+                    fiscal_year: "9/30".to_string(),
+                    sector_name: "IT".to_string(),
+                    fiscal_quarter: "1Q".to_string(),
+                    section: "Mothers".to_string(),
+                },
+                EarningsAnnouncementItem {
+                    date: None,
+                    code: "86970".to_string(),
+                    company_name: "XYZ".to_string(),
+                    fiscal_year: "3/31".to_string(),
+                    sector_name: "Prod".to_string(),
+                    fiscal_quarter: "4Q".to_string(),
+                    section: "Prime".to_string(),
+                },
+            ],
+            pagination_key: Some("value1.value2.".to_string()),
+        };
+
+        let df = response.into_polars().unwrap();
+
+        expect_test::expect![[r#"
+            shape: (2, 7)
+            ┌────────────┬───────┬─────────────┬────────────┬────────────┬───────────────┬─────────┐
+            │ Date       ┆ Code  ┆ CompanyName ┆ FiscalYear ┆ SectorName ┆ FiscalQuarter ┆ Section │
+            │ ---        ┆ ---   ┆ ---         ┆ ---        ┆ ---        ┆ ---           ┆ ---     │
+            │ date       ┆ str   ┆ str         ┆ cat        ┆ cat        ┆ cat           ┆ cat     │
+            ╞════════════╪═══════╪═════════════╪════════════╪════════════╪═══════════════╪═════════╡
+            │ 2022-02-14 ┆ 43760 ┆ ABC         ┆ 9/30       ┆ IT         ┆ 1Q            ┆ Mothers │
+            │ null       ┆ 86970 ┆ XYZ         ┆ 3/31       ┆ Prod       ┆ 4Q            ┆ Prime   │
+            └────────────┴───────┴─────────────┴────────────┴────────────┴───────────────┴─────────┘"#]].assert_eq(&df.to_string());
     }
 }

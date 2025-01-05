@@ -240,6 +240,151 @@ pub struct CashDividendItem {
     pub special_dividend_rate: AmountPerShare,
 }
 
+#[cfg(feature = "polars")]
+impl CashDividendDataResponse {
+    /// Convert the response into a Polars DataFrame.
+    pub fn into_polars(
+        self,
+    ) -> Result<polars::prelude::DataFrame, crate::polars_utils::IntoPolarsError> {
+        use crate::polars_utils::build_categorical_column;
+        use polars::prelude::*;
+
+        let data = self.dividend;
+
+        let mut announcement_date = Vec::with_capacity(data.len());
+        let mut announcement_time = Vec::with_capacity(data.len());
+        let mut code = Vec::with_capacity(data.len());
+        let mut reference_number = Vec::with_capacity(data.len());
+        let mut status_code = Vec::with_capacity(data.len());
+        let mut board_meeting_date = Vec::with_capacity(data.len());
+        let mut interim_final_code = Vec::with_capacity(data.len());
+        let mut forecast_result_code = Vec::with_capacity(data.len());
+        let mut interim_final_term = Vec::with_capacity(data.len());
+        let mut gross_dividend_rate_variant = Vec::with_capacity(data.len());
+        let mut gross_dividend_rate = Vec::with_capacity(data.len());
+        let mut record_date = Vec::with_capacity(data.len());
+        let mut ex_date = Vec::with_capacity(data.len());
+        let mut actual_record_date = Vec::with_capacity(data.len());
+        let mut payable_date_variant = Vec::with_capacity(data.len());
+        let mut payable_date = Vec::with_capacity(data.len());
+        let mut ca_reference_number = Vec::with_capacity(data.len());
+        let mut distribution_amount_variant = Vec::with_capacity(data.len());
+        let mut distribution_amount = Vec::with_capacity(data.len());
+        let mut retained_earnings_variant = Vec::with_capacity(data.len());
+        let mut retained_earnings = Vec::with_capacity(data.len());
+        let mut deemed_dividend_variant = Vec::with_capacity(data.len());
+        let mut deemed_dividend = Vec::with_capacity(data.len());
+        let mut deemed_capital_gains_variant = Vec::with_capacity(data.len());
+        let mut deemed_capital_gains = Vec::with_capacity(data.len());
+        let mut net_asset_decrease_ratio_variant = Vec::with_capacity(data.len());
+        let mut net_asset_decrease_ratio = Vec::with_capacity(data.len());
+        let mut commemorative_special_code = Vec::with_capacity(data.len());
+        let mut commemorative_dividend_rate_variant = Vec::with_capacity(data.len());
+        let mut commemorative_dividend_rate = Vec::with_capacity(data.len());
+        let mut special_dividend_rate_variant = Vec::with_capacity(data.len());
+        let mut special_dividend_rate = Vec::with_capacity(data.len());
+
+        for item in data {
+            announcement_date.push(item.announcement_date);
+            announcement_time.push(item.announcement_time);
+            code.push(item.code);
+            reference_number.push(item.reference_number);
+            status_code.push(item.status_code);
+            board_meeting_date.push(item.board_meeting_date);
+            interim_final_code.push(item.interim_final_code);
+            forecast_result_code.push(item.forecast_result_code);
+            interim_final_term.push(item.interim_final_term);
+            gross_dividend_rate_variant.push(item.gross_dividend_rate.variant());
+            gross_dividend_rate.push(item.gross_dividend_rate.into_number());
+            record_date.push(item.record_date);
+            ex_date.push(item.ex_date);
+            actual_record_date.push(item.actual_record_date);
+            payable_date_variant.push(item.payable_date.variant());
+            payable_date.push(item.payable_date.into_date());
+            ca_reference_number.push(item.ca_reference_number);
+            distribution_amount_variant.push(item.distribution_amount.variant());
+            distribution_amount.push(item.distribution_amount.into_number());
+            retained_earnings_variant.push(item.retained_earnings.variant());
+            retained_earnings.push(item.retained_earnings.into_number());
+            deemed_dividend_variant.push(item.deemed_dividend.variant());
+            deemed_dividend.push(item.deemed_dividend.into_number());
+            deemed_capital_gains_variant.push(item.deemed_capital_gains.variant());
+            deemed_capital_gains.push(item.deemed_capital_gains.into_number());
+            net_asset_decrease_ratio_variant.push(item.net_asset_decrease_ratio.variant());
+            net_asset_decrease_ratio.push(item.net_asset_decrease_ratio.into_number());
+            commemorative_special_code.push(item.commemorative_special_code);
+            commemorative_dividend_rate_variant.push(item.commemorative_dividend_rate.variant());
+            commemorative_dividend_rate.push(item.commemorative_dividend_rate.into_number());
+            special_dividend_rate_variant.push(item.special_dividend_rate.variant());
+            special_dividend_rate.push(item.special_dividend_rate.into_number());
+        }
+
+        let df = polars::frame::DataFrame::new(vec![
+            Column::new("AnnouncementDate".into(), announcement_date).cast(&DataType::Date)?,
+            Column::new("AnnouncementTime".into(), announcement_time),
+            build_categorical_column("Code", code)?,
+            Column::new("ReferenceNumber".into(), reference_number),
+            build_categorical_column("StatusCode", status_code)?,
+            Column::new("BoardMeetingDate".into(), board_meeting_date).cast(&DataType::Date)?,
+            build_categorical_column("InterimFinalCode", interim_final_code)?,
+            build_categorical_column("ForecastResultCode", forecast_result_code)?,
+            Column::new("InterimFinalTerm".into(), interim_final_term),
+            build_categorical_column("GrossDividendRateVariant", gross_dividend_rate_variant)?,
+            Column::new("GrossDividendRate".into(), gross_dividend_rate),
+            Column::new("RecordDate".into(), record_date).cast(&DataType::Date)?,
+            Column::new("ExDate".into(), ex_date).cast(&DataType::Date)?,
+            Column::new("ActualRecordDate".into(), actual_record_date).cast(&DataType::Date)?,
+            build_categorical_column("PayableDateVariant", payable_date_variant)?,
+            Column::new("PayableDate".into(), payable_date).cast(&DataType::Date)?,
+            Column::new("CAReferenceNumber".into(), ca_reference_number),
+            build_categorical_column("DistributionAmountVariant", distribution_amount_variant)?,
+            Column::new("DistributionAmount".into(), distribution_amount),
+            build_categorical_column("RetainedEarningsVariant", retained_earnings_variant)?,
+            Column::new("RetainedEarnings".into(), retained_earnings),
+            build_categorical_column("DeemedDividendVariant", deemed_dividend_variant)?,
+            Column::new("DeemedDividend".into(), deemed_dividend),
+            build_categorical_column("DeemedCapitalGainsVariant", deemed_capital_gains_variant)?,
+            Column::new("DeemedCapitalGains".into(), deemed_capital_gains),
+            build_categorical_column(
+                "NetAssetDecreaseRatioVariant",
+                net_asset_decrease_ratio_variant,
+            )?,
+            Column::new("NetAssetDecreaseRatio".into(), net_asset_decrease_ratio),
+            build_categorical_column("CommemorativeSpecialCode", commemorative_special_code)?,
+            build_categorical_column(
+                "CommemorativeDividendRateVariant",
+                commemorative_dividend_rate_variant,
+            )?,
+            Column::new(
+                "CommemorativeDividendRate".into(),
+                commemorative_dividend_rate,
+            ),
+            build_categorical_column("SpecialDividendRateVariant", special_dividend_rate_variant)?,
+            Column::new("SpecialDividendRate".into(), special_dividend_rate),
+        ])?;
+
+        let df = df
+            .lazy()
+            .with_columns(vec![
+                col("AnnouncementTime").str().to_time(StrptimeOptions {
+                    format: Some("%H:%M".into()),
+                    strict: true,
+                    exact: true,
+                    ..Default::default()
+                }),
+                col("InterimFinalTerm").str().to_date(StrptimeOptions {
+                    format: Some("%Y-%m".into()),
+                    strict: true,
+                    exact: true,
+                    ..Default::default()
+                }),
+            ])
+            .collect()?;
+
+        Ok(df)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -523,5 +668,110 @@ mod tests {
         };
 
         pretty_assertions::assert_eq!(response, expected_response);
+    }
+
+    #[cfg(feature = "polars")]
+    #[test]
+    fn test_into_polars() {
+        std::env::set_var("POLARS_FMT_MAX_COLS", "-1");
+        std::env::set_var("POLARS_TABLE_WIDTH", "999");
+
+        let response = CashDividendDataResponse {
+            dividend: vec![
+                CashDividendItem {
+                    announcement_date: "2023-03-06".to_string(),
+                    announcement_time: "10:00".to_string(),
+                    code: "86970".to_string(),
+                    reference_number: "1".to_string(),
+                    status_code: DevidendStatucCode::New,
+                    board_meeting_date: "2023-03-07".to_string(),
+                    interim_final_code: DividendInterimFinalCode::Interim,
+                    forecast_result_code: DividendForecastResultCode::Determined,
+                    interim_final_term: "2023-04".to_string(),
+                    gross_dividend_rate: AmountPerShare::Number(100.0),
+                    record_date: "2023-03-08".to_string(),
+                    ex_date: "2023-03-09".to_string(),
+                    actual_record_date: "2023-03-10".to_string(),
+                    payable_date: PayableDate::Date("2023-03-11".to_string()),
+                    ca_reference_number: "1".to_string(),
+                    distribution_amount: AmountPerShare::Number(100.0),
+                    retained_earnings: AmountPerShare::Number(200.0),
+                    deemed_dividend: AmountPerShare::Number(300.0),
+                    deemed_capital_gains: AmountPerShare::Number(400.0),
+                    net_asset_decrease_ratio: AmountPerShare::Number(500.0),
+                    commemorative_special_code: DividendCommemorativeSpecialCode::Normal,
+                    commemorative_dividend_rate: AmountPerShare::Number(600.0),
+                    special_dividend_rate: AmountPerShare::Number(700.0),
+                },
+                CashDividendItem {
+                    announcement_date: "2023-03-07".to_string(),
+                    announcement_time: "11:00".to_string(),
+                    code: "86970".to_string(),
+                    reference_number: "2".to_string(),
+                    status_code: DevidendStatucCode::Revised,
+                    board_meeting_date: "2023-03-07".to_string(),
+                    interim_final_code: DividendInterimFinalCode::Final,
+                    forecast_result_code: DividendForecastResultCode::Determined,
+                    interim_final_term: "2023-04".to_string(),
+                    gross_dividend_rate: AmountPerShare::Undetermined,
+                    record_date: "2023-03-12".to_string(),
+                    ex_date: "2023-03-13".to_string(),
+                    actual_record_date: "2023-03-14".to_string(),
+                    payable_date: PayableDate::Undetermined,
+                    ca_reference_number: "2".to_string(),
+                    distribution_amount: AmountPerShare::Undetermined,
+                    retained_earnings: AmountPerShare::Undetermined,
+                    deemed_dividend: AmountPerShare::Undetermined,
+                    deemed_capital_gains: AmountPerShare::Undetermined,
+                    net_asset_decrease_ratio: AmountPerShare::Undetermined,
+                    commemorative_special_code: DividendCommemorativeSpecialCode::Commemorative,
+                    commemorative_dividend_rate: AmountPerShare::Undetermined,
+                    special_dividend_rate: AmountPerShare::Undetermined,
+                },
+                CashDividendItem {
+                    announcement_date: "2023-03-08".to_string(),
+                    announcement_time: "12:00".to_string(),
+                    code: "86970".to_string(),
+                    reference_number: "3".to_string(),
+                    status_code: DevidendStatucCode::Delete,
+                    board_meeting_date: "2023-03-08".to_string(),
+                    interim_final_code: DividendInterimFinalCode::Unknown("aaa".to_string()),
+                    forecast_result_code: DividendForecastResultCode::Unknown("bbb".to_string()),
+                    interim_final_term: "2023-05".to_string(),
+                    gross_dividend_rate: AmountPerShare::NotApplicable,
+                    record_date: "2023-03-16".to_string(),
+                    ex_date: "2023-03-17".to_string(),
+                    actual_record_date: "2023-03-18".to_string(),
+                    payable_date: PayableDate::NotApplicable,
+                    ca_reference_number: "3".to_string(),
+                    distribution_amount: AmountPerShare::NotApplicable,
+                    retained_earnings: AmountPerShare::NotApplicable,
+                    deemed_dividend: AmountPerShare::NotApplicable,
+                    deemed_capital_gains: AmountPerShare::NotApplicable,
+                    net_asset_decrease_ratio: AmountPerShare::NotApplicable,
+                    commemorative_special_code: DividendCommemorativeSpecialCode::Unknown(
+                        "ccc".to_string(),
+                    ),
+                    commemorative_dividend_rate: AmountPerShare::NotApplicable,
+                    special_dividend_rate: AmountPerShare::NotApplicable,
+                },
+            ],
+            pagination_key: Some("value3.value4.".to_string()),
+        };
+
+        let df = response.into_polars().unwrap();
+
+        expect_test::expect![[r#"
+            shape: (3, 32)
+            ┌──────────────────┬──────────────────┬───────┬─────────────────┬────────────┬──────────────────┬──────────────────┬────────────────────┬──────────────────┬──────────────────────────┬───────────────────┬────────────┬────────────┬──────────────────┬────────────────────┬─────────────┬───────────────────┬───────────────────────────┬────────────────────┬─────────────────────────┬──────────────────┬───────────────────────┬────────────────┬───────────────────────────┬────────────────────┬──────────────────────────────┬───────────────────────┬──────────────────────────┬─────────────────────────────────┬───────────────────────────┬────────────────────────────┬─────────────────────┐
+            │ AnnouncementDate ┆ AnnouncementTime ┆ Code  ┆ ReferenceNumber ┆ StatusCode ┆ BoardMeetingDate ┆ InterimFinalCode ┆ ForecastResultCode ┆ InterimFinalTerm ┆ GrossDividendRateVariant ┆ GrossDividendRate ┆ RecordDate ┆ ExDate     ┆ ActualRecordDate ┆ PayableDateVariant ┆ PayableDate ┆ CAReferenceNumber ┆ DistributionAmountVariant ┆ DistributionAmount ┆ RetainedEarningsVariant ┆ RetainedEarnings ┆ DeemedDividendVariant ┆ DeemedDividend ┆ DeemedCapitalGainsVariant ┆ DeemedCapitalGains ┆ NetAssetDecreaseRatioVariant ┆ NetAssetDecreaseRatio ┆ CommemorativeSpecialCode ┆ CommemorativeDividendRateVaria… ┆ CommemorativeDividendRate ┆ SpecialDividendRateVariant ┆ SpecialDividendRate │
+            │ ---              ┆ ---              ┆ ---   ┆ ---             ┆ ---        ┆ ---              ┆ ---              ┆ ---                ┆ ---              ┆ ---                      ┆ ---               ┆ ---        ┆ ---        ┆ ---              ┆ ---                ┆ ---         ┆ ---               ┆ ---                       ┆ ---                ┆ ---                     ┆ ---              ┆ ---                   ┆ ---            ┆ ---                       ┆ ---                ┆ ---                          ┆ ---                   ┆ ---                      ┆ ---                             ┆ ---                       ┆ ---                        ┆ ---                 │
+            │ date             ┆ time             ┆ cat   ┆ str             ┆ cat        ┆ date             ┆ cat              ┆ cat                ┆ date             ┆ cat                      ┆ f64               ┆ date       ┆ date       ┆ date             ┆ cat                ┆ date        ┆ str               ┆ cat                       ┆ f64                ┆ cat                     ┆ f64              ┆ cat                   ┆ f64            ┆ cat                       ┆ f64                ┆ cat                          ┆ f64                   ┆ cat                      ┆ cat                             ┆ f64                       ┆ cat                        ┆ f64                 │
+            ╞══════════════════╪══════════════════╪═══════╪═════════════════╪════════════╪══════════════════╪══════════════════╪════════════════════╪══════════════════╪══════════════════════════╪═══════════════════╪════════════╪════════════╪══════════════════╪════════════════════╪═════════════╪═══════════════════╪═══════════════════════════╪════════════════════╪═════════════════════════╪══════════════════╪═══════════════════════╪════════════════╪═══════════════════════════╪════════════════════╪══════════════════════════════╪═══════════════════════╪══════════════════════════╪═════════════════════════════════╪═══════════════════════════╪════════════════════════════╪═════════════════════╡
+            │ 2023-03-06       ┆ 10:00:00         ┆ 86970 ┆ 1               ┆ 1          ┆ 2023-03-07       ┆ 1                ┆ 1                  ┆ 2023-04-01       ┆ Number                   ┆ 100.0             ┆ 2023-03-08 ┆ 2023-03-09 ┆ 2023-03-10       ┆ Date               ┆ 2023-03-11  ┆ 1                 ┆ Number                    ┆ 100.0              ┆ Number                  ┆ 200.0            ┆ Number                ┆ 300.0          ┆ Number                    ┆ 400.0              ┆ Number                       ┆ 500.0                 ┆ 0                        ┆ Number                          ┆ 600.0                     ┆ Number                     ┆ 700.0               │
+            │ 2023-03-07       ┆ 11:00:00         ┆ 86970 ┆ 2               ┆ 2          ┆ 2023-03-07       ┆ 2                ┆ 1                  ┆ 2023-04-01       ┆ Undetermined             ┆ null              ┆ 2023-03-12 ┆ 2023-03-13 ┆ 2023-03-14       ┆ Undetermined       ┆ null        ┆ 2                 ┆ Undetermined              ┆ null               ┆ Undetermined            ┆ null             ┆ Undetermined          ┆ null           ┆ Undetermined              ┆ null               ┆ Undetermined                 ┆ null                  ┆ 1                        ┆ Undetermined                    ┆ null                      ┆ Undetermined               ┆ null                │
+            │ 2023-03-08       ┆ 12:00:00         ┆ 86970 ┆ 3               ┆ 3          ┆ 2023-03-08       ┆ aaa              ┆ bbb                ┆ 2023-05-01       ┆ NotApplicable            ┆ null              ┆ 2023-03-16 ┆ 2023-03-17 ┆ 2023-03-18       ┆ NotApplicable      ┆ null        ┆ 3                 ┆ NotApplicable             ┆ null               ┆ NotApplicable           ┆ null             ┆ NotApplicable         ┆ null           ┆ NotApplicable             ┆ null               ┆ NotApplicable                ┆ null                  ┆ ccc                      ┆ NotApplicable                   ┆ null                      ┆ NotApplicable              ┆ null                │
+            └──────────────────┴──────────────────┴───────┴─────────────────┴────────────┴──────────────────┴──────────────────┴────────────────────┴──────────────────┴──────────────────────────┴───────────────────┴────────────┴────────────┴──────────────────┴────────────────────┴─────────────┴───────────────────┴───────────────────────────┴────────────────────┴─────────────────────────┴──────────────────┴───────────────────────┴────────────────┴───────────────────────────┴────────────────────┴──────────────────────────────┴───────────────────────┴──────────────────────────┴─────────────────────────────────┴───────────────────────────┴────────────────────────────┴─────────────────────┘"#]]
+        .assert_eq(&df.to_string());
     }
 }

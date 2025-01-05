@@ -3,6 +3,8 @@
 pub mod api;
 pub mod client;
 pub mod error;
+#[cfg(feature = "polars")]
+mod polars_utils;
 
 pub use api::breakdown_trading_data::*;
 pub use api::cash_dividend_data::*;

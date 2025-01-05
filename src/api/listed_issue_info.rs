@@ -103,7 +103,7 @@ pub type ListedIssueInfoStandardPlanResponse = ListedIssueInfoPremiumPlanRespons
 /// Listed issue info response for premium plan.
 ///
 /// See: [API Reference](https://jpx.gitbook.io/j-quants-en/api-reference/listed_info)
-#[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ListedIssueInfoPremiumPlanResponse {
     /// The listed info for premium plan.
     pub info: Vec<IssueInfoPremiumPlanItem>,
@@ -113,7 +113,7 @@ pub struct ListedIssueInfoPremiumPlanResponse {
 pub type IssueInfoFreePlanItem = IssueInfoLightPlanItem;
 
 /// Issue info for light plan.
-#[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct IssueInfoLightPlanItem {
     /// The common structure for issue info.
     #[serde(flatten)]
@@ -124,7 +124,7 @@ pub struct IssueInfoLightPlanItem {
 pub type IssueInfoStandardPlanItem = IssueInfoPremiumPlanItem;
 
 /// Issue info for standard plan.
-#[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct IssueInfoPremiumPlanItem {
     /// The common structure for issue info.
     #[serde(flatten)]
@@ -140,7 +140,7 @@ pub struct IssueInfoPremiumPlanItem {
 }
 
 /// Common structure for issue info.
-#[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct IssueInfoCommonItem {
     /// Date of application of information (YYYY-MM-DD)
     #[serde(rename = "Date")]
@@ -185,6 +185,119 @@ pub struct IssueInfoCommonItem {
     /// Market segment code name (Japanese).
     #[serde(rename = "MarketCodeName")]
     pub market_code_name: String,
+}
+
+#[cfg(feature = "polars")]
+use polars::prelude::*;
+
+#[cfg(feature = "polars")]
+fn build_common_columns(
+    data: Vec<IssueInfoCommonItem>,
+) -> Result<Vec<Column>, crate::polars_utils::IntoPolarsError> {
+    use crate::polars_utils::build_categorical_column;
+
+    let mut dates = Vec::with_capacity(data.len());
+    let mut codes = Vec::with_capacity(data.len());
+    let mut company_names = Vec::with_capacity(data.len());
+    let mut company_names_english = Vec::with_capacity(data.len());
+    let mut sector17_codes = Vec::with_capacity(data.len());
+    let mut sector17_code_names = Vec::with_capacity(data.len());
+    let mut sector33_codes = Vec::with_capacity(data.len());
+    let mut sector33_code_names = Vec::with_capacity(data.len());
+    let mut scale_categories = Vec::with_capacity(data.len());
+    let mut market_codes = Vec::with_capacity(data.len());
+    let mut market_code_names = Vec::with_capacity(data.len());
+
+    for common_item in data {
+        let IssueInfoCommonItem {
+            date,
+            code,
+            company_name,
+            company_name_english,
+            sector17_code,
+            sector17_code_name,
+            sector33_code,
+            sector33_code_name,
+            scale_category,
+            market_code,
+            market_code_name,
+        } = common_item;
+
+        dates.push(date);
+        codes.push(code);
+        company_names.push(company_name);
+        company_names_english.push(company_name_english);
+        sector17_codes.push(sector17_code);
+        sector17_code_names.push(sector17_code_name);
+        sector33_codes.push(sector33_code);
+        sector33_code_names.push(sector33_code_name);
+        scale_categories.push(scale_category);
+        market_codes.push(market_code);
+        market_code_names.push(market_code_name);
+    }
+
+    let columns = vec![
+        Column::new("Date".into(), dates).cast(&DataType::Date)?,
+        Column::new("Code".into(), codes),
+        Column::new("CompanyName".into(), company_names),
+        Column::new("CompanyNameEnglish".into(), company_names_english),
+        build_categorical_column("Sector17Code", sector17_codes)?,
+        build_categorical_column("Sector17CodeName", sector17_code_names)?,
+        build_categorical_column("Sector33Code", sector33_codes)?,
+        build_categorical_column("Sector33CodeName", sector33_code_names)?,
+        build_categorical_column("ScaleCategory", scale_categories)?,
+        build_categorical_column("MarketCode", market_codes)?,
+        build_categorical_column("MarketCodeName", market_code_names)?,
+    ];
+
+    Ok(columns)
+}
+
+#[cfg(feature = "polars")]
+impl ListedIssueInfoLightPlanResponse {
+    /// Convert the response into a Polars DataFrame.
+    pub fn into_polars(
+        self,
+    ) -> Result<polars::prelude::DataFrame, crate::polars_utils::IntoPolarsError> {
+        let data = self.info;
+        let columns = build_common_columns(data.into_iter().map(|d| d.common).collect::<Vec<_>>())?;
+        let df = polars::frame::DataFrame::new(columns)?;
+
+        Ok(df)
+    }
+}
+
+#[cfg(feature = "polars")]
+impl ListedIssueInfoPremiumPlanResponse {
+    /// Convert the response into a Polars DataFrame.
+    pub fn into_polars(
+        self,
+    ) -> Result<polars::prelude::DataFrame, crate::polars_utils::IntoPolarsError> {
+        use crate::polars_utils::build_categorical_column;
+
+        let data = self.info;
+
+        let mut common = Vec::with_capacity(data.len());
+        let mut margin_codes = Vec::with_capacity(data.len());
+        let mut margin_code_names = Vec::with_capacity(data.len());
+
+        for item in data {
+            common.push(item.common);
+            margin_codes.push(item.margin_code);
+            margin_code_names.push(item.margin_code_name);
+        }
+
+        let mut columns = build_common_columns(common)?;
+        columns.push(build_categorical_column("MarginCode", margin_codes)?);
+        columns.push(build_categorical_column(
+            "MarginCodeName",
+            margin_code_names,
+        )?);
+
+        let df = polars::frame::DataFrame::new(columns)?;
+
+        Ok(df)
+    }
 }
 
 #[cfg(test)]
@@ -283,5 +396,99 @@ mod tests {
             };
 
         pretty_assertions::assert_eq!(response, expected_response);
+    }
+
+    #[cfg(feature = "polars")]
+    #[test]
+    fn test_light_into_polars() {
+        std::env::set_var("POLARS_FMT_MAX_COLS", "-1");
+
+        let response = ListedIssueInfoLightPlanResponse {
+            info: vec![
+                IssueInfoLightPlanItem {
+                    common: IssueInfoCommonItem {
+                        date: "2022-11-11".to_string(),
+                        code: "86970".to_string(),
+                        company_name: "Group".to_string(),
+                        company_name_english: "JEG".to_string(),
+                        sector17_code: Sector17Code::FinancialsExBanks,
+                        sector17_code_name: "Bank".to_string(),
+                        sector33_code: Sector33Code::OtherFinancingBusiness,
+                        sector33_code_name: "Bank".to_string(),
+                        scale_category: "TOPIX Large70".to_string(),
+                        market_code: MarketCode::Prime,
+                        market_code_name: "Prime".to_string(),
+                    },
+                },
+                IssueInfoLightPlanItem {
+                    common: IssueInfoCommonItem {
+                        date: "2022-11-12".to_string(),
+                        code: "86971".to_string(),
+                        company_name: "Group".to_string(),
+                        company_name_english: "JEG2".to_string(),
+                        sector17_code: Sector17Code::Foods,
+                        sector17_code_name: "Bank-A".to_string(),
+                        sector33_code: Sector33Code::FisheryAgricultureForestry,
+                        sector33_code_name: "Bank-B".to_string(),
+                        scale_category: "TOPIX Large70-A".to_string(),
+                        market_code: MarketCode::TSEFirstSection,
+                        market_code_name: "Prime-B".to_string(),
+                    },
+                },
+            ],
+        };
+
+        let df = response.into_polars().unwrap();
+
+        expect_test::expect![[r#"
+            shape: (2, 11)
+            ┌────────────┬───────┬─────────────┬────────────────────┬──────────────┬──────────────────┬──────────────┬──────────────────┬─────────────────┬────────────┬────────────────┐
+            │ Date       ┆ Code  ┆ CompanyName ┆ CompanyNameEnglish ┆ Sector17Code ┆ Sector17CodeName ┆ Sector33Code ┆ Sector33CodeName ┆ ScaleCategory   ┆ MarketCode ┆ MarketCodeName │
+            │ ---        ┆ ---   ┆ ---         ┆ ---                ┆ ---          ┆ ---              ┆ ---          ┆ ---              ┆ ---             ┆ ---        ┆ ---            │
+            │ date       ┆ str   ┆ str         ┆ str                ┆ cat          ┆ cat              ┆ cat          ┆ cat              ┆ cat             ┆ cat        ┆ cat            │
+            ╞════════════╪═══════╪═════════════╪════════════════════╪══════════════╪══════════════════╪══════════════╪══════════════════╪═════════════════╪════════════╪════════════════╡
+            │ 2022-11-11 ┆ 86970 ┆ Group       ┆ JEG                ┆ 16           ┆ Bank             ┆ 7200         ┆ Bank             ┆ TOPIX Large70   ┆ 0111       ┆ Prime          │
+            │ 2022-11-12 ┆ 86971 ┆ Group       ┆ JEG2               ┆ 1            ┆ Bank-A           ┆ 0050         ┆ Bank-B           ┆ TOPIX Large70-A ┆ 0101       ┆ Prime-B        │
+            └────────────┴───────┴─────────────┴────────────────────┴──────────────┴──────────────────┴──────────────┴──────────────────┴─────────────────┴────────────┴────────────────┘"#]]
+        .assert_eq(&df.to_string());
+    }
+
+    #[cfg(feature = "polars")]
+    #[test]
+    fn test_premium_into_polars() {
+        std::env::set_var("POLARS_FMT_MAX_COLS", "-1");
+
+        let response = ListedIssueInfoPremiumPlanResponse {
+            info: vec![IssueInfoPremiumPlanItem {
+                common: IssueInfoCommonItem {
+                    date: "2022-11-11".to_string(),
+                    code: "86970".to_string(),
+                    company_name: "Group".to_string(),
+                    company_name_english: "JEG".to_string(),
+                    sector17_code: Sector17Code::FinancialsExBanks,
+                    sector17_code_name: "Bank".to_string(),
+                    sector33_code: Sector33Code::OtherFinancingBusiness,
+                    sector33_code_name: "Bank".to_string(),
+                    scale_category: "TOPIX Large70".to_string(),
+                    market_code: MarketCode::Prime,
+                    market_code_name: "Prime".to_string(),
+                },
+                margin_code: MarginCode::MarginIssues,
+                margin_code_name: "MarginTrading".to_string(),
+            }],
+        };
+
+        let df = response.into_polars().unwrap();
+
+        expect_test::expect![[r#"
+            shape: (1, 13)
+            ┌────────────┬───────┬─────────────┬────────────────────┬──────────────┬──────────────────┬──────────────┬──────────────────┬───────────────┬────────────┬────────────────┬────────────┬────────────────┐
+            │ Date       ┆ Code  ┆ CompanyName ┆ CompanyNameEnglish ┆ Sector17Code ┆ Sector17CodeName ┆ Sector33Code ┆ Sector33CodeName ┆ ScaleCategory ┆ MarketCode ┆ MarketCodeName ┆ MarginCode ┆ MarginCodeName │
+            │ ---        ┆ ---   ┆ ---         ┆ ---                ┆ ---          ┆ ---              ┆ ---          ┆ ---              ┆ ---           ┆ ---        ┆ ---            ┆ ---        ┆ ---            │
+            │ date       ┆ str   ┆ str         ┆ str                ┆ cat          ┆ cat              ┆ cat          ┆ cat              ┆ cat           ┆ cat        ┆ cat            ┆ cat        ┆ cat            │
+            ╞════════════╪═══════╪═════════════╪════════════════════╪══════════════╪══════════════════╪══════════════╪══════════════════╪═══════════════╪════════════╪════════════════╪════════════╪════════════════╡
+            │ 2022-11-11 ┆ 86970 ┆ Group       ┆ JEG                ┆ 16           ┆ Bank             ┆ 7200         ┆ Bank             ┆ TOPIX Large70 ┆ 0111       ┆ Prime          ┆ 1          ┆ MarginTrading  │
+            └────────────┴───────┴─────────────┴────────────────────┴──────────────┴──────────────────┴──────────────┴──────────────────┴───────────────┴────────────┴────────────────┴────────────┴────────────────┘"#]]
+        .assert_eq(&df.to_string());
     }
 }

@@ -199,6 +199,82 @@ pub struct BreakdownTradingDataItem {
     pub margin_buy_close_volume: f64,
 }
 
+#[cfg(feature = "polars")]
+impl BreakdownTradingDataResponse {
+    /// Convert the response into a Polars DataFrame.
+    pub fn into_polars(
+        self,
+    ) -> Result<polars::prelude::DataFrame, crate::polars_utils::IntoPolarsError> {
+        use crate::polars_utils::build_categorical_column;
+        use polars::prelude::*;
+
+        let data = self.breakdown;
+
+        let mut dates = Vec::with_capacity(data.len());
+        let mut codes = Vec::with_capacity(data.len());
+        let mut long_sell_values = Vec::with_capacity(data.len());
+        let mut short_sell_without_margin_values = Vec::with_capacity(data.len());
+        let mut margin_sell_new_values = Vec::with_capacity(data.len());
+        let mut margin_sell_close_values = Vec::with_capacity(data.len());
+        let mut long_buy_values = Vec::with_capacity(data.len());
+        let mut margin_buy_new_values = Vec::with_capacity(data.len());
+        let mut margin_buy_close_values = Vec::with_capacity(data.len());
+        let mut long_sell_volumes = Vec::with_capacity(data.len());
+        let mut short_sell_without_margin_volumes = Vec::with_capacity(data.len());
+        let mut margin_sell_new_volumes = Vec::with_capacity(data.len());
+        let mut margin_sell_close_volumes = Vec::with_capacity(data.len());
+        let mut long_buy_volumes = Vec::with_capacity(data.len());
+        let mut margin_buy_new_volumes = Vec::with_capacity(data.len());
+        let mut margin_buy_close_volumes = Vec::with_capacity(data.len());
+
+        for item in data {
+            dates.push(item.date);
+            codes.push(item.code);
+            long_sell_values.push(item.long_sell_value);
+            short_sell_without_margin_values.push(item.short_sell_without_margin_value);
+            margin_sell_new_values.push(item.margin_sell_new_value);
+            margin_sell_close_values.push(item.margin_sell_close_value);
+            long_buy_values.push(item.long_buy_value);
+            margin_buy_new_values.push(item.margin_buy_new_value);
+            margin_buy_close_values.push(item.margin_buy_close_value);
+            long_sell_volumes.push(item.long_sell_volume);
+            short_sell_without_margin_volumes.push(item.short_sell_without_margin_volume);
+            margin_sell_new_volumes.push(item.margin_sell_new_volume);
+            margin_sell_close_volumes.push(item.margin_sell_close_volume);
+            long_buy_volumes.push(item.long_buy_volume);
+            margin_buy_new_volumes.push(item.margin_buy_new_volume);
+            margin_buy_close_volumes.push(item.margin_buy_close_volume);
+        }
+
+        let df = polars::frame::DataFrame::new(vec![
+            Column::new("Date".into(), dates).cast(&DataType::Date)?,
+            build_categorical_column("Code", codes)?,
+            Column::new("LongSellValue".into(), long_sell_values),
+            Column::new(
+                "ShortSellWithoutMarginValue".into(),
+                short_sell_without_margin_values,
+            ),
+            Column::new("MarginSellNewValue".into(), margin_sell_new_values),
+            Column::new("MarginSellCloseValue".into(), margin_sell_close_values),
+            Column::new("LongBuyValue".into(), long_buy_values),
+            Column::new("MarginBuyNewValue".into(), margin_buy_new_values),
+            Column::new("MarginBuyCloseValue".into(), margin_buy_close_values),
+            Column::new("LongSellVolume".into(), long_sell_volumes),
+            Column::new(
+                "ShortSellWithoutMarginVolume".into(),
+                short_sell_without_margin_volumes,
+            ),
+            Column::new("MarginSellNewVolume".into(), margin_sell_new_volumes),
+            Column::new("MarginSellCloseVolume".into(), margin_sell_close_volumes),
+            Column::new("LongBuyVolume".into(), long_buy_volumes),
+            Column::new("MarginBuyNewVolume".into(), margin_buy_new_volumes),
+            Column::new("MarginBuyCloseVolume".into(), margin_buy_close_volumes),
+        ])?;
+
+        Ok(df)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -417,5 +493,67 @@ mod tests {
         };
 
         pretty_assertions::assert_eq!(response, expected_response);
+    }
+
+    #[cfg(feature = "polars")]
+    #[test]
+    fn test_into_polars() {
+        std::env::set_var("POLARS_FMT_MAX_COLS", "-1");
+
+        let response = BreakdownTradingDataResponse {
+            breakdown: vec![
+                BreakdownTradingDataItem {
+                    date: "2015-04-01".to_string(),
+                    code: "13010".to_string(),
+                    long_sell_value: 100.0,
+                    short_sell_without_margin_value: 200.0,
+                    margin_sell_new_value: 300.0,
+                    margin_sell_close_value: 400.0,
+                    long_buy_value: 500.0,
+                    margin_buy_new_value: 600.0,
+                    margin_buy_close_value: 700.0,
+                    long_sell_volume: 800.0,
+                    short_sell_without_margin_volume: 900.0,
+                    margin_sell_new_volume: 1000.0,
+                    margin_sell_close_volume: 1100.0,
+                    long_buy_volume: 1200.0,
+                    margin_buy_new_volume: 1300.0,
+                    margin_buy_close_volume: 1400.0,
+                },
+                BreakdownTradingDataItem {
+                    date: "2015-04-02".to_string(),
+                    code: "13010".to_string(),
+                    long_sell_value: 10000.0,
+                    short_sell_without_margin_value: 11000.0,
+                    margin_sell_new_value: 12000.0,
+                    margin_sell_close_value: 13000.0,
+                    long_buy_value: 14000.0,
+                    margin_buy_new_value: 15000.0,
+                    margin_buy_close_value: 16000.0,
+                    long_sell_volume: 17000.0,
+                    short_sell_without_margin_volume: 18000.0,
+                    margin_sell_new_volume: 19000.0,
+                    margin_sell_close_volume: 20000.0,
+                    long_buy_volume: 21000.0,
+                    margin_buy_new_volume: 22000.0,
+                    margin_buy_close_volume: 23000.0,
+                },
+            ],
+            pagination_key: None,
+        };
+
+        let df = response.into_polars().unwrap();
+
+        expect_test::expect![[r#"
+            shape: (2, 16)
+            ┌────────────┬───────┬───────────────┬─────────────────────────────┬────────────────────┬──────────────────────┬──────────────┬───────────────────┬─────────────────────┬────────────────┬──────────────────────────────┬─────────────────────┬───────────────────────┬───────────────┬────────────────────┬──────────────────────┐
+            │ Date       ┆ Code  ┆ LongSellValue ┆ ShortSellWithoutMarginValue ┆ MarginSellNewValue ┆ MarginSellCloseValue ┆ LongBuyValue ┆ MarginBuyNewValue ┆ MarginBuyCloseValue ┆ LongSellVolume ┆ ShortSellWithoutMarginVolume ┆ MarginSellNewVolume ┆ MarginSellCloseVolume ┆ LongBuyVolume ┆ MarginBuyNewVolume ┆ MarginBuyCloseVolume │
+            │ ---        ┆ ---   ┆ ---           ┆ ---                         ┆ ---                ┆ ---                  ┆ ---          ┆ ---               ┆ ---                 ┆ ---            ┆ ---                          ┆ ---                 ┆ ---                   ┆ ---           ┆ ---                ┆ ---                  │
+            │ date       ┆ cat   ┆ f64           ┆ f64                         ┆ f64                ┆ f64                  ┆ f64          ┆ f64               ┆ f64                 ┆ f64            ┆ f64                          ┆ f64                 ┆ f64                   ┆ f64           ┆ f64                ┆ f64                  │
+            ╞════════════╪═══════╪═══════════════╪═════════════════════════════╪════════════════════╪══════════════════════╪══════════════╪═══════════════════╪═════════════════════╪════════════════╪══════════════════════════════╪═════════════════════╪═══════════════════════╪═══════════════╪════════════════════╪══════════════════════╡
+            │ 2015-04-01 ┆ 13010 ┆ 100.0         ┆ 200.0                       ┆ 300.0              ┆ 400.0                ┆ 500.0        ┆ 600.0             ┆ 700.0               ┆ 800.0          ┆ 900.0                        ┆ 1000.0              ┆ 1100.0                ┆ 1200.0        ┆ 1300.0             ┆ 1400.0               │
+            │ 2015-04-02 ┆ 13010 ┆ 10000.0       ┆ 11000.0                     ┆ 12000.0            ┆ 13000.0              ┆ 14000.0      ┆ 15000.0           ┆ 16000.0             ┆ 17000.0        ┆ 18000.0                      ┆ 19000.0             ┆ 20000.0               ┆ 21000.0       ┆ 22000.0            ┆ 23000.0              │
+            └────────────┴───────┴───────────────┴─────────────────────────────┴────────────────────┴──────────────────────┴──────────────┴───────────────────┴─────────────────────┴────────────────┴──────────────────────────────┴─────────────────────┴───────────────────────┴───────────────┴────────────────────┴──────────────────────┘"#]]
+        .assert_eq(&df.to_string());
     }
 }
