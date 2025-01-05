@@ -147,6 +147,58 @@ pub struct FinancialStatementDetailItem {
     pub financial_statement: HashMap<String, String>,
 }
 
+#[cfg(feature = "polars")]
+impl FinancialStatementDetailsResponse {
+    /// Convert the response into a Polars DataFrame.
+    pub fn into_polars(
+        self,
+    ) -> Result<polars::prelude::DataFrame, crate::polars_utils::IntoPolarsError> {
+        use crate::polars_utils::{build_categorical_column, hashmap_list_to_columns};
+        use polars::prelude::*;
+
+        let data = self.fs_details;
+
+        let mut disclosed_dates = Vec::with_capacity(data.len());
+        let mut disclosed_times = Vec::with_capacity(data.len());
+        let mut local_codes = Vec::with_capacity(data.len());
+        let mut disclosure_numbers = Vec::with_capacity(data.len());
+        let mut type_of_documents = Vec::with_capacity(data.len());
+        let mut financial_statements = Vec::with_capacity(data.len());
+
+        for item in data {
+            let FinancialStatementDetailItem {
+                disclosed_date,
+                disclosed_time,
+                local_code,
+                disclosure_number,
+                type_of_document,
+                financial_statement,
+            } = item;
+
+            disclosed_dates.push(disclosed_date);
+            disclosed_times.push(disclosed_time);
+            local_codes.push(local_code);
+            disclosure_numbers.push(disclosure_number);
+            type_of_documents.push(type_of_document);
+            financial_statements.push(financial_statement);
+        }
+
+        let extra_columns = hashmap_list_to_columns(financial_statements);
+        let mut columns = vec![
+            Column::new("DisclosedDate".into(), disclosed_dates).cast(&DataType::Date)?,
+            Column::new("DisclosedTime".into(), disclosed_times).cast(&DataType::Time)?,
+            build_categorical_column("LocalCode", local_codes)?,
+            build_categorical_column("DisclosureNumber", disclosure_numbers)?,
+            build_categorical_column("TypeOfDocument", type_of_documents)?,
+        ];
+        columns.extend(extra_columns);
+
+        let df = polars::frame::DataFrame::new(columns)?;
+
+        Ok(df)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use maplit::hashmap;
@@ -469,5 +521,117 @@ mod tests {
         };
 
         pretty_assertions::assert_eq!(response, expected_response);
+    }
+
+    #[cfg(feature = "polars")]
+    #[test]
+    fn test_into_polars() {
+        std::env::set_var("POLARS_FMT_MAX_COLS", "-1");
+
+        let financial_statement_map: HashMap<&str, &str> = hashmap! {
+            "Goodwill (IFRS)" => "67374000000",
+            "Retained earnings (IFRS)" => "263894000000",
+            "Operating profit (loss) (IFRS)" => "51765000000.0",
+            "Previous fiscal year end date, DEI" => "2022-03-31",
+            "Basic earnings (loss) per share (IFRS)" => "66.76",
+            "Document type, DEI" => "四半期第３号参考様式　[IFRS]（連結）",
+            "Current period end date, DEI" => "2022-12-31",
+            "Revenue - 2 (IFRS)" => "100987000000.0",
+            "Industry code when consolidated financial statements are prepared in accordance with industry specific regulations, DEI" => "CTE",
+            "Profit (loss) attributable to owners of parent (IFRS)" => "35175000000.0",
+            "Other current liabilities - CL (IFRS)" => "8904000000",
+            "Share of profit (loss) of investments accounted for using equity method (IFRS)" => "1042000000.0",
+            "Current liabilities (IFRS)" => "78852363000000",
+            "Equity attributable to owners of parent (IFRS)" => "311103000000",
+            "Whether consolidated financial statements are prepared, DEI" => "true",
+            "Non-current liabilities (IFRS)" => "33476000000",
+            "Other expenses (IFRS)" => "58000000.0",
+            "Income taxes payable - CL (IFRS)" => "5245000000",
+            "Filer name in English, DEI" => "Japan Exchange Group, Inc.",
+            "Non-controlling interests (IFRS)" => "8918000000",
+            "Capital surplus (IFRS)" => "38844000000",
+            "Finance costs (IFRS)" => "71000000.0",
+            "Other current assets - CA (IFRS)" => "4217000000",
+            "Property, plant and equipment (IFRS)" => "11277000000",
+            "Deferred tax liabilities (IFRS)" => "419000000",
+            "Other components of equity (IFRS)" => "422000000",
+            "Current fiscal year start date, DEI" => "2022-04-01",
+            "Type of current period, DEI" =>  "Q3",
+            "Cash and cash equivalents (IFRS)" => "91135000000",
+            "Share capital (IFRS)" => "11500000000",
+            "Retirement benefit asset - NCA (IFRS)" => "9028000000",
+            "Number of submission, DEI" =>  "1",
+            "Trade and other receivables - CA (IFRS)" => "18837000000",
+            "Liabilities and equity (IFRS)" => "79205861000000",
+            "EDINET code, DEI" =>  "E03814",
+            "Equity (IFRS)" =>  "320021000000",
+            "Security code, DEI" =>  "86970",
+            "Other financial assets - CA (IFRS)" => "112400000000",
+            "Other financial assets - NCA (IFRS)" => "2898000000",
+            "Income taxes receivable - CA (IFRS)" => "5529000000",
+            "Investments accounted for using equity method (IFRS)" => "18362000000",
+            "Other non-current assets - NCA (IFRS)" => "6240000000",
+            "Previous fiscal year start date, DEI" => "2021-04-01",
+            "Filer name in Japanese, DEI" => "株式会社日本取引所グループ",
+            "Deferred tax assets (IFRS)" => "2862000000",
+            "Trade and other payables - CL (IFRS)" => "5037000000",
+            "Bonds and borrowings - CL (IFRS)" => "33000000000",
+            "Current fiscal year end date, DEI" => "2023-03-31",
+            "XBRL amendment flag, DEI" =>  "false",
+            "Non-current assets (IFRS)" => "182317000000",
+            "Retirement benefit liability - NCL (IFRS)" => "9214000000",
+            "Amendment flag, DEI" =>  "false",
+            "Assets (IFRS)" =>  "79205861000000",
+            "Income tax expense (IFRS)" => "15841000000.0",
+            "Report amendment flag, DEI" => "false",
+            "Profit (loss) (IFRS)" => "35894000000.0",
+            "Operating expenses (IFRS)" => "50206000000.0",
+            "Intangible assets (IFRS)" => "36324000000",
+            "Profit (loss) before tax from continuing operations (IFRS)" => "51736000000.0",
+            "Liabilities (IFRS)" => "78885839000000",
+            "Accounting standards, DEI" =>  "IFRS",
+            "Bonds and borrowings - NCL (IFRS)" => "19972000000",
+            "Finance income (IFRS)" => "43000000.0",
+            "Profit (loss) attributable to non-controlling interests (IFRS)" => "719000000.0",
+            "Comparative period end date, DEI" => "2021-12-31",
+            "Current assets (IFRS)" => "79023543000000",
+            "Other non-current liabilities - NCL (IFRS)" => "3870000000",
+            "Other income (IFRS)" => "458000000.0",
+            "Treasury shares (IFRS)" => "-3556000000",
+        };
+
+        let response = FinancialStatementDetailsResponse {
+            fs_details: vec![FinancialStatementDetailItem {
+                disclosed_date: "2023-01-30".to_string(),
+                disclosed_time: "12:00:00".to_string(),
+                local_code: "86970".to_string(),
+                disclosure_number: "20230127594871".to_string(),
+                type_of_document: TypeOfDocument::Q3FinancialStatementsConsolidatedIFRS,
+                financial_statement: financial_statement_map
+                    .into_iter()
+                    .map(|(k, v)| (k.to_string(), v.to_string()))
+                    .collect(),
+            }],
+            pagination_key: Some("value1.value2.".to_string()),
+        };
+
+        let df = response.into_polars().unwrap();
+
+        expect_test::expect![[r#"
+            shape: (1, 74)
+            ┌─────────────┬─────────────┬───────────┬─────────────┬─────────────┬─────────────┬─────────────┬─────────────┬─────────────┬─────────────┬─────────────┬─────────────┬─────────────┬─────────────┬─────────────┬─────────────┬─────────────┬─────────────┬─────────────┬─────────────┬─────────────┬─────────────┬─────────────┬─────────────┬─────────────┬─────────────┬─────────────┬─────────┬─────────┬─────────────┬─────────────┬─────────────┬─────────────┬─────────────┬─────────────┬─────────────┬─────────────┬─────────────┬─────────────┬─────────────┬─────────────┬─────────────┬─────────────┬─────────────┬─────────────┬─────────────┬─────────────┬─────────────┬─────────────┬─────────────┬────────┬─────────────┬─────────────┬─────────────┬────────────┬────────────┬────────────┬────────────┬────────────┬────────────┬────────────┬────────────┬────────────┬────────────┬────────────┬────────────┬────────────┬────────────┬────────────┬────────────┬────────────┬─────────┬────────────┬────────────┐
+            │ DisclosedDa ┆ DisclosedTi ┆ LocalCode ┆ DisclosureN ┆ TypeOfDocum ┆ Accounting  ┆ Amendment   ┆ Assets      ┆ Basic       ┆ Bonds and   ┆ Bonds and   ┆ Capital     ┆ Cash and    ┆ Comparative ┆ Current     ┆ Current     ┆ Current     ┆ Current     ┆ Current     ┆ Deferred    ┆ Deferred    ┆ Document    ┆ EDINET      ┆ Equity      ┆ Equity attr ┆ Filer name  ┆ Filer name  ┆ Finance ┆ Finance ┆ Goodwill    ┆ Income tax  ┆ Income      ┆ Income      ┆ Industry    ┆ Intangible  ┆ Investments ┆ Liabilities ┆ Liabilities ┆ Non-control ┆ Non-current ┆ Non-current ┆ Number of   ┆ Operating   ┆ Operating   ┆ Other       ┆ Other       ┆ Other       ┆ Other       ┆ Other       ┆ Other       ┆ Other  ┆ Other       ┆ Other       ┆ Previous    ┆ Previous   ┆ Profit     ┆ Profit     ┆ Profit     ┆ Profit     ┆ Property,  ┆ Report     ┆ Retained   ┆ Retirement ┆ Retirement ┆ Revenue -  ┆ Security   ┆ Share      ┆ Share of   ┆ Trade and  ┆ Trade and  ┆ Treasury   ┆ Type of ┆ Whether    ┆ XBRL       │
+            │ te          ┆ me          ┆ ---       ┆ umber       ┆ ent         ┆ standards,  ┆ flag, DEI   ┆ (IFRS)      ┆ earnings    ┆ borrowings  ┆ borrowings  ┆ surplus     ┆ cash        ┆ period end  ┆ assets      ┆ fiscal year ┆ fiscal year ┆ liabilities ┆ period end  ┆ tax assets  ┆ tax         ┆ type, DEI   ┆ code, DEI   ┆ (IFRS)      ┆ ibutable to ┆ in English, ┆ in          ┆ costs   ┆ income  ┆ (IFRS)      ┆ expense     ┆ taxes       ┆ taxes       ┆ code when   ┆ assets      ┆ accounted   ┆ (IFRS)      ┆ and equity  ┆ ling        ┆ assets      ┆ liabilities ┆ submission, ┆ expenses    ┆ profit      ┆ components  ┆ current     ┆ current     ┆ expenses    ┆ financial   ┆ financial   ┆ income ┆ non-current ┆ non-current ┆ fiscal year ┆ fiscal     ┆ (loss)     ┆ (loss) att ┆ (loss) att ┆ (loss)     ┆ plant and  ┆ amendment  ┆ earnings   ┆ benefit    ┆ benefit    ┆ 2 (IFRS)   ┆ code, DEI  ┆ capital    ┆ profit     ┆ other      ┆ other rece ┆ shares     ┆ current ┆ consolidat ┆ amendment  │
+            │ ---         ┆ ---         ┆ cat       ┆ ---         ┆ ---         ┆ DEI         ┆ ---         ┆ ---         ┆ (loss) per  ┆ - CL (IFR…  ┆ - NCL (IF…  ┆ (IFRS)      ┆ equivalents ┆ date, D…    ┆ (IFRS)      ┆ end date, … ┆ start date… ┆ (IFRS)      ┆ date, DEI   ┆ (IFRS)      ┆ liabilities ┆ ---         ┆ ---         ┆ ---         ┆ owners …    ┆ DEI         ┆ Japanese,   ┆ (IFRS)  ┆ (IFRS)  ┆ ---         ┆ (IFRS)      ┆ payable -   ┆ receivable  ┆ consolidate ┆ (IFRS)      ┆ for usin…   ┆ ---         ┆ (IFRS)      ┆ interests   ┆ (IFRS)      ┆ (IFRS)      ┆ DEI         ┆ (IFRS)      ┆ (loss)      ┆ of equity   ┆ assets - CA ┆ liabilities ┆ (IFRS)      ┆ assets - CA ┆ assets -    ┆ (IFRS) ┆ assets -    ┆ liabilities ┆ end date,…  ┆ year start ┆ (IFRS)     ┆ ributable  ┆ ributable  ┆ before tax ┆ equipment  ┆ flag, DEI  ┆ (IFRS)     ┆ asset -    ┆ liability  ┆ ---        ┆ ---        ┆ (IFRS)     ┆ (loss) of  ┆ payables - ┆ ivables -  ┆ (IFRS)     ┆ period, ┆ ed         ┆ flag, DEI  │
+            │ date        ┆ time        ┆           ┆ cat         ┆ cat         ┆ ---         ┆ str         ┆ f64         ┆ shar…       ┆ ---         ┆ ---         ┆ ---         ┆ (IFR…       ┆ ---         ┆ ---         ┆ ---         ┆ ---         ┆ ---         ┆ ---         ┆ ---         ┆ (IFRS…      ┆ str         ┆ str         ┆ f64         ┆ ---         ┆ ---         ┆ DEI         ┆ ---     ┆ ---     ┆ f64         ┆ ---         ┆ CL (IFR…    ┆ - CA (…     ┆ …           ┆ ---         ┆ ---         ┆ f64         ┆ ---         ┆ (IFR…       ┆ ---         ┆ ---         ┆ ---         ┆ ---         ┆ (IFRS)      ┆ (IF…        ┆ (IFR…       ┆ - CL…       ┆ ---         ┆ (I…         ┆ NCA (…      ┆ ---    ┆ NCA…        ┆ …           ┆ ---         ┆ dat…       ┆ ---        ┆ to …       ┆ to …       ┆ from …     ┆ …          ┆ ---        ┆ ---        ┆ NCA…       ┆ -…         ┆ f64        ┆ f64        ┆ ---        ┆ inve…      ┆ CL …       ┆ …          ┆ ---        ┆ DEI     ┆ financial… ┆ ---        │
+            │             ┆             ┆           ┆             ┆             ┆ str         ┆             ┆             ┆ ---         ┆ f64         ┆ f64         ┆ f64         ┆ ---         ┆ str         ┆ f64         ┆ str         ┆ str         ┆ f64         ┆ str         ┆ f64         ┆ ---         ┆             ┆             ┆             ┆ f64         ┆ str         ┆ ---         ┆ f64     ┆ f64     ┆             ┆ f64         ┆ ---         ┆ ---         ┆ ---         ┆ f64         ┆ f64         ┆             ┆ f64         ┆ ---         ┆ f64         ┆ f64         ┆ f64         ┆ f64         ┆ ---         ┆ ---         ┆ ---         ┆ ---         ┆ f64         ┆ ---         ┆ ---         ┆ f64    ┆ ---         ┆ ---         ┆ str         ┆ ---        ┆ f64        ┆ ---        ┆ ---        ┆ ---        ┆ ---        ┆ str        ┆ f64        ┆ ---        ┆ ---        ┆            ┆            ┆ f64        ┆ ---        ┆ ---        ┆ ---        ┆ f64        ┆ ---     ┆ ---        ┆ str        │
+            │             ┆             ┆           ┆             ┆             ┆             ┆             ┆             ┆ f64         ┆             ┆             ┆             ┆ f64         ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆ f64         ┆             ┆             ┆             ┆             ┆             ┆ str         ┆         ┆         ┆             ┆             ┆ f64         ┆ f64         ┆ str         ┆             ┆             ┆             ┆             ┆ f64         ┆             ┆             ┆             ┆             ┆ f64         ┆ f64         ┆ f64         ┆ f64         ┆             ┆ f64         ┆ f64         ┆        ┆ f64         ┆ f64         ┆             ┆ str        ┆            ┆ f64        ┆ f64        ┆ f64        ┆ f64        ┆            ┆            ┆ f64        ┆ f64        ┆            ┆            ┆            ┆ f64        ┆ f64        ┆ f64        ┆            ┆ str     ┆ str        ┆            │
+            ╞═════════════╪═════════════╪═══════════╪═════════════╪═════════════╪═════════════╪═════════════╪═════════════╪═════════════╪═════════════╪═════════════╪═════════════╪═════════════╪═════════════╪═════════════╪═════════════╪═════════════╪═════════════╪═════════════╪═════════════╪═════════════╪═════════════╪═════════════╪═════════════╪═════════════╪═════════════╪═════════════╪═════════╪═════════╪═════════════╪═════════════╪═════════════╪═════════════╪═════════════╪═════════════╪═════════════╪═════════════╪═════════════╪═════════════╪═════════════╪═════════════╪═════════════╪═════════════╪═════════════╪═════════════╪═════════════╪═════════════╪═════════════╪═════════════╪═════════════╪════════╪═════════════╪═════════════╪═════════════╪════════════╪════════════╪════════════╪════════════╪════════════╪════════════╪════════════╪════════════╪════════════╪════════════╪════════════╪════════════╪════════════╪════════════╪════════════╪════════════╪════════════╪═════════╪════════════╪════════════╡
+            │ 2023-01-30  ┆ null        ┆ 86970     ┆ 20230127594 ┆ 3QFinancial ┆ IFRS        ┆ false       ┆ 7.9206e13   ┆ 66.76       ┆ 3.3000e10   ┆ 1.9972e10   ┆ 3.8844e10   ┆ 9.1135e10   ┆ 2021-12-31  ┆ 7.9024e13   ┆ 2023-03-31  ┆ 2022-04-01  ┆ 7.8852e13   ┆ 2022-12-31  ┆ 2.8620e9    ┆ 4.19e8      ┆ 四半期第３  ┆ E03814      ┆ 3.2002e11   ┆ 3.1110e11   ┆ Japan       ┆ 株式会社日  ┆ 7.1e7   ┆ 4.3e7   ┆ 6.7374e10   ┆ 1.5841e10   ┆ 5.2450e9    ┆ 5.5290e9    ┆ CTE         ┆ 3.6324e10   ┆ 1.8362e10   ┆ 7.8886e13   ┆ 7.9206e13   ┆ 8.9180e9    ┆ 1.8232e11   ┆ 3.3476e10   ┆ 1.0         ┆ 5.0206e10   ┆ 5.1765e10   ┆ 4.22e8      ┆ 4.2170e9    ┆ 8.9040e9    ┆ 5.8e7       ┆ 1.1240e11   ┆ 2.8980e9    ┆ 4.58e8 ┆ 6.2400e9    ┆ 3.8700e9    ┆ 2022-03-31  ┆ 2021-04-01 ┆ 3.5894e10  ┆ 7.19e8     ┆ 3.5175e10  ┆ 5.1736e10  ┆ 1.1277e10  ┆ false      ┆ 2.6389e11  ┆ 9.0280e9   ┆ 9.2140e9   ┆ 1.0099e11  ┆ 86970.0    ┆ 1.1500e10  ┆ 1.0420e9   ┆ 5.0370e9   ┆ 1.8837e10  ┆ -3.5560e9  ┆ Q3      ┆ true       ┆ false      │
+            │             ┆             ┆           ┆ 871         ┆ Statements_ ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆ 号参考様式  ┆             ┆             ┆             ┆ Exchange    ┆ 本取引所グ  ┆         ┆         ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆        ┆             ┆             ┆             ┆            ┆            ┆            ┆            ┆            ┆            ┆            ┆            ┆            ┆            ┆            ┆            ┆            ┆            ┆            ┆            ┆            ┆         ┆            ┆            │
+            │             ┆             ┆           ┆             ┆ Consolid…   ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆ 　[IFRS]（  ┆             ┆             ┆             ┆ Group, Inc. ┆ ループ      ┆         ┆         ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆        ┆             ┆             ┆             ┆            ┆            ┆            ┆            ┆            ┆            ┆            ┆            ┆            ┆            ┆            ┆            ┆            ┆            ┆            ┆            ┆            ┆         ┆            ┆            │
+            │             ┆             ┆           ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆ 連結）      ┆             ┆             ┆             ┆             ┆             ┆         ┆         ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆             ┆        ┆             ┆             ┆             ┆            ┆            ┆            ┆            ┆            ┆            ┆            ┆            ┆            ┆            ┆            ┆            ┆            ┆            ┆            ┆            ┆            ┆         ┆            ┆            │
+            └─────────────┴─────────────┴───────────┴─────────────┴─────────────┴─────────────┴─────────────┴─────────────┴─────────────┴─────────────┴─────────────┴─────────────┴─────────────┴─────────────┴─────────────┴─────────────┴─────────────┴─────────────┴─────────────┴─────────────┴─────────────┴─────────────┴─────────────┴─────────────┴─────────────┴─────────────┴─────────────┴─────────┴─────────┴─────────────┴─────────────┴─────────────┴─────────────┴─────────────┴─────────────┴─────────────┴─────────────┴─────────────┴─────────────┴─────────────┴─────────────┴─────────────┴─────────────┴─────────────┴─────────────┴─────────────┴─────────────┴─────────────┴─────────────┴─────────────┴────────┴─────────────┴─────────────┴─────────────┴────────────┴────────────┴────────────┴────────────┴────────────┴────────────┴────────────┴────────────┴────────────┴────────────┴────────────┴────────────┴────────────┴────────────┴────────────┴────────────┴────────────┴─────────┴────────────┴────────────┘"#]]
+        .assert_eq(&df.to_string());
     }
 }
