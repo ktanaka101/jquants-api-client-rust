@@ -116,340 +116,7 @@ impl MergePage for FinancialStatementsResponse {
     }
 }
 
-/// Represents a single financial statement item.
-#[derive(Debug, Clone, PartialEq, Deserialize)]
-pub struct FinancialStatementItem {
-    /// Disclosed Date (YYYY-MM-DD)
-    #[serde(rename = "DisclosedDate")]
-    pub disclosed_date: String,
 
-    /// Disclosed Time (HH:MM:SS)
-    #[serde(rename = "DisclosedTime")]
-    pub disclosed_time: String,
-
-    /// Issue Code (5-character)
-    #[serde(rename = "LocalCode")]
-    pub local_code: String,
-
-    /// Disclosure Number
-    #[serde(rename = "DisclosureNumber")]
-    pub disclosure_number: String,
-
-    /// Type of Document
-    #[serde(rename = "TypeOfDocument")]
-    pub type_of_document: TypeOfDocument,
-
-    /// Type of Current Period (e.g., "3Q")
-    #[serde(rename = "TypeOfCurrentPeriod")]
-    pub type_of_current_period: AccountingPeriod,
-
-    /// Start date of current accounting period
-    #[serde(rename = "CurrentPeriodStartDate")]
-    pub current_period_start_date: String,
-
-    /// End date of current accounting period
-    #[serde(rename = "CurrentPeriodEndDate")]
-    pub current_period_end_date: String,
-
-    /// Start date of current fiscal year
-    #[serde(rename = "CurrentFiscalYearStartDate")]
-    pub current_fiscal_year_start_date: String,
-
-    /// End date of current fiscal year
-    #[serde(rename = "CurrentFiscalYearEndDate")]
-    pub current_fiscal_year_end_date: String,
-
-    /// Start date of next fiscal year
-    ///
-    /// Blank is set if disclosure information for the following fiscal year is not set.
-    #[serde(
-        rename = "NextFiscalYearStartDate",
-        deserialize_with = "empty_string_or_null_as_none"
-    )]
-    pub next_fiscal_year_start_date: Option<String>,
-
-    /// End date of next fiscal year
-    ///
-    /// Blank is set if disclosure information for the following fiscal year is not set.
-    #[serde(
-        rename = "NextFiscalYearEndDate",
-        deserialize_with = "empty_string_or_null_as_none"
-    )]
-    pub next_fiscal_year_end_date: Option<String>,
-
-    /// Net Sales
-    #[serde(rename = "NetSales")]
-    pub net_sales: String,
-
-    /// Operating Profit
-    #[serde(rename = "OperatingProfit")]
-    pub operating_profit: String,
-
-    /// Ordinary Profit
-    #[serde(rename = "OrdinaryProfit")]
-    pub ordinary_profit: String,
-
-    /// Profit
-    #[serde(rename = "Profit")]
-    pub profit: String,
-
-    /// Earnings per share
-    #[serde(rename = "EarningsPerShare")]
-    pub earnings_per_share: String,
-
-    /// Diluted Earnings per share
-    #[serde(rename = "DilutedEarningsPerShare")]
-    pub diluted_earnings_per_share: String,
-
-    /// Total Assets
-    #[serde(rename = "TotalAssets")]
-    pub total_assets: String,
-
-    /// Equity
-    #[serde(rename = "Equity")]
-    pub equity: String,
-
-    /// Equity to Asset Ratio
-    #[serde(rename = "EquityToAssetRatio")]
-    pub equity_to_asset_ratio: String,
-
-    /// Book Value per Share
-    #[serde(rename = "BookValuePerShare")]
-    pub book_value_per_share: String,
-
-    /// Cash Flows from Operating Activities
-    #[serde(rename = "CashFlowsFromOperatingActivities")]
-    pub cash_flows_from_operating_activities: String,
-
-    /// Cash Flows from Investing Activities
-    #[serde(rename = "CashFlowsFromInvestingActivities")]
-    pub cash_flows_from_investing_activities: String,
-
-    /// Cash Flows from Financing Activities
-    #[serde(rename = "CashFlowsFromFinancingActivities")]
-    pub cash_flows_from_financing_activities: String,
-
-    /// Cash and Equivalents
-    #[serde(rename = "CashAndEquivalents")]
-    pub cash_and_equivalents: String,
-
-    /// Result Dividend Per Share 1st Quarter
-    #[serde(rename = "ResultDividendPerShare1stQuarter")]
-    pub result_dividend_per_share_1st_quarter: String,
-
-    /// Result Dividend Per Share 2nd Quarter
-    #[serde(rename = "ResultDividendPerShare2ndQuarter")]
-    pub result_dividend_per_share_2nd_quarter: String,
-
-    /// Result Dividend Per Share 3rd Quarter
-    #[serde(rename = "ResultDividendPerShare3rdQuarter")]
-    pub result_dividend_per_share_3rd_quarter: String,
-
-    /// Result Dividend Per Share Fiscal Year End
-    #[serde(rename = "ResultDividendPerShareFiscalYearEnd")]
-    pub result_dividend_per_share_fiscal_year_end: String,
-
-    /// Result Dividend Per Share Annual
-    #[serde(rename = "ResultDividendPerShareAnnual")]
-    pub result_dividend_per_share_annual: String,
-
-    /// Distributions Per Unit (REIT)
-    #[serde(rename = "DistributionsPerUnit(REIT)")]
-    pub distributions_per_unit_reit: String,
-
-    /// Result Total Dividend Paid Annual
-    #[serde(rename = "ResultTotalDividendPaidAnnual")]
-    pub result_total_dividend_paid_annual: String,
-
-    /// Result Payout Ratio Annual
-    #[serde(rename = "ResultPayoutRatioAnnual")]
-    pub result_payout_ratio_annual: String,
-
-    /// Forecast Dividend Per Share 1st Quarter
-    #[serde(rename = "ForecastDividendPerShare1stQuarter")]
-    pub forecast_dividend_per_share_1st_quarter: String,
-
-    /// Forecast Dividend Per Share 2nd Quarter
-    #[serde(rename = "ForecastDividendPerShare2ndQuarter")]
-    pub forecast_dividend_per_share_2nd_quarter: String,
-
-    /// Forecast Dividend Per Share 3rd Quarter
-    #[serde(rename = "ForecastDividendPerShare3rdQuarter")]
-    pub forecast_dividend_per_share_3rd_quarter: String,
-
-    /// Forecast Dividend Per Share Fiscal Year End
-    #[serde(rename = "ForecastDividendPerShareFiscalYearEnd")]
-    pub forecast_dividend_per_share_fiscal_year_end: String,
-
-    /// Forecast Dividend Per Share Annual
-    #[serde(rename = "ForecastDividendPerShareAnnual")]
-    pub forecast_dividend_per_share_annual: String,
-
-    /// Forecast Distributions Per Unit (REIT)
-    #[serde(rename = "ForecastDistributionsPerUnit(REIT)")]
-    pub forecast_distributions_per_unit_reit: String,
-
-    /// Forecast Total Dividend Paid Annual
-    #[serde(rename = "ForecastTotalDividendPaidAnnual")]
-    pub forecast_total_dividend_paid_annual: String,
-
-    /// Forecast Payout Ratio Annual
-    #[serde(rename = "ForecastPayoutRatioAnnual")]
-    pub forecast_payout_ratio_annual: String,
-
-    /// Next Year Forecast Dividend Per Share 1st Quarter
-    #[serde(rename = "NextYearForecastDividendPerShare1stQuarter")]
-    pub next_year_forecast_dividend_per_share_1st_quarter: String,
-
-    /// Next Year Forecast Dividend Per Share 2nd Quarter
-    #[serde(rename = "NextYearForecastDividendPerShare2ndQuarter")]
-    pub next_year_forecast_dividend_per_share_2nd_quarter: String,
-
-    /// Next Year Forecast Dividend Per Share 3rd Quarter
-    #[serde(rename = "NextYearForecastDividendPerShare3rdQuarter")]
-    pub next_year_forecast_dividend_per_share_3rd_quarter: String,
-
-    /// Next Year Forecast Dividend Per Share Fiscal Year End
-    #[serde(rename = "NextYearForecastDividendPerShareFiscalYearEnd")]
-    pub next_year_forecast_dividend_per_share_fiscal_year_end: String,
-
-    /// Next Year Forecast Dividend Per Share Annual
-    #[serde(rename = "NextYearForecastDividendPerShareAnnual")]
-    pub next_year_forecast_dividend_per_share_annual: String,
-
-    /// Next Year Forecast Distributions Per Unit (REIT)
-    #[serde(rename = "NextYearForecastDistributionsPerUnit(REIT)")]
-    pub next_year_forecast_distributions_per_unit_reit: String,
-
-    /// Next Year Forecast Payout Ratio Annual
-    #[serde(rename = "NextYearForecastPayoutRatioAnnual")]
-    pub next_year_forecast_payout_ratio_annual: String,
-
-    /// Forecast Net Sales 2nd Quarter
-    #[serde(rename = "ForecastNetSales2ndQuarter")]
-    pub forecast_net_sales_2nd_quarter: String,
-
-    /// Forecast Operating Profit 2nd Quarter
-    #[serde(rename = "ForecastOperatingProfit2ndQuarter")]
-    pub forecast_operating_profit_2nd_quarter: String,
-
-    /// Forecast Ordinary Profit 2nd Quarter
-    #[serde(rename = "ForecastOrdinaryProfit2ndQuarter")]
-    pub forecast_ordinary_profit_2nd_quarter: String,
-
-    /// Forecast Profit 2nd Quarter
-    #[serde(rename = "ForecastProfit2ndQuarter")]
-    pub forecast_profit_2nd_quarter: String,
-
-    /// Forecast Earnings Per Share 2nd Quarter
-    #[serde(rename = "ForecastEarningsPerShare2ndQuarter")]
-    pub forecast_earnings_per_share_2nd_quarter: String,
-
-    /// Next Year Forecast Net Sales 2nd Quarter
-    #[serde(rename = "NextYearForecastNetSales2ndQuarter")]
-    pub next_year_forecast_net_sales_2nd_quarter: String,
-
-    /// Next Year Forecast Operating Profit 2nd Quarter
-    #[serde(rename = "NextYearForecastOperatingProfit2ndQuarter")]
-    pub next_year_forecast_operating_profit_2nd_quarter: String,
-
-    /// Next Year Forecast Ordinary Profit 2nd Quarter
-    #[serde(rename = "NextYearForecastOrdinaryProfit2ndQuarter")]
-    pub next_year_forecast_ordinary_profit_2nd_quarter: String,
-
-    /// Next Year Forecast Profit 2nd Quarter
-    #[serde(rename = "NextYearForecastProfit2ndQuarter")]
-    pub next_year_forecast_profit_2nd_quarter: String,
-
-    /// Next Year Forecast Earnings Per Share 2nd Quarter
-    #[serde(rename = "NextYearForecastEarningsPerShare2ndQuarter")]
-    pub next_year_forecast_earnings_per_share_2nd_quarter: String,
-
-    /// Forecast Net Sales at Fiscal Year End
-    #[serde(rename = "ForecastNetSales")]
-    pub forecast_net_sales: String,
-
-    /// Forecast Operating Profit at Fiscal Year End
-    #[serde(rename = "ForecastOperatingProfit")]
-    pub forecast_operating_profit: String,
-
-    /// Forecast Ordinary Profit at Fiscal Year End
-    #[serde(rename = "ForecastOrdinaryProfit")]
-    pub forecast_ordinary_profit: String,
-
-    /// Forecast Profit at Fiscal Year End
-    #[serde(rename = "ForecastProfit")]
-    pub forecast_profit: String,
-
-    /// Forecast Earnings Per Share at Fiscal Year End
-    #[serde(rename = "ForecastEarningsPerShare")]
-    pub forecast_earnings_per_share: String,
-
-    /// Next Year Forecast Net Sales at Fiscal Year End
-    #[serde(rename = "NextYearForecastNetSales")]
-    pub next_year_forecast_net_sales: String,
-
-    /// Next Year Forecast Operating Profit at Fiscal Year End
-    #[serde(rename = "NextYearForecastOperatingProfit")]
-    pub next_year_forecast_operating_profit: String,
-
-    /// Next Year Forecast Ordinary Profit at Fiscal Year End
-    #[serde(rename = "NextYearForecastOrdinaryProfit")]
-    pub next_year_forecast_ordinary_profit: String,
-
-    /// Next Year Forecast Profit at Fiscal Year End
-    #[serde(rename = "NextYearForecastProfit")]
-    pub next_year_forecast_profit: String,
-
-    /// Next Year Forecast Earnings Per Share at Fiscal Year End
-    #[serde(rename = "NextYearForecastEarningsPerShare")]
-    pub next_year_forecast_earnings_per_share: String,
-
-    /// Material Changes in Subsidiaries at Fiscal Year End
-    #[serde(rename = "MaterialChangesInSubsidiaries")]
-    pub material_changes_in_subsidiaries: String,
-
-    /// Significant Changes In The Scope Of Consolidation
-    #[serde(
-        rename = "SignificantChangesInTheScopeOfConsolidation",
-        deserialize_with = "empty_string_or_null_as_none"
-    )]
-    pub significant_changes_in_the_scope_of_consolidation: Option<String>,
-
-    /// Changes Based on Revisions of Accounting Standard
-    #[serde(rename = "ChangesBasedOnRevisionsOfAccountingStandard")]
-    pub changes_based_on_revisions_of_accounting_standard: String,
-
-    /// Changes Other Than Ones Based on Revisions of Accounting Standard
-    #[serde(rename = "ChangesOtherThanOnesBasedOnRevisionsOfAccountingStandard")]
-    pub changes_other_than_based_on_revisions_of_accounting_standard: String,
-
-    /// Changes in Accounting Estimates
-    #[serde(rename = "ChangesInAccountingEstimates")]
-    pub changes_in_accounting_estimates: String,
-
-    /// Retrospective Restatement
-    #[serde(rename = "RetrospectiveRestatement")]
-    pub retrospective_restatement: String,
-
-    /// Number of Issued and Outstanding Shares at the End of Fiscal Year Including Treasury Stock
-    #[serde(
-        rename = "NumberOfIssuedAndOutstandingSharesAtTheEndOfFiscalYearIncludingTreasuryStock"
-    )]
-    pub number_of_issued_and_outstanding_shares_at_the_end_of_fiscal_year_including_treasury_stock:
-        String,
-
-    /// Number of Treasury Stock at the End of Fiscal Year
-    #[serde(rename = "NumberOfTreasuryStockAtTheEndOfFiscalYear")]
-    pub number_of_treasury_stock_at_the_end_of_fiscal_year: String,
-
-    /// Average Number of Shares
-    #[serde(rename = "AverageNumberOfShares")]
-    pub average_number_of_shares: String,
-
-    /// Non-Consolidated Net Sales at Fiscal Year End
-    #[serde(rename = "NonConsolidatedNetSales")]
-    pub non_consolidated_net_sales: String,
 
     /// Non-Consolidated Operating Profit at Fiscal Year End
     #[serde(rename = "NonConsolidatedOperatingProfit")]
@@ -458,6 +125,82 @@ pub struct FinancialStatementItem {
     /// Non-Consolidated Ordinary Profit at Fiscal Year End
     #[serde(rename = "NonConsolidatedOrdinaryProfit")]
     pub non_consolidated_ordinary_profit: String,
+}
+
+#[cfg(feature = "polars")]
+impl FinancialStatementsResponse {
+    /// Convert the response into a Polars DataFrame.
+    pub fn into_polars(
+        self,
+    ) -> Result<polars::prelude::DataFrame, crate::polars_utils::IntoPolarsError> {
+        use crate::polars_utils::build_categorical_column;
+        use polars::prelude::*;
+
+        let data = self.statements;
+
+        let mut columns = Vec::new();
+
+        // Define a macro to add columns
+        macro_rules! add_column {
+            ($name:expr, $field:expr, $type:expr) => {
+                columns.push(Series::new(
+                    $name,
+                    data.iter().map(|item| &item.$field).collect::<Vec<_>>(),
+                ).cast($type)?);
+            };
+        }
+
+        // Add columns for each field
+        add_column!("DisclosedDate", disclosed_date, &DataType::Date);
+        add_column!("DisclosedTime", disclosed_time, &DataType::Utf8);
+        add_column!("LocalCode", local_code, &DataType::Utf8);
+        add_column!("DisclosureNumber", disclosure_number, &DataType::Utf8);
+        add_column!("TypeOfDocument", type_of_document, &DataType::Categorical(None));
+        add_column!("TypeOfCurrentPeriod", type_of_current_period, &DataType::Categorical(None));
+        add_column!("CurrentPeriodStartDate", current_period_start_date, &DataType::Date);
+        add_column!("CurrentPeriodEndDate", current_period_end_date, &DataType::Date);
+        add_column!("CurrentFiscalYearStartDate", current_fiscal_year_start_date, &DataType::Date);
+        add_column!("CurrentFiscalYearEndDate", current_fiscal_year_end_date, &DataType::Date);
+        add_column!("NextFiscalYearStartDate", next_fiscal_year_start_date, &DataType::Date);
+        add_column!("NextFiscalYearEndDate", next_fiscal_year_end_date, &DataType::Date);
+
+        // Add numeric columns
+        macro_rules! add_numeric_column {
+            ($name:expr, $field:expr) => {
+                columns.push(Series::new(
+                    $name,
+                    data.iter().map(|item| item.$field.parse::<f64>().ok()).collect::<Vec<_>>(),
+                ));
+            };
+        }
+
+        add_numeric_column!("NetSales", net_sales);
+        add_numeric_column!("OperatingProfit", operating_profit);
+        add_numeric_column!("OrdinaryProfit", ordinary_profit);
+        add_numeric_column!("Profit", profit);
+        add_numeric_column!("EarningsPerShare", earnings_per_share);
+        add_numeric_column!("DilutedEarningsPerShare", diluted_earnings_per_share);
+        add_numeric_column!("TotalAssets", total_assets);
+        add_numeric_column!("Equity", equity);
+        add_numeric_column!("EquityToAssetRatio", equity_to_asset_ratio);
+        add_numeric_column!("BookValuePerShare", book_value_per_share);
+        add_numeric_column!("CashFlowsFromOperatingActivities", cash_flows_from_operating_activities);
+        add_numeric_column!("CashFlowsFromInvestingActivities", cash_flows_from_investing_activities);
+        add_numeric_column!("CashFlowsFromFinancingActivities", cash_flows_from_financing_activities);
+        add_numeric_column!("CashAndEquivalents", cash_and_equivalents);
+
+        // Add remaining columns (you may need to adjust the types as needed)
+        add_column!("MaterialChangesInSubsidiaries", material_changes_in_subsidiaries, &DataType::Utf8);
+        add_column!("SignificantChangesInTheScopeOfConsolidation", significant_changes_in_the_scope_of_consolidation, &DataType::Utf8);
+        add_column!("ChangesBasedOnRevisionsOfAccountingStandard", changes_based_on_revisions_of_accounting_standard, &DataType::Utf8);
+        add_column!("ChangesOtherThanOnesBasedOnRevisionsOfAccountingStandard", changes_other_than_based_on_revisions_of_accounting_standard, &DataType::Utf8);
+        add_column!("ChangesInAccountingEstimates", changes_in_accounting_estimates, &DataType::Utf8);
+        add_column!("RetrospectiveRestatement", retrospective_restatement, &DataType::Utf8);
+
+        let df = DataFrame::new(columns)?;
+        Ok(df)
+    }
+}
 
     /// Non-Consolidated Profit at Fiscal Year End
     #[serde(rename = "NonConsolidatedProfit")]
@@ -633,19 +376,142 @@ mod tests {
                     "NextYearForecastOrdinaryProfit2ndQuarter": "",
                     "NextYearForecastProfit2ndQuarter": "",
                     "NextYearForecastEarningsPerShare2ndQuarter": "",
-                    "ForecastNetSales": "132500000000",
-                    "ForecastOperatingProfit": "65500000000",
+                    "ForecastNetSales": "135000000000",
+                    "ForecastOperatingProfit": "70000000000",
                     "ForecastOrdinaryProfit": "",
-                    "ForecastProfit": "45000000000",
-                    "ForecastEarningsPerShare": "85.42",
+                    "ForecastProfit": "47000000000",
+                    "ForecastEarningsPerShare": "89.22",
                     "NextYearForecastNetSales": "",
                     "NextYearForecastOperatingProfit": "",
                     "NextYearForecastOrdinaryProfit": "",
                     "NextYearForecastProfit": "",
                     "NextYearForecastEarningsPerShare": "",
-                    "MaterialChangesInSubsidiaries": "false",
-                    "SignificantChangesInTheScopeOfConsolidation": "",
-                    "ChangesBasedOnRevisionsOfAccountingStandard": "false",
+                    "MaterialChangesInSubsidiaries": "None",
+                    "ChangesBasedOnRevisionsOfAccountingStandard": "None",
+                    "ChangesOtherThanOnesBasedOnRevisionsOfAccountingStandard": "None",
+                    "ChangesInAccountingEstimates": "None",
+                    "RetrospectiveRestatement": "None",
+                    "NumberOfIssuedAndOutstandingSharesAtTheEndOfFiscalYearIncludingTreasuryStock": "527578000",
+                    "NumberOfTreasuryStockAtTheEndOfFiscalYear": "1000",
+                    "AverageNumberOfShares": "526800000",
+                    "NonConsolidatedNetSales": "",
+                    "NonConsolidatedOperatingProfit": "",
+                    "NonConsolidatedOrdinaryProfit": "",
+                    "NonConsolidatedProfit": "",
+                    "NonConsolidatedEarningsPerShare": "",
+                    "NonConsolidatedTotalAssets": "",
+                    "NonConsolidatedEquity": "",
+                    "NonConsolidatedEquityToAssetRatio": "",
+                    "NonConsolidatedBookValuePerShare": "",
+                    "ForecastNonConsolidatedNetSales2ndQuarter": "",
+                    "ForecastNonConsolidatedOperatingProfit2ndQuarter": "",
+                    "ForecastNonConsolidatedOrdinaryProfit2ndQuarter": "",
+                    "ForecastNonConsolidatedProfit2ndQuarter": "",
+                    "ForecastNonConsolidatedEarningsPerShare2ndQuarter": "",
+                    "NextYearForecastNonConsolidatedNetSales2ndQuarter": "",
+                    "NextYearForecastNonConsolidatedOperatingProfit2ndQuarter": "",
+                    "NextYearForecastNonConsolidatedOrdinaryProfit2ndQuarter": "",
+                    "NextYearForecastNonConsolidatedProfit2ndQuarter": "",
+                    "NextYearForecastNonConsolidatedEarningsPerShare2ndQuarter": "",
+                    "ForecastNonConsolidatedNetSales": "",
+                    "ForecastNonConsolidatedOperatingProfit": "",
+                    "ForecastNonConsolidatedOrdinaryProfit": "",
+                    "ForecastNonConsolidatedProfit": "",
+                    "ForecastNonConsolidatedEarningsPerShare": "",
+                    "NextYearForecastNonConsolidatedNetSales": "",
+                    "NextYearForecastNonConsolidatedOperatingProfit": "",
+                    "NextYearForecastNonConsolidatedOrdinaryProfit": "",
+                    "NextYearForecastNonConsolidatedProfit": "",
+                    "NextYearForecastNonConsolidatedEarningsPerShare": ""
+                }
+            ],
+            "pagination_key": "value1.value2."
+        }
+        "#;
+
+        let response: FinancialStatementsResponse = serde_json::from_str(json_data).unwrap();
+
+        assert_eq!(response.statements.len(), 1);
+        assert_eq!(response.pagination_key, Some("value1.value2.".to_string()));
+
+        let statement = &response.statements[0];
+        assert_eq!(statement.disclosed_date, "2023-01-30");
+        assert_eq!(statement.disclosed_time, "12:00:00");
+        assert_eq!(statement.local_code, "86970");
+        assert_eq!(statement.disclosure_number, "20230127594871");
+        assert_eq!(statement.type_of_document, TypeOfDocument::_3QFinancialStatements_Consolidated_IFRS);
+        assert_eq!(statement.type_of_current_period, AccountingPeriod::_3Q);
+        assert_eq!(statement.current_period_start_date, "2022-04-01");
+        assert_eq!(statement.current_period_end_date, "2022-12-31");
+        assert_eq!(statement.current_fiscal_year_start_date, "2022-04-01");
+        assert_eq!(statement.current_fiscal_year_end_date, "2023-03-31");
+        assert_eq!(statement.next_fiscal_year_start_date, None);
+        assert_eq!(statement.next_fiscal_year_end_date, None);
+        assert_eq!(statement.net_sales, "100529000000");
+        assert_eq!(statement.operating_profit, "51765000000");
+        assert_eq!(statement.ordinary_profit, "");
+        assert_eq!(statement.profit, "35175000000");
+        assert_eq!(statement.earnings_per_share, "66.76");
+        assert_eq!(statement.diluted_earnings_per_share, "");
+        assert_eq!(statement.total_assets, "79205861000000");
+        assert_eq!(statement.equity, "320021000000");
+        assert_eq!(statement.equity_to_asset_ratio, "0.004");
+        assert_eq!(statement.book_value_per_share, "");
+        assert_eq!(statement.cash_flows_from_operating_activities, "");
+        assert_eq!(statement.cash_flows_from_investing_activities, "");
+        assert_eq!(statement.cash_flows_from_financing_activities, "");
+        assert_eq!(statement.cash_and_equivalents, "91135000000");
+    }
+
+    #[cfg(feature = "polars")]
+    #[test]
+    fn test_into_polars() {
+        use polars::prelude::*;
+
+        let response = FinancialStatementsResponse {
+            statements: vec![
+                FinancialStatementItem {
+                    disclosed_date: "2023-01-30".to_string(),
+                    disclosed_time: "12:00:00".to_string(),
+                    local_code: "86970".to_string(),
+                    disclosure_number: "20230127594871".to_string(),
+                    type_of_document: TypeOfDocument::_3QFinancialStatements_Consolidated_IFRS,
+                    type_of_current_period: AccountingPeriod::_3Q,
+                    current_period_start_date: "2022-04-01".to_string(),
+                    current_period_end_date: "2022-12-31".to_string(),
+                    current_fiscal_year_start_date: "2022-04-01".to_string(),
+                    current_fiscal_year_end_date: "2023-03-31".to_string(),
+                    next_fiscal_year_start_date: None,
+                    next_fiscal_year_end_date: None,
+                    net_sales: "100529000000".to_string(),
+                    operating_profit: "51765000000".to_string(),
+                    ordinary_profit: "".to_string(),
+                    profit: "35175000000".to_string(),
+                    earnings_per_share: "66.76".to_string(),
+                    diluted_earnings_per_share: "".to_string(),
+                    total_assets: "79205861000000".to_string(),
+                    equity: "320021000000".to_string(),
+                    equity_to_asset_ratio: "0.004".to_string(),
+                    book_value_per_share: "".to_string(),
+                    cash_flows_from_operating_activities: "".to_string(),
+                    cash_flows_from_investing_activities: "".to_string(),
+                    cash_flows_from_financing_activities: "".to_string(),
+                    cash_and_equivalents: "91135000000".to_string(),
+                    // Add other fields as needed
+                    ..Default::default()
+                }
+            ],
+            pagination_key: Some("value1.value2.".to_string()),
+        };
+
+        let df = response.into_polars().unwrap();
+
+        assert_eq!(df.shape(), (1, 26)); // Adjust the number of columns as needed
+        assert_eq!(df.column("DisclosedDate").unwrap().dtype(), &DataType::Date);
+        assert_eq!(df.column("LocalCode").unwrap().dtype(), &DataType::Utf8);
+        assert_eq!(df.column("NetSales").unwrap().dtype(), &DataType::Float64);
+    }
+}
                     "ChangesOtherThanOnesBasedOnRevisionsOfAccountingStandard": "false",
                     "ChangesInAccountingEstimates": "true",
                     "RetrospectiveRestatement": "",
