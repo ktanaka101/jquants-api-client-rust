@@ -23,7 +23,7 @@ tokio = { version = "^1.41", features = ["full"] }
 futures = "0.3"
 async-stream = "0.3"
 
-polars = { version = "^0.44", optional = true, features = [
+polars = { version = "^0.45", optional = true, features = [
   "dtype-date",
   "dtype-time",
   "dtype-categorical",
